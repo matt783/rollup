@@ -4,9 +4,14 @@
 /* global web3 */
 /* global BigInt */
 
+<<<<<<< HEAD
 const chai = require("chai");
 //const { expect } = chai;
 //const ethers = require("ethers");
+=======
+//const chai = require("chai");
+//const { expect } = chai;
+>>>>>>> slasher
 const fs = require("fs");
 
 const { slashSC } = require("./slasher");
@@ -14,7 +19,10 @@ const poseidonUnit = require("circomlib/src/poseidon_gencontract");
 const rollupUtils = require("../../rollup-utils/rollup-utils.js");
 const Verifier = artifacts.require("../../../../contracts/test/VerifierHelper");
 const RollupTest = artifacts.require("../../../../contracts/test/RollupTest");
+<<<<<<< HEAD
 const TokenRollup = artifacts.require("../../../../contracts/test/TokenRollup");
+=======
+>>>>>>> slasher
 const RollupPoS = artifacts.require("../../../../contracts/test/RollupPoS");
 const RollupDB = require("../../js/rollupdb");
 const SMTMemDB = require("circomlib/src/smt_memdb");
@@ -53,14 +61,21 @@ function manageEvent(event) {
 contract("RollupPoS", async (accounts) => {
 
     let insPoseidonUnit;
+<<<<<<< HEAD
     //let insTokenRollup;
+=======
+>>>>>>> slasher
     let insRollupTest;
     let insVerifier;
     let insRollupPoS;
 
     let urlNode = "http://localhost:8545";
     let addressSC;
+<<<<<<< HEAD
     const  walletPath = "./wallet.json";
+=======
+    const  walletPath = "./walletSlash.json";
+>>>>>>> slasher
     const  pass = "foo";
     let abi;
     let walletJson;
@@ -89,11 +104,9 @@ contract("RollupPoS", async (accounts) => {
   
     const maxTx = 10;
     const maxOnChainTx = 10;
-    //const tokenInitialAmount = 100;
     const {
         0: owner,
-        1: /*id1,
-        2:*/ beneficiary,
+        1: beneficiary,
     } = accounts;
 
     before(async () => {
@@ -101,9 +114,6 @@ contract("RollupPoS", async (accounts) => {
         const C = new web3.eth.Contract(poseidonUnit.abi);
         insPoseidonUnit = await C.deploy({ data: poseidonUnit.createCode() })
             .send({ gas: 2500000, from: owner });
-
-        // Deploy TokenRollup
-        //insTokenRollup = await TokenRollup.new(id1, tokenInitialAmount);
 
         // Deploy Verifier
         insVerifier = await Verifier.new();

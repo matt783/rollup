@@ -7,10 +7,13 @@ async function slashSC(urlNode, addressSC, walletJson, password, abi, oldCurrent
     const provider = new ethers.providers.JsonRpcProvider(urlNode);
     walletEth = walletEth.connect(provider);
     const contract = new ethers.Contract(addressSC, abi, walletEth);
+    let currentSlot;
     try{
-        const currentSlot = await contract.currentSlot();
-        //des de oldCurrentSlot al actual
-        const slots = Array.from(Array(currentSlot), (x, index) => index);
+        currentSlot = await contract.currentSlot();
+        var slots = [];
+        for (var i = oldCurrentSlot; i < currentSlot; i++) {
+            slots.push(i);
+        }
         console.log(slots);
         slots.forEach((slot) => {
             console.log(slot);
