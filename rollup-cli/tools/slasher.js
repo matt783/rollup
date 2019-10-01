@@ -14,9 +14,7 @@ async function slashSC(urlNode, addressSC, walletJson, password, abi, oldCurrent
         for (var i = oldCurrentSlot; i < currentSlot; i++) {
             slots.push(i);
         }
-        console.log(slots);
         slots.forEach((slot) => {
-            console.log(slot);
             contract.slash(slot).then(response => {
                 console.log(response);
             });
