@@ -69,10 +69,10 @@ contract("Rollup", async (accounts) => {
         actualConfigBot.addressTokens = insTokenRollup.address;
         actualConfigBot.addressRollup = insRollupTest.address;
 
-        let walletBot = actualConfigBot.wallet;
+        let walletBotPath = actualConfigBot.walletFunder;
         fs.writeFileSync(configBot, JSON.stringify(actualConfigBot,null,1), "utf-8");
         //New wallet for Bot
-        fs.writeFileSync(walletBot, JSON.stringify(await walletRollup.toEncryptedJson("foo"),null,1), "utf-8");
+        fs.writeFileSync(walletBotPath, JSON.stringify(await walletRollup.toEncryptedJson("foo"),null,1), "utf-8");
 
 
        
@@ -82,7 +82,13 @@ contract("Rollup", async (accounts) => {
     it("Distribute tokens and funds", async () => {
         await insTokenRollup.transfer(walletEth.address, 300, { from: id1 });
 
-        web3.eth.sendTransaction({to:walletEth.address, from:providerfunds, value: web3.utils.toWei("90", "ether")});//provide funds to our account
+        let balance = await web3.eth.getBalance(providerfunds);
+        let account = 4;
+        while (web3.utils.fromWei(balance) <90){
+            account++;
+            balance=  await web3.eth.getBalance(accounts[account]);
+        }
+        web3.eth.sendTransaction({to:walletEth.address, from:accounts[account], value: web3.utils.toWei("90", "ether")});//provide funds to our account
     });
 
     it("Rollup token listing", async () => {
@@ -102,12 +108,10 @@ contract("Rollup", async (accounts) => {
 
     });
 
-
-
+    //recommended comment this case and execute yourself, in order to see logs and errors
     it("test bot", async () => {
-        process.execSync("node ../tools/bot.js 10 1 1");
+        process.execSync("node ../tools/bot.js doall");
         const resWalletEth = await insTokenRollup.balanceOf(walletEth.address);
-        expect(resWalletEth.toString()).to.be.equal("200");
+        expect(resWalletEth.toString()).to.be.equal("260"); //300-(10tokens*4wallets)= 260
     });
-
 });

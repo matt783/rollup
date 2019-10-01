@@ -1,8 +1,9 @@
 {
- "wallet": "../tools/resourcesBot/walletBot.json",
+ "walletFunder": "../tools/resourcesBot/walletFunder.json",
  "operator": "http://127.0.0.1:9000",
- "addressTokens": "0x724E175741e8135B76edE7e6C07A63fAF8Fbf74a",
+ "addressTokens": "0xE26961E66FF7e67Fe2665675d05ABCc449e9bdC7",
  "nodeEth": "http://localhost:8545",
  "abiTokens": "../tools/resourcesBot/abiTokens.json",
- "addressRollup": "0x0DCf23B34919D79D0eF4909d0C29Fe008adB44E8"
+ "addressRollup": "0x8Bba5E439874195c68B13393f24d72d575AddC85",
+ "abiRollup": "../tools/resourcesBot/rollupabi.json"
 }
