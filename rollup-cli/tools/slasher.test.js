@@ -4,14 +4,8 @@
 /* global web3 */
 /* global BigInt */
 
-<<<<<<< HEAD
-const chai = require("chai");
-//const { expect } = chai;
-//const ethers = require("ethers");
-=======
 //const chai = require("chai");
 //const { expect } = chai;
->>>>>>> slasher
 const fs = require("fs");
 
 const { slashSC } = require("./slasher");
@@ -19,13 +13,10 @@ const poseidonUnit = require("circomlib/src/poseidon_gencontract");
 const rollupUtils = require("../../rollup-utils/rollup-utils.js");
 const Verifier = artifacts.require("../../../../contracts/test/VerifierHelper");
 const RollupTest = artifacts.require("../../../../contracts/test/RollupTest");
-<<<<<<< HEAD
-const TokenRollup = artifacts.require("../../../../contracts/test/TokenRollup");
-=======
->>>>>>> slasher
 const RollupPoS = artifacts.require("../../../../contracts/test/RollupPoS");
 const RollupDB = require("../../js/rollupdb");
 const SMTMemDB = require("circomlib/src/smt_memdb");
+const { timeout } = require("../../rollup-operator/src/utils");
 
 function buildInputSm(bb, beneficiary) {
     return {
@@ -61,21 +52,13 @@ function manageEvent(event) {
 contract("RollupPoS", async (accounts) => {
 
     let insPoseidonUnit;
-<<<<<<< HEAD
-    //let insTokenRollup;
-=======
->>>>>>> slasher
     let insRollupTest;
     let insVerifier;
     let insRollupPoS;
 
     let urlNode = "http://localhost:8545";
     let addressSC;
-<<<<<<< HEAD
-    const  walletPath = "./wallet.json";
-=======
     const  walletPath = "./walletSlash.json";
->>>>>>> slasher
     const  pass = "foo";
     let abi;
     let walletJson;
@@ -132,10 +115,11 @@ contract("RollupPoS", async (accounts) => {
         rollupDB = await RollupDB(db);
         
     });
-    it("a verr", async (done) => {
+    it("slash", async () => {
         for(let i = 0; i < 1102; i++) {
             await forgeBlock();
         }
         slashSC(urlNode, addressSC, walletJson, pass, abi, 0);
+        await timeout(30000);
     });
 });
