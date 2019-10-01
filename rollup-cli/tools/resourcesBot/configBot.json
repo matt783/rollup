@@ -1,0 +1,8 @@
+{
+ "wallet": "../tools/resourcesBot/walletBot.json",
+ "operator": "http://127.0.0.1:9000",
+ "addressTokens": "0x724E175741e8135B76edE7e6C07A63fAF8Fbf74a",
+ "nodeEth": "http://localhost:8545",
+ "abiTokens": "../tools/resourcesBot/abiTokens.json",
+ "addressRollup": "0x0DCf23B34919D79D0eF4909d0C29Fe008adB44E8"
+}

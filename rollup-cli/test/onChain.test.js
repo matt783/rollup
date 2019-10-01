@@ -79,7 +79,7 @@ contract("Rollup", async (accounts) => {
     function checkBatchNumber(events) {
         events.forEach(elem => {
             const eventBatch = BigInt(elem.args.batchNumber); 
-            expect(eventBatch.add(BigInt(2)).toString()).to.be.equal(BigInt(rollupDB.lastBlock).toString());
+            expect(eventBatch.add(BigInt(2)).toString()).to.be.equal(BigInt(rollupDB.lastBatch).toString());
         });
     }
     let insPoseidonUnit;
