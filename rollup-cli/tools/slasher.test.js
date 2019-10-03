@@ -116,7 +116,7 @@ contract("RollupPoS", async (accounts) => {
         
     });
     it("slash", async () => {
-        for(let i = 0; i < 1102; i++) {
+        for(let i = 0; i <11; i++) {
             await forgeBlock();
         }
         slashSC(urlNode, addressSC, walletJson, pass, abi, 0);
