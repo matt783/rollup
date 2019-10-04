@@ -4,8 +4,10 @@
 /* global web3 */
 /* global BigInt */
 
-//const chai = require("chai");
-//const { expect } = chai;
+// const chai = require("chai");
+// const { expect } = chai;
+// ganache-cli --mnemonic "vivid bitter wealth early teach village shoot tide beauty universe green vanish"
+
 const fs = require("fs");
 
 const { slashSC } = require("./slasher");
@@ -116,7 +118,7 @@ contract("RollupPoS", async (accounts) => {
         
     });
     it("slash", async () => {
-        for(let i = 0; i <11; i++) {
+        for(let i = 0; i <1011; i++) {
             await forgeBlock();
         }
         slashSC(urlNode, addressSC, walletJson, pass, abi, 0);
