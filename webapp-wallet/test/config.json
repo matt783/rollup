@@ -1,0 +1,5 @@
+{
+ "operator": "http://127.0.0.1:9000",
+ "address": "0xbf9fC1a599f0028eBE705DAa9dE528925BED8D59",
+ "nodeEth": "http://localhost:8545"
+}
