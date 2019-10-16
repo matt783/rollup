@@ -72,3 +72,5 @@ rollup-cli/src/wallet-rollup-cli.json
 
 # vscode configuration
 .vscode
+
+proof-generator/codegen
