@@ -1,260 +1,190 @@
-openapi: 3.0.1
+---
+swagger: "2.0"
 info:
-  title: Rollup Proof Generator
-  description: API specification for the proof generation service of the rollup.
-  version: 0.0.1
-servers:
-- url: http://localhost:8080
-  description: Local development server
+  description: "API specification for the proof generation service of the rollup."
+  version: "0.0.1"
+  title: "Rollup Proof Generator"
+host: "localhost:8080"
 paths:
   /input:
     post:
       tags:
-      - Proof Generator
-      summary: Send inputs to generate a proof
-      description: Send a petition of proo generation based on inputs. Note that this
-        endpoint will just schedule the proof generation, not return it.
-      operationId: postInput
-      requestBody:
-        description: Input object
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/input'
+      - "Proof Generator"
+      summary: "Send inputs to generate a proof"
+      description: "Send a petition of proo generation based on inputs. Note that\
+        \ this endpoint will just schedule the proof generation, not return it."
+      operationId: "postInput"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "Input"
+        description: "Input for the proof generation circuit."
         required: true
+        schema:
+          $ref: "#/definitions/input"
       responses:
         200:
-          description: Success
+          description: "successful operation"
         401:
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/inline_response_401'
+          description: "Input validation error"
+          schema:
+            $ref: "#/definitions/Unauthorized"
         500:
-          description: Internal server error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/inline_response_500'
+          description: "Internal server"
+          schema:
+            $ref: "#/definitions/Error"
         501:
-          description: Not Implemented
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/inline_response_501'
-      x-swagger-router-controller: ProofGenerator
+          description: "Not implemented"
+          schema:
+            $ref: "#/definitions/NotImplemented"
+      x-swagger-router-controller: "ProofGenerator"
   /status:
     get:
       tags:
-      - Proof Generator
-      summary: Get the status of the proof generator.
-      description: Returns the status of the proof generator.
-      operationId: getStatus
+      - "Proof Generator"
+      summary: "Get the status of the proof generator."
+      description: "Returns the status of the proof generator."
+      operationId: "getStatus"
+      produces:
+      - "application/json"
+      parameters: []
       responses:
         200:
-          description: successful operation
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/status'
+          description: "successful operation"
+          schema:
+            $ref: "#/definitions/status"
         401:
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/inline_response_401'
+          description: "Input validation error"
+          schema:
+            $ref: "#/definitions/Unauthorized"
         500:
-          description: Internal server error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/inline_response_500'
+          description: "Internal server"
+          schema:
+            $ref: "#/definitions/Error"
         501:
-          description: Not Implemented
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/inline_response_501'
-      x-swagger-router-controller: ProofGenerator
+          description: "Not implemented"
+          schema:
+            $ref: "#/definitions/NotImplemented"
+      x-swagger-router-controller: "ProofGenerator"
   /cancel:
     post:
       tags:
-      - Proof Generator
-      summary: Abort the proof that is currentl being generated
-      description: Send a petition to abort the creation process of a proof
-      operationId: postCancel
+      - "Proof Generator"
+      summary: "Abort the proof that is currentl being generated"
+      description: "Send a petition to abort the creation process of a proof"
+      operationId: "postCancel"
+      parameters: []
       responses:
         200:
-          description: Success
+          description: "successful operation"
         401:
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/inline_response_401'
+          description: "Input validation error"
+          schema:
+            $ref: "#/definitions/Unauthorized"
         500:
-          description: Internal server error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/inline_response_500'
+          description: "Internal server"
+          schema:
+            $ref: "#/definitions/Error"
         501:
-          description: Not Implemented
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/inline_response_501'
-      x-swagger-router-controller: ProofGenerator
-components:
-  schemas:
-    input:
-      required:
-      - feePlanCoins
-      - feePlanFees
-      - nTxperToken
-      - newExitRoot
-      - newStateRoot
-      - offChainHash
-      - oldStateRoot
-      - onChainHash
-      type: object
-      properties:
-        oldStateRoot:
-          pattern: /^[0-9]{1,80}$/
-          type: string
-          description: Root of the old state tree hashed, encoded as a string representing
-            a 256 bits unsigned integer
-          example: "12345678123456781234567812345678"
-        newStateRoot:
-          pattern: /^[0-9]{1,80}$/
-          type: string
-          description: Root of the new state tree hashed, encoded as a string representing
-            a 256 bits unsigned integer
-          example: "3498766326879236987234687424398762549876"
-        newExitRoot:
-          pattern: /^[0-9]{1,80}$/
-          type: string
-          description: Root of the new exit tree hashed, encoded as a string representing
-            a 256 bits unsigned integer
-          example: "249879827432398725439825387925398790828793"
-        onChainHash:
-          pattern: /^[0-9]{1,80}$/
-          type: string
-          description: ??????, encoded as a string representing a 256 bits unsigned
-            integer
-          example: "908758974536875346878734798"
-        offChainHash:
-          pattern: /^[0-9]{1,80}$/
-          type: string
-          description: ??????, encoded as a string representing a 256 bits unsigned
-            integer
-          example: "87543298673459875609823498012398702134"
-        feePlanCoins:
-          pattern: /^[0-9]{1,80}$/
-          type: string
-          description: ??????, encoded as a string representing a 256 bits unsigned
-            integer
-          example: "869703547053246980532469870325487605342"
-        feePlanFees:
-          pattern: /^[0-9]{1,80}$/
-          type: string
-          description: ???????, encoded as a string representing a 256 bits unsigned
-            integer
-          example: "87634526780543268793542986754328763459807"
-        nTxperToken:
-          pattern: /^[0-9]{1,80}$/
-          type: string
-          description: Number of transactions per token, encoded as a string representing
-            a 256 bits unsigned integer
-          example: "8762587692345687098750723507598634"
-      description: Set of input signals required to generate a proof
-    status:
-      required:
-      - status
-      type: object
-      properties:
-        status:
-          type: string
-          description: |
-            Possible states of the proof service:
-             * `Idle` - waiting for input
-             * `Error` - if witness is not correct
-             * `Pending` - if proof is being generated
-             * `Finished` - if proof has been generated, in that case proof will be returned
-          enum:
-          - Idle
-          - Error
-          - Pending
-          - Finished
-        proof:
-          type: string
-          description: successfully generated proof. When this field is included in
-            the response the value of status will always be `Finished`
-      example:
-        status: Finished
-        proof: yY3Y2apEy3L2VsCavrTaQnCt747TLtHCT37w3iYpMwuRGh2xKgPwf88t7PDQdtDLiiSSBj6wmDTyZdGKSCMWBzwQhTCrR5fH6u6cAP8BTe6MRcPEoiSXwyfDhYZqs25T
-    inline_response_401:
-      required:
-      - code
-      - message
-      type: object
-      properties:
-        code:
-          type: string
-          example: INPUT_VALIDATION_ERROR
-        message:
-          type: string
-          example: Incorrect value for \"id\" at paths,/transaction/{id},get,parameters,0,schema.
-    inline_response_500:
-      required:
-      - code
-      - message
-      type: object
-      properties:
-        code:
-          type: string
-          example: UNKNOWN_ERROR
-        message:
-          type: string
-          example: This is emabarrasing, something went wrong while processing your
-            request. Try again later, if the rror persist please contact support.
-    inline_response_501:
-      required:
-      - code
-      - message
-      type: object
-      properties:
-        code:
-          type: string
-          example: FEATURE_NOT_IMPLEMENTED_YET
-        message:
-          type: string
-          example: This feature is not fully implemented yet. You can use the mockup
-            data provided in this response but keep in mind that the values are reandomly
-            generated.
-        mockup:
-          type: object
-          example:
-            thisObject: Sould be equal to the 200 response object
-  responses:
-    Success:
-      description: Success
-    Error:
-      description: Internal server error
-      content:
-        application/json:
+          description: "Not implemented"
           schema:
-            $ref: '#/components/schemas/inline_response_500'
-    Unauthorized:
-      description: Unauthorized
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/inline_response_401'
-    NotImplemented:
-      description: Not Implemented
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/inline_response_501'
+            $ref: "#/definitions/NotImplemented"
+      x-swagger-router-controller: "ProofGenerator"
+definitions:
+  input:
+    type: "object"
+    required:
+    - "feePlanCoins"
+    - "feePlanFees"
+    - "oldStateRoot"
+    properties:
+      oldStateRoot:
+        type: "string"
+        example: "12345678123456781234567812345678"
+        description: "Root of the old state tree hashed, encoded as a string representing\
+          \ a 256 bits unsigned integer"
+        pattern: "^\\d{1,78}$"
+      feePlanCoins:
+        type: "string"
+        example: "869703547053246980532469870325487605342"
+        description: "??????, encoded as a string representing a 256 bits unsigned\
+          \ integer"
+        pattern: "^\\d{1,78}$"
+      feePlanFees:
+        type: "string"
+        example: "87634526780543268793542986754328763459807"
+        description: "???????, encoded as a string representing a 256 bits unsigned\
+          \ integer"
+        pattern: "^\\d{1,78}$"
+    description: "Set of input signals required to generate a proof"
+  status:
+    type: "object"
+    required:
+    - "status"
+    properties:
+      status:
+        type: "string"
+        description: "Possible states of the proof service:\n * `Idle` - waiting for\
+          \ input\n * `Error` - if witness is not correct\n * `Pending` - if proof\
+          \ is being generated\n * `Finished` - if proof has been generated, in that\
+          \ case proof will be returned\n"
+        enum:
+        - "Idle"
+        - "Error"
+        - "Pending"
+        - "Finished"
+      proof:
+        type: "string"
+        description: "successfully generated proof. When this field is included in\
+          \ the response the value of status will always be `Finished`"
+    example:
+      status: "Finished"
+      proof: "add propper example here as well"
+  Error:
+    type: "object"
+    required:
+    - "code"
+    - "message"
+    properties:
+      code:
+        type: "string"
+        example: "UNKNOWN_ERROR"
+      message:
+        type: "string"
+        example: "This is emabarrasing, something went wrong while processing your\
+          \ request. Try again later, if the rror persist please contact support."
+    description: "Internal server error"
+  Unauthorized:
+    type: "object"
+    required:
+    - "code"
+    - "message"
+    properties:
+      code:
+        type: "string"
+        example: "INPUT_VALIDATION_ERROR"
+      message:
+        type: "string"
+        example: "Incorrect value for \\\"id\\\" at paths,/transaction/{id},get,parameters,0,schema."
+    description: "Unauthorized"
+  NotImplemented:
+    type: "object"
+    required:
+    - "code"
+    - "message"
+    properties:
+      code:
+        type: "string"
+        example: "FEATURE_NOT_IMPLEMENTED_YET"
+      message:
+        type: "string"
+        example: "This feature is not fully implemented yet. You can use the mockup\
+          \ data provided in this response but keep in mind that the values are reandomly\
+          \ generated."
+      mockup:
+        type: "object"
+        example:
+          thisObject: "Sould be equal to the 200 response object"
+        properties: {}
+    description: "Not Implemented"

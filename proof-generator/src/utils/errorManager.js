@@ -10,15 +10,20 @@ const defaultResponse = {
 exports.onError = function(err, req, res, next) {
   let code;
   let response;
-  if (logInfo) console.log(err);
 
   // Validation error
   if (err.failedValidation) {
     response = {
       code: "INPUT_VALIDATION_ERROR",
-      message: `Incorrect value for "${err.paramName}" at ${err.path}.`
     };
     code = 401;
+    if (Array.isArray(err.results.errors)) {
+      response.message = ""
+      for (var error of err.results.errors) {
+        response.message += `\n\t- Incorrect value for ${error.path}: ${error.message}.`
+      }
+    }
+    else response.message = `There was an error on the provided parameters.`;
   }
 
   if (err.notImplemented) {
@@ -41,14 +46,16 @@ exports.onError = function(err, req, res, next) {
     code = 500;
   }
 
-  // Unknown error type
-  if (response == undefined) {
-    console.error(err);
-    code = defaultCode;
-    response = defaultResponse;
+  // controlled internal server error
+  if (err.internal) {
+    response = {
+      code: "INTERNAL_SERVER_ERROR",
+      message: err.message
+    };
+    code = 500;
   }
 
-  // Unknown error type
+  // Unknown error
   if (response == undefined) {
     console.error(err);
     code = defaultCode;

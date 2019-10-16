@@ -1,20 +1,25 @@
 {
   "name": "rollup-proof-generator",
   "version": "0.0.1",
-  "description": "API specification for the proof generation service of the rollup.",
+  "description": "Proof generation service of the rollup.",
   "main": "index.js",
   "scripts": {
     "prestart": "npm install",
     "start": "node index.js"
   },
   "keywords": [
-    "swagger"
+    "Rollup",
+    "zkSNARK",
+    "Etherum",
+    "Blockchain",
+    "CUDA"
   ],
   "license": "Unlicense",
   "private": true,
   "dependencies": {
     "connect": "^3.2.0",
     "js-yaml": "^3.3.0",
-    "oas3-tools": "^1.0.1"
+    "oas3-tools": "^1.0.1",
+    "snarkjs": "^0.1.20"
   }
 }

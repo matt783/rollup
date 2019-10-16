@@ -1,5 +1,28 @@
 'use strict';
 
+const fs = require("fs")
+const zkSnark = require("snarkjs");
+// TODO: add real circuit file here
+const circuitFile = "./FAKE.cir";
+const circuitDef = JSON.parse(fs.readFileSync(circuitFile, "utf8"));
+const circuit = new zkSnark.Circuit(circuitDef);
+const staticCircuitInputs = {
+  // TODO: put static inputs here!
+
+  // proofA: ["0", "0"],
+  // proofB: [["0", "0"], ["0", "0"]],
+  // proofC: ["0", "0"]
+};
+
+// Strings matching API doc
+const state = {
+    IDLE: "Idle",
+    ERROR: "Error",
+    PENDING: "Pending",
+    FINISHED: "Finished",
+};
+let currentState = state.IDLE;
+var currentProof = {};
 
 /**
  * Get the status of the proof generator.
@@ -9,17 +32,10 @@
  **/
 exports.getStatus = function() {
   return new Promise(function(resolve, reject) {
-    var examples = {};
-    examples['application/json'] = {
-      "status" : "Finished",
-      "proof" : "yY3Y2apEy3L2VsCavrTaQnCt747TLtHCT37w3iYpMwuRGh2xKgPwf88t7PDQdtDLiiSSBj6wmDTyZdGKSCMWBzwQhTCrR5fH6u6cAP8BTe6MRcPEoiSXwyfDhYZqs25T"
-    };
-    // RETURNING A MOCKUP, NOT IMPLEMENTED YET
-    reject({
-      notImplemented: true,
-      mockup: examples[Object.keys(examples)[0]]
-    })
-    // return resolve(answer);
+    let status = {status: currentState}
+    if (currentState === state.FINISHED)
+      status[proof] = currentProof;
+    return resolve(status);
   });
 }
 
@@ -28,7 +44,7 @@ exports.getStatus = function() {
  * Abort the proof that is currentl being generated
  * Send a petition to abort the creation process of a proof
  *
- * returns Boolean
+ * no response value expected for this operation
  **/
 exports.postCancel = function() {
   return new Promise(function(resolve, reject) {
@@ -37,6 +53,7 @@ exports.postCancel = function() {
     // RETURNING A MOCKUP, NOT IMPLEMENTED YET
     reject({
       notImplemented: true,
+      message: "This feature is not fully implemented yet. You can use the mockup data provided in this response but keep in mind that the values are reandomly generated.",
       mockup: examples[Object.keys(examples)[0]]
     })
     // return resolve(answer);
@@ -48,13 +65,62 @@ exports.postCancel = function() {
  * Send inputs to generate a proof
  * Send a petition of proo generation based on inputs. Note that this endpoint will just schedule the proof generation, not return it.
  *
- * body Input Input object
+ * input Input Input for the proof generation circuit.
  * no response value expected for this operation
  **/
-exports.postInput = function(body) {
-  console.error(body);
-  console.error(body);
+exports.postInput = function(input) {
   return new Promise(function(resolve, reject) {
+    // Call snarkJS to generate witness
+    try {
+      const witness = circuit.calculateWitness({
+        ...staticCircuitInputs,
+        input
+      });
+      let bin = witnessToBin(witness);
+    } catch (e) {
+      console.error("ERROR GENERATING WITNESS: ", e);
+      reject({
+        internal: true,
+        message: "An error has occured while preparing data for proof generation. Please check the corectness of the submited values"
+      })
+      return
+    }
+    genProof(bin);
     resolve();
   });
+}
+
+/**
+ * Transform witness into binary format
+ *
+ * witness Witness as returned by sanrkJS.
+ * returns witness in binary format as expected by cuSnarks
+ **/
+function witnessToBin(witness) {
+  var bin = null;
+  // Implement witness to bin
+  return bin;
+}
+
+/**
+ * Generate a poof given a binary input
+ *
+ * input Input Input for the proof generation circuit in binary format as expected by cuSnarks.
+ * no response value expected for this operation, however when the operation is finished, it will change the state
+ **/
+function genProof(witnessBin) {
+  currentState = state.PENDING;
+  cudaProofGenerator(bin)
+    .then((proof) => {
+      currentProof = proof;
+      currentState = state.FINISHED;
+    })
+    .catch((e) => {
+      console.error("ERROR GENERATING PROOF: ", e);
+      currentState = state.ERROR;
+    });
+}
+
+async function  cudaProofGenerator(witnessBin) {
+  // call cuSnarks here!
 }

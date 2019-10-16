@@ -1,16 +1,16 @@
-openapi: 3.0.1
+swagger: "2.0"
 
 # TODOs:
 #   - Add authentication and authorization
 #   - Add meta: ToS, License, Contact info, ...
 
+
+
 info:
   version: '0.0.1'
   title: 'Rollup Proof Generator'
   description: 'API specification for the proof generation service of the rollup.'
-servers:
-  - description: Local development server
-    url: http://localhost:8080
+host: localhost:8080
 
 paths:
   /input:
@@ -20,22 +20,30 @@ paths:
       - Proof Generator
       summary: Send inputs to generate a proof
       description: Send a petition of proo generation based on inputs. Note that this endpoint will just schedule the proof generation, not return it.
-      requestBody:
-        description: Input object
+      parameters:
+      - in: body
         required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/input'
+        name: Input
+        description: Input for the proof generation circuit.
+        schema:
+          $ref: '#/definitions/input'
+      produces:
+      - application/json
       responses:
         200:
-          $ref: '#/components/responses/Success'
+          description: successful operation
         401:
-          $ref: '#/components/responses/Unauthorized'
+          description: Input validation error
+          schema:
+            $ref: '#/definitions/Unauthorized'
         500:
-          $ref: '#/components/responses/Error'
+          description: Internal server
+          schema:
+            $ref: '#/definitions/Error'
         501:
-          $ref: '#/components/responses/NotImplemented'
+          description: Not implemented
+          schema:
+            $ref: '#/definitions/NotImplemented'
   /status:
     get:
       operationId: getStatus
@@ -43,19 +51,25 @@ paths:
       - Proof Generator
       summary: Get the status of the proof generator.
       description: Returns the status of the proof generator.
+      produces:
+      - application/json
       responses:
         200:
           description: successful operation
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/status'
+          schema:
+            $ref: '#/definitions/status'
         401:
-          $ref: '#/components/responses/Unauthorized'
+          description: Input validation error
+          schema:
+            $ref: '#/definitions/Unauthorized'
         500:
-          $ref: '#/components/responses/Error'
+          description: Internal server
+          schema:
+            $ref: '#/definitions/Error'
         501:
-          $ref: '#/components/responses/NotImplemented'
+          description: Not implemented
+          schema:
+            $ref: '#/definitions/NotImplemented'
   /cancel:
     post:
       operationId: postCancel
@@ -65,149 +79,114 @@ paths:
       description: Send a petition to abort the creation process of a proof
       responses:
         200:
-          $ref: '#/components/responses/Success'
+          description: successful operation
         401:
-          $ref: '#/components/responses/Unauthorized'
+          description: Input validation error
+          schema:
+            $ref: '#/definitions/Unauthorized'
         500:
-          $ref: '#/components/responses/Error'
+          description: Internal server
+          schema:
+            $ref: '#/definitions/Error'
         501:
-          $ref: '#/components/responses/NotImplemented'
+          description: Not implemented
+          schema:
+            $ref: '#/definitions/NotImplemented'
           
-components:
-  schemas:
-    # TODO: add prop descriptions, check types, validation (regex), example
-    input:
-      type: object
-      description: Set of input signals required to generate a proof
-      properties:
-        oldStateRoot:
-          type: string
-          description: Root of the old state tree hashed, encoded as a string representing a 256 bits unsigned integer
-          pattern: /^[0-9]{1,80}$/
-          example: "12345678123456781234567812345678"
-        newStateRoot:
-          type: string
-          description: Root of the new state tree hashed, encoded as a string representing a 256 bits unsigned integer
-          pattern: /^[0-9]{1,80}$/
-          example: "3498766326879236987234687424398762549876"
-        newExitRoot:
-          type: string
-          description: Root of the new exit tree hashed, encoded as a string representing a 256 bits unsigned integer
-          pattern: /^[0-9]{1,80}$/
-          example: "249879827432398725439825387925398790828793"
-        onChainHash:
-          type: string
-          description: ??????, encoded as a string representing a 256 bits unsigned integer
-          pattern: /^[0-9]{1,80}$/
-          example: "908758974536875346878734798"
-        offChainHash:
-          type: string
-          description: ??????, encoded as a string representing a 256 bits unsigned integer
-          pattern: /^[0-9]{1,80}$/
-          example: "87543298673459875609823498012398702134"
-        feePlanCoins:
-          type: string
-          description: ??????, encoded as a string representing a 256 bits unsigned integer
-          pattern: /^[0-9]{1,80}$/
-          example: "869703547053246980532469870325487605342"
-        feePlanFees:
-          type: string
-          description: ???????, encoded as a string representing a 256 bits unsigned integer
-          pattern: /^[0-9]{1,80}$/
-          example: "87634526780543268793542986754328763459807"
-        nTxperToken:
-          type: string
-          description: Number of transactions per token, encoded as a string representing a 256 bits unsigned integer
-          pattern: /^[0-9]{1,80}$/
-          example: "8762587692345687098750723507598634"
-      required:
-      - oldStateRoot
-      - newStateRoot
-      - newExitRoot
-      - onChainHash
-      - offChainHash
-      - feePlanCoins
-      - feePlanFees
-      - nTxperToken
-        
-    status:
-      type: object
-      properties:
-        status:
-          type: string
-          enum:
-          - Idle
-          - Error
-          - Pending
-          - Finished 
-          description: >
-            Possible states of the proof service:
-             * `Idle` - waiting for input
-             * `Error` - if witness is not correct
-             * `Pending` - if proof is being generated
-             * `Finished` - if proof has been generated, in that case proof will be returned
-        proof:
-          type: string
-          description: successfully generated proof. When this field is included in the response the value of status will always be `Finished`
-      example:
-        status: Finished
-        proof: yY3Y2apEy3L2VsCavrTaQnCt747TLtHCT37w3iYpMwuRGh2xKgPwf88t7PDQdtDLiiSSBj6wmDTyZdGKSCMWBzwQhTCrR5fH6u6cAP8BTe6MRcPEoiSXwyfDhYZqs25T
-      required:
-      - status
-        
-  responses:
-    Success:
-      description: Success
-    Error:
-      description: Internal server error
-      content:
-        application/json:
-          schema:
-            type: object
-            properties:
-              code:
-                type: string
-                example: UNKNOWN_ERROR
-              message:
-                type: string
-                example: This is emabarrasing, something went wrong while processing your request. Try again later, if the rror persist please contact support.
-            required:
-            - code
-            - message
-    Unauthorized:
-      description: Unauthorized
-      content:
-        application/json:
-          schema:
-            type: object
-            properties:
-              code:
-                type: string
-                example: INPUT_VALIDATION_ERROR
-              message:
-                type: string
-                example: Incorrect value for \"id\" at paths,/transaction/{id},get,parameters,0,schema.
-            required:
-            - code
-            - message
-    NotImplemented:
-      description: Not Implemented
-      content:
-        application/json:
-          schema:
-            type: object
-            properties:
-              code:
-                type: string
-                example: FEATURE_NOT_IMPLEMENTED_YET
-              message:
-                type: string
-                example: This feature is not fully implemented yet. You can use the mockup data provided in this response but keep in mind that the values are reandomly generated.
-              mockup:
-                type: object
-                example: 
-                  thisObject: 'Sould be equal to the 200 response object'
-                         
-            required:
-            - code
-            - message
+definitions:
+  # TODO: add feePlanCoins and feePlanFees descriptions
+  input:
+    type: object
+    description: Set of input signals required to generate a proof
+    properties:
+      oldStateRoot:
+        type: string
+        description: Root of the old state tree hashed, encoded as a string representing a 256 bits unsigned integer
+        pattern: ^\d{1,78}$
+        example: "12345678123456781234567812345678"
+      feePlanCoins:
+        type: string
+        description: ??????, encoded as a string representing a 256 bits unsigned integer
+        pattern: ^\d{1,78}$
+        example: "869703547053246980532469870325487605342"
+      feePlanFees:
+        type: string
+        description: ???????, encoded as a string representing a 256 bits unsigned integer
+        pattern: ^\d{1,78}$
+        example: "87634526780543268793542986754328763459807"
+    required:
+    - oldStateRoot
+    - feePlanCoins
+    - feePlanFees
+  # TODO: check proof format add regex validation and redo example according to it
+  status:
+    type: object
+    properties:
+      status:
+        type: string
+        enum:
+        - Idle
+        - Error
+        - Pending
+        - Finished 
+        description: >
+          Possible states of the proof service:
+           * `Idle` - waiting for input
+           * `Error` - if witness is not correct
+           * `Pending` - if proof is being generated
+           * `Finished` - if proof has been generated, in that case proof will be returned
+      proof:
+        type: string
+        description: successfully generated proof. When this field is included in the response the value of status will always be `Finished`
+        # pattern: ^\d{1,78}$
+        # example: ...
+    example:
+      status: Finished
+      proof: add propper example here as well
+    required:
+    - status
+    
+  Error:
+    description: Internal server error
+    type: object
+    properties:
+      code:
+        type: string
+        example: UNKNOWN_ERROR
+      message:
+        type: string
+        example: This is emabarrasing, something went wrong while processing your request. Try again later, if the rror persist please contact support.
+    required:
+    - code
+    - message
+  Unauthorized:
+    description: Unauthorized
+    type: object
+    properties:
+      code:
+        type: string
+        example: INPUT_VALIDATION_ERROR
+      message:
+        type: string
+        example: Incorrect value for \"id\" at paths,/transaction/{id},get,parameters,0,schema.
+    required:
+    - code
+    - message
+  NotImplemented:
+    description: Not Implemented
+    type: object
+    properties:
+      code:
+        type: string
+        example: FEATURE_NOT_IMPLEMENTED_YET
+      message:
+        type: string
+        example: This feature is not fully implemented yet. You can use the mockup data provided in this response but keep in mind that the values are reandomly generated.
+      mockup:
+        type: object
+        example: 
+          thisObject: 'Sould be equal to the 200 response object'
+                     
+    required:
+    - code
+    - message

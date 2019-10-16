@@ -25,8 +25,8 @@ module.exports.postCancel = function postCancel (req, res, next) {
 };
 
 module.exports.postInput = function postInput (req, res, next) {
-  var body = req.swagger.params['body'];
-  ProofGenerator.postInput(body)
+  var input = req.swagger.params['Input'].value;
+  ProofGenerator.postInput(input)
     .then(function (response) {
       utils.writeJson(res, response);
     })
