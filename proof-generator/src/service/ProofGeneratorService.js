@@ -1,18 +1,12 @@
 'use strict';
 
-const fs = require("fs")
-const zkSnark = require("snarkjs");
+const fs                    = require("fs")
+const zkSnark               = require("snarkjs");
+const { buildWitnessBin }   = require("./witnessBin");
 // TODO: add real circuit file here
 const circuitFile = "./FAKE.cir";
-const circuitDef = JSON.parse(fs.readFileSync(circuitFile, "utf8"));
-const circuit = new zkSnark.Circuit(circuitDef);
-const staticCircuitInputs = {
-  // TODO: put static inputs here!
-
-  // proofA: ["0", "0"],
-  // proofB: [["0", "0"], ["0", "0"]],
-  // proofC: ["0", "0"]
-};
+// const circuitDef  = JSON.parse(fs.readFileSync(circuitFile, "utf8"));
+// const circuit     = new zkSnark.Circuit(circuitDef);
 
 // Strings matching API doc
 const state = {
@@ -72,11 +66,8 @@ exports.postInput = function(input) {
   return new Promise(function(resolve, reject) {
     // Call snarkJS to generate witness
     try {
-      const witness = circuit.calculateWitness({
-        ...staticCircuitInputs,
-        input
-      });
-      let bin = witnessToBin(witness);
+      const witness = circuit.calculateWitness(input);
+      let bin = buildWitnessBin();
     } catch (e) {
       console.error("ERROR GENERATING WITNESS: ", e);
       reject({
@@ -88,18 +79,6 @@ exports.postInput = function(input) {
     genProof(bin);
     resolve();
   });
-}
-
-/**
- * Transform witness into binary format
- *
- * witness Witness as returned by sanrkJS.
- * returns witness in binary format as expected by cuSnarks
- **/
-function witnessToBin(witness) {
-  var bin = null;
-  // Implement witness to bin
-  return bin;
 }
 
 /**

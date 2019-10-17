@@ -1,8 +1,8 @@
 'use strict';
 
 var utils = require('../utils/writer.js');
-var onError = require('../utils/errorManager.js').onError;
 var ProofGenerator = require('../service/ProofGeneratorService');
+var onError = require('../utils/errorManager.js').onError;
 
 module.exports.getStatus = function getStatus (req, res, next) {
   ProofGenerator.getStatus()

@@ -92,32 +92,463 @@ paths:
           description: Not implemented
           schema:
             $ref: '#/definitions/NotImplemented'
-          
+
 definitions:
-  # TODO: add feePlanCoins and feePlanFees descriptions
   input:
     type: object
     description: Set of input signals required to generate a proof
+    maxProperties: 30
     properties:
-      oldStateRoot:
+      oldStRoot:
         type: string
         description: Root of the old state tree hashed, encoded as a string representing a 256 bits unsigned integer
         pattern: ^\d{1,78}$
         example: "12345678123456781234567812345678"
       feePlanCoins:
-        type: string
+        # TODO: check type validation and description
+        type: integer
         description: ??????, encoded as a string representing a 256 bits unsigned integer
-        pattern: ^\d{1,78}$
-        example: "869703547053246980532469870325487605342"
+        example: 0
+        minimum: 0
       feePlanFees:
-        type: string
+        # TODO: check type validation and description
+        type: integer
         description: ???????, encoded as a string representing a 256 bits unsigned integer
-        pattern: ^\d{1,78}$
-        example: "87634526780543268793542986754328763459807"
+        minimum: 0
+        example: 0
+      txData:
+        # TODO: check description, fixed length???
+        type: array
+        description: ???????, encoded as a string representing a 256 bits unsigned integer
+        minItems: 4
+        maxItems: 4
+        items: {}
+        example:
+        - "0"
+        - "0"
+        - "1294077440023230710144016724176942272334582932281947479092973291962369"
+        - "431359146674410236714672241732596457699132774224023767129425975443457"
+      rqTxData:
+        # TODO: check description and validatioin, fixed length???
+        type: array
+        description: ???????
+        minItems: 4
+        maxItems: 4
+        items:
+          type: integer
+          minimum: 0
+        example:
+        - 0
+        - 0
+        - 0
+        - 0
+      s:
+        # TODO: check description and validatioin, fixed length???
+        type: array
+        description: ???????
+        minItems: 4
+        maxItems: 4
+        items:
+          type: integer
+          minimum: 0
+        example:
+        - 0
+        - 0
+        - 0
+        - 0
+      r8x:
+        # TODO: check description and validatioin, fixed length???
+        type: array
+        description: ???????
+        minItems: 4
+        maxItems: 4
+        items:
+          type: integer
+          minimum: 0
+        example:
+        - 0
+        - 0
+        - 0
+        - 0
+      r8y:
+        # TODO: check description and validatioin, fixed length???
+        type: array
+        description: ???????
+        minItems: 4
+        maxItems: 4
+        items:
+          type: integer
+          minimum: 0
+        example:
+        - 0
+        - 0
+        - 0
+        - 0
+      loadAmount:
+        # TODO: check description and validatioin, fixed length???
+        type: array
+        description: ???????
+        minItems: 4
+        maxItems: 4
+        items:
+          type: integer
+          minimum: 0
+        example:
+        - 0
+        - 0
+        - 1000
+        - 0
+      ethAddr:
+        # TODO: check description and validatioin, fixed length???
+        type: array
+        description: ???????, encoded as uint or bigInt
+        minItems: 4
+        maxItems: 4
+        items: {}
+        example:
+        - 0
+        - 0
+        - "564285745605685379469803228198653436451829107432"
+        - "564285745605685379469803228198653436451829107432"
+      ax:
+        # TODO: check description and validatioin, fixed length???
+        type: array
+        description: ???????
+        minItems: 4
+        maxItems: 4
+        items: {}
+        example:
+        - 0
+        - 0
+        - "19978187010499430245869538435991859273974821401831892378333645864391780110865"
+        - "19978187010499430245869538435991859273974821401831892378333645864391780110865"
+      ay:
+        # TODO: check description and validatioin, fixed length???
+        type: array
+        description: ???????
+        minItems: 4
+        maxItems: 4
+        items: {}
+        example:
+        - 0
+        - 0
+        - "8221948295571505153368741349618427496143137236526643398342942827546824861670"
+        - "8221948295571505153368741349618427496143137236526643398342942827546824861670"
+      ax1:
+        # TODO: check description and validatioin, fixed length???
+        type: array
+        description: ???????
+        minItems: 4
+        maxItems: 4
+        items: {}
+        example:
+        - 0
+        - 0
+        - 4660
+        - "19978187010499430245869538435991859273974821401831892378333645864391780110865"
+      ay1:
+        # TODO: check description and validatioin, fixed length???
+        type: array
+        description: ???????
+        minItems: 4
+        maxItems: 4
+        items: {}
+        example:
+        - 0
+        - 0
+        - 4660
+        - '8221948295571505153368741349618427496143137236526643398342942827546824861670'
+      amount1:
+        # TODO: check description and validatioin, fixed length???
+        type: array
+        description: ???????
+        minItems: 4
+        maxItems: 4
+        items: {}
+        example:
+        - 0
+        - 0
+        - 4660
+        - "1000"
+      nonce1:
+        # TODO: check description and validatioin, fixed length???
+        type: array
+        description: ???????
+        minItems: 4
+        maxItems: 4
+        items: {}
+        example:
+        - 0
+        - 0
+        - 4660
+        - 0
+      ethAddr1:
+        # TODO: check description and validatioin, fixed length???
+        type: array
+        description: ???????
+        minItems: 4
+        maxItems: 4
+        items: {}
+        example:
+        - 0
+        - 0
+        - "564285745605685379469803228198653436451829107432"
+        - "564285745605685379469803228198653436451829107432"
+      siblings1:
+        # TODO: check description and validatioin, fixed length???
+        type: array
+        description: ???????
+        minItems: 4
+        maxItems: 4
+        items:
+          type: array
+          minItems: 8
+          maxItems: 8
+          items: {}
+        example:
+        - - 0
+          - 0
+          - 0
+          - 0
+          - 0
+          - 0
+          - 0
+          - 0
+        - - 0
+          - 0
+          - 0
+          - 0
+          - 0
+          - 0
+          - 0
+          - 0
+        - - 0
+          - 0
+          - 0
+          - 0
+          - 0
+          - 0
+          - 0
+          - 0
+        - - '0'
+          - '0'
+          - '0'
+          - '0'
+          - '0'
+          - '0'
+          - '0'
+          - '0'
+      isOld0_1:
+        # TODO: IS THIS A BOOL!?!?!, fixed length???
+        type: array
+        description: ???????
+        minItems: 4
+        maxItems: 4
+        items: {}
+        example:
+        - 0
+        - 0
+        - 1
+        - 0
+      oldKey1:
+        # TODO: check description and validatioin, fixed length???
+        type: array
+        description: ???????
+        minItems: 4
+        maxItems: 4
+        items: {}
+        example:
+        - 0
+        - 0
+        - 0
+        - 4660
+      oldValue1:
+        # TODO: check description and validatioin, fixed length???
+        type: array
+        description: ???????
+        minItems: 4
+        maxItems: 4
+        items: {}
+        example:
+        - 0
+        - 0
+        - 0
+        - 4660
+      ax2:
+        # TODO: check description and validatioin, fixed length???
+        type: array
+        description: ???????
+        minItems: 4
+        maxItems: 4
+        items: {}
+        example:
+        - 0
+        - 0
+        - 0
+        - 4660
+      ay2:
+        # TODO: check description and validatioin, fixed length???
+        type: array
+        description: ???????
+        minItems: 4
+        maxItems: 4
+        items: {}
+        example:
+        - 0
+        - 0
+        - 0
+        - 4660
+      amount2:
+        # TODO: check description and validatioin, fixed length???
+        type: array
+        description: ???????
+        minItems: 4
+        maxItems: 4
+        items: {}
+        example:
+        - 0
+        - 0
+        - 0
+        - 4660
+      nonce2:
+        # TODO: check description and validatioin, fixed length???
+        type: array
+        description: ???????
+        minItems: 4
+        maxItems: 4
+        items: {}
+        example:
+        - 0
+        - 0
+        - 0
+        - 4660
+      ethAddr2:
+        # TODO: check description and validatioin, fixed length???
+        type: array
+        description: ???????
+        minItems: 4
+        maxItems: 4
+        items: {}
+        example:
+        - 0
+        - 0
+        - 0
+        - "564285745605685379469803228198653436451829107432"
+      siblings2:
+        # TODO: check description and validatioin, fixed length???
+        type: array
+        description: ???????
+        minItems: 4
+        maxItems: 4
+        items:
+          type: array
+          minItems: 8
+          maxItems: 8
+          items: {}
+        example:
+        - - 0
+          - 0
+          - 0
+          - 0
+          - 0
+          - 0
+          - 0
+          - 0
+        - - 0
+          - 0
+          - 0
+          - 0
+          - 0
+          - 0
+          - 0
+          - 0
+        - - 0
+          - 0
+          - 0
+          - 0
+          - 0
+          - 0
+          - 0
+          - 0
+        - - '0'
+          - '0'
+          - '0'
+          - '0'
+          - '0'
+          - '0'
+          - '0'
+          - '0'
+      isOld0_2:
+        # TODO: IS THIS A BOOL!?!?!, fixed length???
+        type: array
+        description: ???????
+        minItems: 4
+        maxItems: 4
+        items:
+          type: integer
+          minimum: 0
+          maximum: 1
+        example:
+        - 0
+        - 0
+        - 0
+        - 1
+      oldKey2:
+        # TODO: check description and validatioin, fixed length???
+        type: array
+        description: ???????
+        minItems: 4
+        maxItems: 4
+        items: {}
+        example:
+        - 0
+        - 0
+        - 0
+        - 0
+      oldValue2:
+        # TODO: check description and validatioin, fixed length???
+        type: array
+        description: ???????
+        minItems: 4
+        maxItems: 4
+        items: {}
+        example:
+        - 0
+        - 0
+        - 0
+        - 0
     required:
-    - oldStateRoot
+    - oldStRoot
     - feePlanCoins
     - feePlanFees
+    - txData
+    - rqTxData
+    - s
+    - r8x
+    - r8y
+    - loadAmount
+    - ethAddr
+    - ax
+    - ay
+    - ax1
+    - ay1
+    - amount1
+    - nonce1
+    - ethAddr1
+    - siblings1
+    - isOld0_1
+    - oldKey1
+    - oldValue1
+    - ax2
+    - ay2
+    - amount2
+    - nonce2
+    - ethAddr2
+    - siblings2
+    - isOld0_2
+    - oldKey2
+    - oldValue2
+
   # TODO: check proof format add regex validation and redo example according to it
   status:
     type: object
@@ -128,7 +559,7 @@ definitions:
         - Idle
         - Error
         - Pending
-        - Finished 
+        - Finished
         description: >
           Possible states of the proof service:
            * `Idle` - waiting for input
@@ -145,7 +576,7 @@ definitions:
       proof: add propper example here as well
     required:
     - status
-    
+
   Error:
     description: Internal server error
     type: object
@@ -184,9 +615,9 @@ definitions:
         example: This feature is not fully implemented yet. You can use the mockup data provided in this response but keep in mind that the values are reandomly generated.
       mockup:
         type: object
-        example: 
+        example:
           thisObject: 'Sould be equal to the 200 response object'
-                     
+
     required:
     - code
     - message
