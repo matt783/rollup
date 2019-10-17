@@ -4,9 +4,9 @@ const fs                    = require("fs")
 const zkSnark               = require("snarkjs");
 const { buildWitnessBin }   = require("./witnessBin");
 // TODO: add real circuit file here
-const circuitFile = "./FAKE.cir";
-// const circuitDef  = JSON.parse(fs.readFileSync(circuitFile, "utf8"));
-// const circuit     = new zkSnark.Circuit(circuitDef);
+const circuitFile = `${__dirname}/../circuit/rollup_4x8.json`;
+const circuitDef  = JSON.parse(fs.readFileSync(circuitFile, "utf8"));
+const circuit     = new zkSnark.Circuit(circuitDef);
 
 // Strings matching API doc
 const state = {

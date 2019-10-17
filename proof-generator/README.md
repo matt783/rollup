@@ -1,6 +1,10 @@
 # Proof Service
 Service used to generate Zero Knowledge proofs (zkSNARK) using hardware acceleration.
 
+## Compile the circuit
+1. cd into proof-generator/src/circuit
+2. run: `node --max_old_space_size=4000 compiler.js`
+
 ## API
 
 The API specification is written following the [Open API Specification (OAS) 3.0](https://swagger.io/specification/).

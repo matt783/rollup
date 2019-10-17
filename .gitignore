@@ -74,3 +74,4 @@ rollup-cli/src/wallet-rollup-cli.json
 .vscode
 
 proof-generator/codegen
+proof-generator/src/circuit/*.json
