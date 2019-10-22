@@ -27,8 +27,10 @@ var currentProof = {};
 exports.getStatus = function() {
   return new Promise(function(resolve, reject) {
     let status = {status: currentState}
-    if (currentState === state.FINISHED)
-      status[proof] = currentProof;
+    if (currentState === state.FINISHED) {
+      status[proof] = currentProof.proof;
+      status[pubData] = currentProof.pubData;
+    }
     return resolve(status);
   });
 }
@@ -44,7 +46,7 @@ exports.postCancel = function() {
   return new Promise(function(resolve, reject) {
     var examples = {};
     examples['application/json'] = true;
-    // RETURNING A MOCKUP, NOT IMPLEMENTED YET
+    // TODO: RETURNING A MOCKUP, NOT IMPLEMENTED YET
     reject({
       notImplemented: true,
       message: "This feature is not fully implemented yet. You can use the mockup data provided in this response but keep in mind that the values are reandomly generated.",
@@ -64,10 +66,10 @@ exports.postCancel = function() {
  **/
 exports.postInput = function(input) {
   return new Promise(function(resolve, reject) {
-    // Call snarkJS to generate witness
+    let bin;
     try {
       const witness = circuit.calculateWitness(input);
-      let bin = buildWitnessBin();
+      bin = buildWitnessBin(witness);
     } catch (e) {
       console.error("ERROR GENERATING WITNESS: ", e);
       reject({
@@ -89,7 +91,7 @@ exports.postInput = function(input) {
  **/
 function genProof(witnessBin) {
   currentState = state.PENDING;
-  cudaProofGenerator(bin)
+  cudaProofGenerator(witnessBin)
     .then((proof) => {
       currentProof = proof;
       currentState = state.FINISHED;
@@ -102,4 +104,15 @@ function genProof(witnessBin) {
 
 async function  cudaProofGenerator(witnessBin) {
   // call cuSnarks here!
+  // WRITE bin TO FILE (may be useful in the future for sending it via API)
+        // const fs = require('fs');
+        // var wstream = fs.createWriteStream(`./witness.bin`);
+        // wstream.write(Buffer.from(bin));
+        // wstream.end();
+  // ... then((x) => {
+  // currentProof = {
+  //   proof: x.proof,
+  //   pubData: x.pubData
+  // }
+// })
 }

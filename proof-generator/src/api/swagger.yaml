@@ -115,7 +115,6 @@ definitions:
     - "nonce2"
     - "oldKey1"
     - "oldKey2"
-    - "oldStRoot"
     - "oldValue1"
     - "oldValue2"
     - "r8x"
@@ -126,12 +125,6 @@ definitions:
     - "siblings2"
     - "txData"
     properties:
-      oldStRoot:
-        type: "string"
-        example: "12345678123456781234567812345678"
-        description: "Root of the old state tree hashed, encoded as a string representing\
-          \ a 256 bits unsigned integer"
-        pattern: "^\\d{1,78}$"
       feePlanCoins:
         type: "integer"
         example: 0
@@ -154,8 +147,6 @@ definitions:
         description: "???????, encoded as a string representing a 256 bits unsigned\
           \ integer"
         items: {}
-        maxItems: 4
-        minItems: 4
       rqTxData:
         type: "array"
         example:
@@ -167,8 +158,6 @@ definitions:
         items:
           type: "integer"
           minimum: 0
-        maxItems: 4
-        minItems: 4
       s:
         type: "array"
         example:
@@ -180,8 +169,6 @@ definitions:
         items:
           type: "integer"
           minimum: 0
-        maxItems: 4
-        minItems: 4
       r8x:
         type: "array"
         example:
@@ -193,8 +180,6 @@ definitions:
         items:
           type: "integer"
           minimum: 0
-        maxItems: 4
-        minItems: 4
       r8y:
         type: "array"
         example:
@@ -206,8 +191,6 @@ definitions:
         items:
           type: "integer"
           minimum: 0
-        maxItems: 4
-        minItems: 4
       loadAmount:
         type: "array"
         example:
@@ -219,8 +202,6 @@ definitions:
         items:
           type: "integer"
           minimum: 0
-        maxItems: 4
-        minItems: 4
       ethAddr:
         type: "array"
         example:
@@ -230,8 +211,6 @@ definitions:
         - "564285745605685379469803228198653436451829107432"
         description: "???????, encoded as uint or bigInt"
         items: {}
-        maxItems: 4
-        minItems: 4
       ax:
         type: "array"
         example:
@@ -241,8 +220,6 @@ definitions:
         - "19978187010499430245869538435991859273974821401831892378333645864391780110865"
         description: "???????"
         items: {}
-        maxItems: 4
-        minItems: 4
       ay:
         type: "array"
         example:
@@ -252,8 +229,6 @@ definitions:
         - "8221948295571505153368741349618427496143137236526643398342942827546824861670"
         description: "???????"
         items: {}
-        maxItems: 4
-        minItems: 4
       ax1:
         type: "array"
         example:
@@ -263,8 +238,6 @@ definitions:
         - "19978187010499430245869538435991859273974821401831892378333645864391780110865"
         description: "???????"
         items: {}
-        maxItems: 4
-        minItems: 4
       ay1:
         type: "array"
         example:
@@ -274,8 +247,6 @@ definitions:
         - "8221948295571505153368741349618427496143137236526643398342942827546824861670"
         description: "???????"
         items: {}
-        maxItems: 4
-        minItems: 4
       amount1:
         type: "array"
         example:
@@ -285,8 +256,6 @@ definitions:
         - "1000"
         description: "???????"
         items: {}
-        maxItems: 4
-        minItems: 4
       nonce1:
         type: "array"
         example:
@@ -296,8 +265,6 @@ definitions:
         - 0
         description: "???????"
         items: {}
-        maxItems: 4
-        minItems: 4
       ethAddr1:
         type: "array"
         example:
@@ -307,8 +274,6 @@ definitions:
         - "564285745605685379469803228198653436451829107432"
         description: "???????"
         items: {}
-        maxItems: 4
-        minItems: 4
       siblings1:
         type: "array"
         example:
@@ -348,10 +313,6 @@ definitions:
         items:
           type: "array"
           items: {}
-          maxItems: 8
-          minItems: 8
-        maxItems: 4
-        minItems: 4
       isOld0_1:
         type: "array"
         example:
@@ -361,8 +322,6 @@ definitions:
         - 0
         description: "???????"
         items: {}
-        maxItems: 4
-        minItems: 4
       oldKey1:
         type: "array"
         example:
@@ -372,8 +331,6 @@ definitions:
         - 4660
         description: "???????"
         items: {}
-        maxItems: 4
-        minItems: 4
       oldValue1:
         type: "array"
         example:
@@ -383,8 +340,6 @@ definitions:
         - 4660
         description: "???????"
         items: {}
-        maxItems: 4
-        minItems: 4
       ax2:
         type: "array"
         example:
@@ -394,8 +349,6 @@ definitions:
         - 4660
         description: "???????"
         items: {}
-        maxItems: 4
-        minItems: 4
       ay2:
         type: "array"
         example:
@@ -405,8 +358,6 @@ definitions:
         - 4660
         description: "???????"
         items: {}
-        maxItems: 4
-        minItems: 4
       amount2:
         type: "array"
         example:
@@ -416,8 +367,6 @@ definitions:
         - 4660
         description: "???????"
         items: {}
-        maxItems: 4
-        minItems: 4
       nonce2:
         type: "array"
         example:
@@ -427,8 +376,6 @@ definitions:
         - 4660
         description: "???????"
         items: {}
-        maxItems: 4
-        minItems: 4
       ethAddr2:
         type: "array"
         example:
@@ -438,8 +385,6 @@ definitions:
         - "564285745605685379469803228198653436451829107432"
         description: "???????"
         items: {}
-        maxItems: 4
-        minItems: 4
       siblings2:
         type: "array"
         example:
@@ -479,10 +424,6 @@ definitions:
         items:
           type: "array"
           items: {}
-          maxItems: 8
-          minItems: 8
-        maxItems: 4
-        minItems: 4
       isOld0_2:
         type: "array"
         example:
@@ -495,8 +436,6 @@ definitions:
           type: "integer"
           minimum: 0
           maximum: 1
-        maxItems: 4
-        minItems: 4
       oldKey2:
         type: "array"
         example:
@@ -506,8 +445,6 @@ definitions:
         - 0
         description: "???????"
         items: {}
-        maxItems: 4
-        minItems: 4
       oldValue2:
         type: "array"
         example:
@@ -517,8 +454,6 @@ definitions:
         - 0
         description: "???????"
         items: {}
-        maxItems: 4
-        minItems: 4
     description: "Set of input signals required to generate a proof"
   status:
     type: "object"

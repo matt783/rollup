@@ -35,7 +35,6 @@ describe("Rollup Basic circuit TXs", function () {
 
         await bb.build();
         const input = bb.getInput();
-
         const w = circuit.calculateWitness(input, {logTrigger:false, logOutput: false, logSet: false});
 
         checkBatch(circuit, w, bb);
@@ -402,5 +401,3 @@ describe("Rollup Basic circuit TXs", function () {
     it("Should check batch with invalid order", async () => {
     });
 });
-
-

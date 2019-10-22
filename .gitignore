@@ -75,3 +75,5 @@ rollup-cli/src/wallet-rollup-cli.json
 
 proof-generator/codegen
 proof-generator/src/circuit/*.json
+proof-generator/src/circuit/*.csv
+proof-generator/src/circuit/out/

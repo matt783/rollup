@@ -3,7 +3,9 @@ Service used to generate Zero Knowledge proofs (zkSNARK) using hardware accelera
 
 ## Compile the circuit
 1. cd into proof-generator/src/circuit
-2. run: `node --max_old_space_size=4000 compiler.js`
+2. edit compiler.js to specify the number of maximum transactions and the levels of the tree that wil use the circuit
+3. run: `node --max_old_space_size=4000 compiler.js`.
+
 
 ## API
 
