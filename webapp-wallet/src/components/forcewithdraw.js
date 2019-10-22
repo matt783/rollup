@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
 import { Form, Container, Button } from 'semantic-ui-react';
-import { beforeWithdraw, withdraw } from '../actions/withdraw-actions';
+import { beforeForceWithdraw, forceWithdraw } from '../actions/forcewithdraw-actions';
 
-class Withdraw extends Component {
+class ForceWithdraw extends Component {
   
   constructor(props) {
     super(props);
@@ -22,18 +22,18 @@ class Withdraw extends Component {
     const password = this.passwordRef.current.value;
     const tokenId = parseInt(this.tokenIdRef.current.value);
 
-    const files = await beforeWithdraw(config, wallet, abi);
+    const files = await beforeForceWithdraw(config, wallet, abi);
     const nodeEth = files.config.nodeEth;
     const addressSC = files.config.address;
     const operator = files.config.operator;
-    const res = await withdraw(nodeEth, addressSC, amount, tokenId, files.wallet, password, files.abi, operator);
+    const res = await forceWithdraw(nodeEth, addressSC, amount, tokenId, files.wallet, password, files.abi, operator);
     console.log(res);
   }
 
   render() {
     return(
       <Container>
-        <h1>Withdraw</h1>
+        <h1>Force Withdraw</h1>
         <Form>
           <Form.Field>
             <label>Wallet</label>
@@ -67,4 +67,4 @@ class Withdraw extends Component {
   }
 }
 
-export default Withdraw;
+export default ForceWithdraw;

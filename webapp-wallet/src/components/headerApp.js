@@ -42,6 +42,13 @@ class HeaderApp extends Component {
               Send
             </Menu.Item>
          </Link>
+         <Link to={'/forcewithdraw'}>
+            <Menu.Item
+              name="forcewithdraw"
+            >
+              Force Withdraw
+            </Menu.Item>
+         </Link>
          <Link to={'/withdraw'}>
             <Menu.Item
               name="withdraw"
