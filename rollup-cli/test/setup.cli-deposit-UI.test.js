@@ -11,7 +11,6 @@ const ethers = require('ethers');
 const fs = require('fs');
 
 const config = '../../webapp-wallet/test/config.json';
-const rollupabi = '../../webapp-wallet/test/rollupabi.json';
 
 const poseidonUnit = require('circomlib/src/poseidon_gencontract');
 

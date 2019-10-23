@@ -7,64 +7,55 @@ class HeaderApp extends Component {
     return (
       <Header>
         <Menu>
-          <Link to={'/loadfiles'}>
+          <Link to={'/createWallet'}>
             <Menu.Item
-              name="loadfiles"
+              name="createWallet"
             >
-              Load Files
+              Create Wallet
             </Menu.Item>
-          </Link>
-          <Link to={'/deposit'}>
+         </Link>
+         <Link to={'/config'}>
+            <Menu.Item
+              name="config"
+            >
+              Config
+            </Menu.Item>
+         </Link>
+         <Link to={'/deposit'}>
             <Menu.Item
               name="deposit"
             >
               Deposit
             </Menu.Item>
-          </Link>
-          <Link to={'/depositontop'}>
+         </Link>
+         <Link to={'/depositontop'}>
             <Menu.Item
               name="depositontop"
             >
               DepositOnTop
             </Menu.Item>
-          </Link>
-          <Link to={'/send'}>
+         </Link>
+         <Link to={'/send'}>
             <Menu.Item
               name="send"
             >
               Send
             </Menu.Item>
-          </Link>
-          <Link to={'/forcewithdraw'}>
+         </Link>
+         <Link to={'/forcewithdraw'}>
             <Menu.Item
               name="forcewithdraw"
             >
               Force Withdraw
             </Menu.Item>
-          </Link>
-          <Link to={'/withdraw'}>
+         </Link>
+         <Link to={'/withdraw'}>
             <Menu.Item
               name="withdraw"
             >
               Withdraw
             </Menu.Item>
-          </Link>
-          <Menu.Menu position='right'>
-            <Link to={'/createWallet'}>
-              <Menu.Item
-                name="createWallet"
-              >
-                Create Wallet
-              </Menu.Item>
-            </Link>
-            <Link to={'/config'}>
-              <Menu.Item
-                name="config"
-              >
-                Create Config
-              </Menu.Item>
-            </Link>
-          </Menu.Menu>
+         </Link>
         </Menu>
       </Header>
     );

@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { send } from '../actions/send-actions';
+import { send, beforeSend } from '../actions/send-actions';
 import { Form, Container, Button } from 'semantic-ui-react';
 
 class Send extends Component {
@@ -8,22 +8,26 @@ class Send extends Component {
     super(props);
     this.idToRef = React.createRef();
     this.amountRef = React.createRef();
+    this.walletRef = React.createRef();
+    this.configRef = React.createRef();
     this.passwordRef = React.createRef();
     this.tokenIdRef = React.createRef();
     this.feeRef = React.createRef();
   }
 
   handleClick = async () => {
-    const { wallet, config } = this.props;
-
     const idTo = parseInt(this.idToRef.current.value);
     const amount = parseInt(this.amountRef.current.value);
+    const wallet = this.walletRef.current.files[0];
+    const config = this.configRef.current.files[0];
     const password = this.passwordRef.current.value;
     const tokenId = parseInt(this.tokenIdRef.current.value);
     const fee = parseInt(this.feeRef.current.value);
-    const operator = config.operator;
 
-    const res = await send(operator, idTo, amount, wallet, password, tokenId, fee);
+    const files = await beforeSend(config, wallet);
+    const operator = files.config.operator;
+
+    const res = await send(operator, idTo, amount, files.wallet, password, tokenId, fee);
     console.log("SEND: " + res);
   }
 
@@ -32,6 +36,14 @@ class Send extends Component {
       <Container>
         <h1>Send</h1>
         <Form>
+          <Form.Field>
+            <label>Wallet</label>
+            <input type="file" ref={this.walletRef}/>
+          </Form.Field>
+          <Form.Field>
+            <label>Config</label>
+            <input type="file" ref={this.configRef}/>
+          </Form.Field>
           <Form.Field>
             <label>ID To</label>
             <input type="text" ref={this.idToRef}/>
