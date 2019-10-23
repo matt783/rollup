@@ -46,7 +46,7 @@ class CreateWallet extends Component {
             <br/>
             <Form>
               <Form.Field>
-                <label>Name Wallet</label>
+                <label>File Name</label>
                 <input type="text" ref={this.walletNameRef} />
               </Form.Field>
               <Form.Field>

@@ -278,13 +278,43 @@
       {
         "name": "tokenId",
         "type": "uint32"
+      }
+    ],
+    "name": "transfer",
+    "outputs": [],
+    "payable": true,
+    "stateMutability": "payable",
+    "type": "function"
+  },
+  {
+    "constant": false,
+    "inputs": [
+      {
+        "name": "loadAmount",
+        "type": "uint128"
+      },
+      {
+        "name": "tokenId",
+        "type": "uint32"
+      },
+      {
+        "name": "ethAddress",
+        "type": "address"
       },
       {
         "name": "babyPubKey",
         "type": "uint256[2]"
+      },
+      {
+        "name": "toId",
+        "type": "uint64"
+      },
+      {
+        "name": "amount",
+        "type": "uint16"
       }
     ],
-    "name": "transfer",
+    "name": "depositAndTransfer",
     "outputs": [],
     "payable": true,
     "stateMutability": "payable",
@@ -300,10 +330,6 @@
       {
         "name": "amount",
         "type": "uint16"
-      },
-      {
-        "name": "babyPubKey",
-        "type": "uint256[2]"
       }
     ],
     "name": "forceWithdraw",
@@ -334,10 +360,6 @@
       {
         "name": "nonce",
         "type": "uint48"
-      },
-      {
-        "name": "babyPubKey",
-        "type": "uint256[2]"
       },
       {
         "name": "siblings",
@@ -372,10 +394,6 @@
       {
         "name": "input",
         "type": "uint256[8]"
-      },
-      {
-        "name": "compressedTxs",
-        "type": "bytes"
       }
     ],
     "name": "forgeBatch",

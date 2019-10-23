@@ -44,7 +44,7 @@ export const depositOnTop = async (urlNode, addressSC, balance, tokenId, walletJ
                 if (coorectLeaf === []){
                     reject("There're no leafs with this wallet (babyjub) and this tokenID");
                 }
-            
+                console.log("DEPOSIT ON TOP");
                 let receipt = await contractWithSigner.depositOnTop(coorectLeaf.id, balance, tokenId, overrides);//response.data.value.nonce,
                 resolve(receipt);
             })

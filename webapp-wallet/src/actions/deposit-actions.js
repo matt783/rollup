@@ -21,7 +21,7 @@ export const deposit = async (urlNode, addressSC, balance, tokenId, walletJson, 
     walletEth = walletEth.connect(provider);
     let address = await walletEth.getAddress();
     let contractWithSigner = new ethers.Contract(addressSC, abi, walletEth);
-    
+    console.log(addressSC);
     let overrides = {
         gasLimit: 800000,
         value: ethers.utils.parseEther("0.11"),
@@ -29,6 +29,10 @@ export const deposit = async (urlNode, addressSC, balance, tokenId, walletJson, 
     
     try{
         return new Promise (function (resolve){
+            console.log("DEPOSIT");
+            console.log(balance);
+            console.log(tokenId);
+            console.log(address);
             contractWithSigner.deposit(balance, tokenId, address, pubKeyBabyjub, overrides).then(response => {
                 resolve(response);
             });

@@ -44,7 +44,7 @@ export const send = async (UrlOperator, idTo, amount, walletJson, password, toke
                     ? value.toString()
                     : value // return everything else unchanged
             ));
-
+            console.log("SEND");
             axios.post(`${UrlOperator}/offchain/send`,parsetransaction).then(function(response){
                 resolve(response.status);
             }) 

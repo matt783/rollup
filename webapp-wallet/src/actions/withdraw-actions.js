@@ -37,6 +37,7 @@ export const withdraw = async (urlNode, addressSC, balance, tokenId, walletJson,
               if (coorectLeaf === []){
                   reject("There're no leafs with this wallet (babyjub) and this tokenID");
               }
+              console.log("WITHDRAW");
               let receipt = await contractWithSigner.withdraw(coorectLeaf.id, balance, tokenId, coorectLeaf.exitRoot,
                   coorectLeaf.nonce, pubKeyBabyjub, coorectLeaf.sibilings);
               resolve(receipt);

@@ -27,7 +27,7 @@ class Deposit extends Component {
     const addressSC = files.config.address;
 
     const res = await deposit(nodeEth, addressSC, amount, tokenId, files.wallet, password, files.abi);
-    console.log("DEPOSIT: " + res);
+    console.log(res);
   }
 
   render() {

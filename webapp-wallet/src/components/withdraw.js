@@ -59,7 +59,7 @@ class Withdraw extends Component {
             <label>Token ID</label>
             <input type="text" ref={this.tokenIdRef}/>
           </Form.Field>
-          <Button type="submit" onClick={this.handleClick}>Deposit</Button>
+          <Button type="submit" onClick={this.handleClick}>Withdraw</Button>
         </Form>
         <br/>
       </Container>
