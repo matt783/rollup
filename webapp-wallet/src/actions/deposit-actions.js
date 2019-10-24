@@ -1,45 +1,44 @@
-const ethers = require("ethers");
-const { Wallet } = require("../utils/wallet");
-const { readFile } = require("../utils/wallet-utils");
+const ethers = require('ethers');
+const { Wallet } = require('../utils/wallet');
+const { readFile } = require('../utils/wallet-utils');
 
 export const beforeDeposit = async (configFile, walletFile, abiFile) => {
     const config = await readFile(configFile);
     const wallet = await readFile(walletFile);
     const abi = await readFile(abiFile);
-    const files = {config, wallet, abi}
+    const files = { config, wallet, abi };
     return files;
-}
+};
 
 export const deposit = async (urlNode, addressSC, balance, tokenId, walletJson, password, abi) => {
-    let walletRollup= await Wallet.fromEncryptedJson(walletJson, password);
+    console.log(walletJson);
+    console.log(password)
+    const walletRollup = await Wallet.fromEncryptedJson(walletJson, password);
     let walletEth = walletRollup.ethWallet.wallet;
-    let walletBaby = walletRollup.babyjubWallet;
+    const walletBaby = walletRollup.babyjubWallet;
 
     const provider = new ethers.providers.JsonRpcProvider(urlNode);
-    let pubKeyBabyjub = [walletBaby.publicKey[0].toString(), walletBaby.publicKey[1].toString()] ;
+    const pubKeyBabyjub = [walletBaby.publicKey[0].toString(), walletBaby.publicKey[1].toString()];
 
     walletEth = walletEth.connect(provider);
-    let address = await walletEth.getAddress();
-    let contractWithSigner = new ethers.Contract(addressSC, abi, walletEth);
-    console.log(addressSC);
-    let overrides = {
+    const address = await walletEth.getAddress();
+    const contractWithSigner = new ethers.Contract(addressSC, abi, walletEth);
+    const overrides = {
         gasLimit: 800000,
-        value: ethers.utils.parseEther("0.11"),
+        value: ethers.utils.parseEther('0.11'),
     };
-    
-    try{
-        return new Promise (function (resolve){
-            console.log("DEPOSIT");
+
+    try {
+        return new Promise(((resolve) => {
+            console.log('DEPOSIT');
             console.log(balance);
             console.log(tokenId);
             console.log(address);
-            contractWithSigner.deposit(balance, tokenId, address, pubKeyBabyjub, overrides).then(response => {
+            contractWithSigner.deposit(balance, tokenId, address, pubKeyBabyjub, overrides).then((response) => {
                 resolve(response);
             });
-        });
+        }));
+    } catch (error) {
+        console.log('error.... ', error);
     }
-    catch (error) {
-        console.log("error.... ", error);
-    }
-
-}
+};

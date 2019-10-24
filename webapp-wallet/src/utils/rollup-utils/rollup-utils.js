@@ -147,7 +147,7 @@ function signRollupTx(walletBabyJub, tx) {
 }
 
 function buildFeeInputSm(feePlan) {
-    if (feePlan === undefined) return ["0", "0"];
+    if (feePlan == undefined) return ["0", "0"];
     if (feePlan.length > 16){
         throw new Error("Not allowed more than 16 coins with fee");
     }

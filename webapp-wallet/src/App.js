@@ -34,14 +34,14 @@ class App extends Component {
             <Deposit 
               wallet = {this.props.wallet}
               config = {this.props.config}
-              rollupabi = {this.props.rollupabi}
+              abiRollup = {this.props.abiRollup}
             />
           }/>
           <Route exact path="/depositontop" render={() =>
             <DepositOnTop 
               wallet = {this.props.wallet}
               config = {this.props.config}
-              rollupabi = {this.props.rollupabi}
+              abiRollup = {this.props.abiRollup}
             />
           }/>
           <Route exact path="/send" render={() =>
@@ -54,14 +54,14 @@ class App extends Component {
             <ForceWithdraw 
               wallet = {this.props.wallet}
               config = {this.props.config}
-              rollupabi = {this.props.rollupabi}
+              abiRollup = {this.props.abiRollup}
             />
           }/>
           <Route exact path="/withdraw" render={() =>
             <Withdraw 
               wallet = {this.props.wallet}
               config = {this.props.config}
-              rollupabi = {this.props.rollupabi}
+              abiRollup = {this.props.abiRollup}
             />
           }/>
         </React.Fragment>
@@ -73,7 +73,7 @@ class App extends Component {
 const mapStateToProps = state => ({
   wallet: state.appReducer.wallet,
   config: state.appReducer.config,
-  rollupabi: state.appReducer.rollupabi
+  abiRollup: state.appReducer.abiRollup
 })
 
 

@@ -4,7 +4,7 @@ import { CommentActions } from 'semantic-ui-react';
 const initialState = {
   wallet: null,
   config: null,
-  rollupabi: null,
+  abiRollup: null,
 }
 
 export default function(state = initialState, action){
@@ -15,7 +15,7 @@ export default function(state = initialState, action){
               ...state,
               wallet: action.payload.wallet,
               config: action.payload.config,
-              rollupabi: action.payload.rollupabi
+              abiRollup: action.payload.abiRollup
           }
 
       default: 

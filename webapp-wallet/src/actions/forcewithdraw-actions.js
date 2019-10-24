@@ -1,15 +1,15 @@
-const axios = require("axios");
-const { Wallet } = require("../utils/wallet");
-const { readFile } = require("../utils/wallet-utils");
-const ethers = require("ethers");
+const axios = require('axios');
+const ethers = require('ethers');
+const { Wallet } = require('../utils/wallet');
+const { readFile } = require('../utils/wallet-utils');
 
 export const beforeForceWithdraw = async (configFile, walletFile, abiFile) => {
     const config = await readFile(configFile);
     const wallet = await readFile(walletFile);
     const abi = await readFile(abiFile);
-    const files = {config, wallet, abi}
+    const files = { config, wallet, abi };
     return files;
-}
+};
 
 export const forceWithdraw = async (urlNode, addressSC, balance, tokenId, walletJson, password, abi, UrlOperator) => {
     const walletRollup = await Wallet.fromEncryptedJson(walletJson, password);
@@ -36,7 +36,7 @@ export const forceWithdraw = async (urlNode, addressSC, balance, tokenId, wallet
                     if (correctLeaf === []) {
                         reject(new Error("There're no leafs with this wallet (babyjub) and this tokenID"));
                     }
-                    console.log("FORCE");
+                    console.log('FORCE');
                     const receipt = await contractWithSigner.forceWithdraw(correctLeaf.id, balance, overrides);
                     resolve(receipt);
                 })
@@ -47,4 +47,4 @@ export const forceWithdraw = async (urlNode, addressSC, balance, tokenId, wallet
     } catch (error) {
         return ('error.... ', error);
     }
-}
+};

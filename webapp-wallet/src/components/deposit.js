@@ -14,13 +14,11 @@ class Deposit extends Component {
   handleClick = async () => {
 
     const { wallet, config, abiRollup } = this.props;
-
     const amount = parseInt(this.amountRef.current.value);
     const password = this.passwordRef.current.value;
     const tokenId = parseInt(this.tokenIdRef.current.value);
     const nodeEth = config.nodeEth;
     const addressSC = config.address;
-    
     const res = await deposit(nodeEth, addressSC, amount, tokenId, wallet, password, abiRollup);
     console.log(res);
   }

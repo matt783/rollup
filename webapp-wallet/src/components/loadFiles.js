@@ -20,29 +20,29 @@ class LoadFiles extends Component {
   state = {
     wallet: '',
     config: '',
-    abi: '',
+    abiRollup: '',
     ok: FILE_STATE.EMPTY,
   }
 
   handleChange = (e, id) => {
     e.preventDefault();
     const files = e.target.files;
-    if(id === "wallet") {
+    if(id === FILES.WALLET) {
       this.setState({wallet: files[0]});
-    } else if (id === "config") {
+    } else if (id === FILES.CONFIG) {
       this.setState({config: files[0]});
-    } else if (id === "abi") {
-      this.setState({abi: files[0]});
+    } else if (id === FILES.ABI) {
+      this.setState({abiRollup: files[0]});
     }
   }
 
   handleClick = async () => {
-
-    if (this.state.wallet === '' || this.state.config === '' || this.state.abi === '') {
+    console.log(this.state)
+    if (this.state.wallet === '' || this.state.config === '' || this.state.abiRollup === '') {
       console.log("Incorrect File");
       this.setState({ok: FILE_STATE.ERROR})
     } else {
-      await this.props.loadFiles(this.state.wallet, this.state.config, this.state.abi);
+      await this.props.loadFiles(this.state.wallet, this.state.config, this.state.abiRollup);
       this.setState({ok: FILE_STATE.UPLOADED})
     }
   }

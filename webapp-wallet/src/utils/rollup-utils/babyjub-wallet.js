@@ -35,6 +35,9 @@ class BabyJubWallet {
 
         const keyStr = walletUtils.passToKey(pass, kdfparams.salt,
             kdfparams.i, kdfparams.dklen, kdfparams.digest);
+        console.log(keyStr)
+        console.log(ciphertext)
+        console.log(mac)
         walletUtils.checkPass(keyStr, ciphertext, mac);
         const keyBuff = Buffer.from(keyStr, "base64");
         const ivBuff = Buffer.from(crypto.cipherparams.iv, "base64");

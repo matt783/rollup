@@ -37,6 +37,7 @@ class Wallet {
    * @param {String} pass - password 
    */
     static async fromEncryptedJson(wallet, pass) {
+        //console.log(wallet)
         const eth = JSON.stringify(wallet.ethWallet);
         const babyjub = JSON.stringify(wallet.babyjubWallet);
         const ethWallet = await EthereumWallet.fromEncryptedJson(eth, pass);
