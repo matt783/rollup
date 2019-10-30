@@ -4,7 +4,8 @@ import {BrowserRouter as Router, Route } from 'react-router-dom';
 import { connect } from 'react-redux';
 
 import HeaderApp from "./components/headerApp";
-import CreateWallet from "./components/createWallet";
+import InitView from "./components/initView";
+import CreateWallet from "./components/createWallet2";
 import Config from "./components/config";
 import LoadFiles from "./components/loadFiles";
 import Deposit from "./components/deposit";
@@ -19,8 +20,10 @@ class App extends Component {
     return (
       <div>
         <React.Fragment>
-          <HeaderApp />
-          <Route exact path="/"/>
+          <Route exact path="/" render={() => 
+            <InitView />
+          }
+          />
           <Route exact path="/createWallet" render={() =>
             <CreateWallet />
           }/>

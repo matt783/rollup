@@ -1,5 +1,5 @@
 import { LOAD_FILES } from './types';
-
+import * as rollup from '../utils/bundle-cli';
 const { readFile } = require('../utils/wallet-utils');
 
 export const loadFiles = (walletFile, configFile, abiFile) => async (dispatch) => {
@@ -12,3 +12,4 @@ export const loadFiles = (walletFile, configFile, abiFile) => async (dispatch) =
         payload: { wallet, config, abiRollup },
     });
 };
+

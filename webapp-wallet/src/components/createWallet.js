@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import {createRandomWallet, createWalletfromMnemonic, createWalletfromJson} from "../actions/create-actions";
 import { Button, Divider, Container, Form, Header } from 'semantic-ui-react';
+import * as rollup from '../utils/bundle-cli';
 
 class CreateWallet extends Component {
 
@@ -31,11 +32,16 @@ class CreateWallet extends Component {
       await createWalletfromMnemonic(password, walletName, mnemonic);
     }
   }
+
   handleClick3 = async () => {
     const walletName = this.walletNameRef.current.value;
     const password = this.passwordRef.current.value;
     const passwordImport = this.passwordImportRef.current.value;
     await createWalletfromJson(password, walletName, passwordImport, this.walletFile.current.files[0]);
+  }
+
+  handleClick4 = async () => {
+    console.log(rollup)
   }
   
 
@@ -71,6 +77,7 @@ class CreateWallet extends Component {
               <input type="password" ref={this.passwordImportRef}/>
               <Button onClick = {this.handleClick3}>Import Wallet</Button>
             </Form>
+            <Button onClick = {this.handleClick4}>Roll</Button>
             <br/>
       </Container>
     );

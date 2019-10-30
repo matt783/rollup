@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
-import { deposit } from '../actions/deposit-actions';
+// import { deposit } from '../actions/deposit-actions';
 import { Form, Container, Button } from 'semantic-ui-react';
+import * as rollup from '../utils/bundle-cli';
 
 class Deposit extends Component {
   
@@ -19,7 +20,7 @@ class Deposit extends Component {
     const tokenId = parseInt(this.tokenIdRef.current.value);
     const nodeEth = config.nodeEth;
     const addressSC = config.address;
-    const res = await deposit(nodeEth, addressSC, amount, tokenId, wallet, password, abiRollup);
+    const res = await rollup.onchain.deposit.deposit(nodeEth, addressSC, amount, tokenId, wallet, password, abiRollup);
     console.log(res);
   }
 

@@ -80,7 +80,7 @@ class LoadFiles extends Component {
             <label>ABI Rollup</label>
             <input type="file" onChange={(e) => this.handleChange(e, FILES.ABI)}/>
           </Form.Field>
-          <Button type="submit" onClick={this.handleClick}>Deposit</Button>
+          <Button type="submit" onClick={this.handleClick}>Load</Button>
         </Form>
       </Container>
     );
