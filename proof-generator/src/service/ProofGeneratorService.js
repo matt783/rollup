@@ -1,18 +1,21 @@
 'use strict';
 
+const util                  = require('util');
+const exec                  = util.promisify(require('child_process').exec);
 const fs                    = require("fs")
 const zkSnark               = require("snarkjs");
-const { buildWitnessBin }   = require("./witnessBin");
-// TODO: add real circuit file here
-const circuitFile = `${__dirname}/../circuit/rollup_4x8.json`;
-const circuitDef  = JSON.parse(fs.readFileSync(circuitFile, "utf8"));
-const circuit     = new zkSnark.Circuit(circuitDef);
+const { writeWitnessBin }   = require("./witnessBin");
+
+const config = JSON.parse(fs.readFileSync(`${__dirname}/../../config.json`, "utf8"));
+// UNCOMMENT FOR REALNESS
+// const circuitDef  = JSON.parse(fs.readFileSync(config.circuitFile, "utf8"));
+// const circuit     = new zkSnark.Circuit(circuitDef);
 
 // Strings matching API doc
 const state = {
-    IDLE: "Idle",
-    ERROR: "Error",
-    PENDING: "Pending",
+    IDLE:     "Idle",
+    ERROR:    "Error",
+    PENDING:  "Pending",
     FINISHED: "Finished",
 };
 let currentState = state.IDLE;
@@ -28,8 +31,8 @@ exports.getStatus = function() {
   return new Promise(function(resolve, reject) {
     let status = {status: currentState}
     if (currentState === state.FINISHED) {
-      status[proof] = currentProof.proof;
-      status[pubData] = currentProof.pubData;
+      status.proof = currentProof.proof;
+      status.pubData = currentProof.pubData;
     }
     return resolve(status);
   });
@@ -66,19 +69,21 @@ exports.postCancel = function() {
  **/
 exports.postInput = function(input) {
   return new Promise(function(resolve, reject) {
-    let bin;
-    try {
-      const witness = circuit.calculateWitness(input);
-      bin = buildWitnessBin(witness);
-    } catch (e) {
-      console.error("ERROR GENERATING WITNESS: ", e);
-      reject({
-        internal: true,
-        message: "An error has occured while preparing data for proof generation. Please check the corectness of the submited values"
-      })
-      return
-    }
-    genProof(bin);
+    // UNCOMMENT FOR REALNESS: 
+    // const witness = circuit.calculateWitness(input);
+    // writeWitnessBin(witness, config.witnessFile)
+    //   .then(() => {
+    //     genProof(); // generate the proof, don't wait for it!
+    //     resolve();
+    //   })
+    //   .catch((e) => {
+    //     console.error("ERROR GENERATING WITNESS: ", e);
+    //     reject({
+    //       internal: true,
+    //       message: "An error has occured while preparing data for proof generation. Please check the corectness of the submited values"
+    //     });
+    //   });
+    genProof();
     resolve();
   });
 }
@@ -89,30 +94,67 @@ exports.postInput = function(input) {
  * input Input Input for the proof generation circuit in binary format as expected by cuSnarks.
  * no response value expected for this operation, however when the operation is finished, it will change the state
  **/
-function genProof(witnessBin) {
+function genProof() {
   currentState = state.PENDING;
-  cudaProofGenerator(witnessBin)
-    .then((proof) => {
-      currentProof = proof;
+  cudaProofGenerator()
+    .then((cmdRes) => {
+      if (cmdRes.stdout === "") {
+        console.error("ERROR GENERATING PROOF: cusnark server wasn't ready. Starting the server and trying again");
+        startProofGenerator()
+          .then((res) => {
+            console.error("START SERVER RESPOMSE: ",res);
+            // CHECK RESPONSE
+            // genProof();
+          })
+          .catch(err => console.error("ERROR STARTING SERVER: ", err));
+      }
+      console.error("SUCCESS GENERATING PROOF: ", cmdRes);
+      // TODO: CHECK cmdRes status => error / success
+      currentProof = {
+        proof: JSON.parse(fs.readFileSync(config.proofFile, "utf8")),
+        pubData: JSON.parse(fs.readFileSync(config.publicDataFile, "utf8"))
+      };
       currentState = state.FINISHED;
     })
     .catch((e) => {
-      console.error("ERROR GENERATING PROOF: ", e);
-      currentState = state.ERROR;
+      // if cusnark server is down, start it and retry
+      if (e.stderr.includes("ModuleNotFoundError: No module named 'cusnarks_config'")) {
+        console.error("ERROR GENERATING PROOF: cusnark server wasn't ready. Starting the server and trying again");
+        startProofGenerator()
+          .then((res) => {
+            console.error("START SERVER RESPOMSE: ", res);
+            // CHECK RESPONSE
+            // genProof();
+          })
+          .catch(err => console.error("ERROR STARTING SERVER: ", err));
+      }
+      else {
+        console.error("ERROR GENERATING PROOF: ", e);
+        currentState = state.ERROR;
+      }
     });
 }
 
-async function  cudaProofGenerator(witnessBin) {
-  // call cuSnarks here!
-  // WRITE bin TO FILE (may be useful in the future for sending it via API)
-        // const fs = require('fs');
-        // var wstream = fs.createWriteStream(`./witness.bin`);
-        // wstream.write(Buffer.from(bin));
-        // wstream.end();
-  // ... then((x) => {
-  // currentProof = {
-  //   proof: x.proof,
-  //   pubData: x.pubData
-  // }
-// })
+async function  cudaProofGenerator() {
+  // build cuSNARKs call
+  const cmd = `cd ${config.pysnarkPath} && \
+CUDA_DEVICE_LIST=${config.cudaList} \
+python3 pysnarks.py -m p \
+-w ${config.witnessFile} \
+-p ${config.proofFile} \
+-pd ${config.publicDataFile} \
+-v 1`;
+  console.error("cmd; ", cmd);
+  
+  // execute cuSNARKs call
+  return await exec(cmd);
 }
+
+async function startProofGenerator() {
+  const cmd = `cd ${config.pysnarkPath} && CUDA_VISIBLE_DEVICES=1,2 python3 pysnarks.py -m p -pk ${config.provingKey} -vk ${config.verifyingKey}`;  
+  console.error("start server command: ", cmd);
+  
+  return await exec(cmd);
+}
+
+

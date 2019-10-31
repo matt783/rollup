@@ -3,8 +3,12 @@
 const compile         = require("circom");
 const zkSnark         = require("snarkjs");
 const fs              = require('fs');
+const yargs           = require("yargs");
+const SMTMemDB        = require("circomlib").SMTMemDB;
+const RollupDB        = require("../../../js/rollupdb");
+
 const circuitBaseName = "rollup_";
-const constrainRange  = {
+let constrainRange  = {
   txs: {
     from: 4,
     to: 256,
@@ -16,30 +20,40 @@ const constrainRange  = {
     step: 1
   }
 }
+const outDir = "./out";
+const options = yargs
+ .usage("Usage: [-t <number of transactions> -l <number of levels> | -m]")
+ .option("t", { alias: "transactions", describe: "Number of transactions", type: "number"})
+ .option("l", { alias: "levels", describe: "Number of levels, use in combination with -t to generate a circuit of -t transactions and -l levels", type: "number"})
+ .option("i", { alias: "input", describe: "Get input sample of a circuit of -t transactions and -l levels", type: "boolean"})
+ .option("m", { alias: "metrics", describe: "Use this option to generate many metrics according to constrainRange in the code (edit in the code)", type: "boolean"})
+ .argv;
 
 function genCircuit(circuits, currentCircuit) {
   const circuitName = `${circuitBaseName}${circuits[currentCircuit][0]}x${circuits[currentCircuit][1]}`;
   console.error(new Date(), "GENERATING CIRCUIT: "+ circuitName);
   const circuit = baseCircuit.replace("TXS, LEVEL", `${circuits[currentCircuit][0]}, ${circuits[currentCircuit][1]}`);
   // CHECK IF ALREADY COMPILED
-  fs.readdir("./out/", function(err, filenames) {
+  fs.readdir(`${outDir}/`, function(err, filenames) {
+    if (err) throw err;
     if (filenames.includes(circuitName + ".json")) {
       console.error(circuitName + " already compiled!");
-      genCircuit(circuits, ++currentCircuit);
+      if (currentCircuit + 1 < circuits.length)
+        genCircuit(circuits, ++currentCircuit);
       return
     }
     // WRITE .circom FILE TO BE COMPILED
-    fs.writeFile(`./out/${circuitName}.circom`, circuit, (err) => {
+    fs.writeFile(`${outDir}/${circuitName}.circom`, circuit, (err) => {
         if (err) throw err;
         // COMPLIE .circom
-        compile(`./out/${circuitName}.circom`).then((cir) => {
+        compile(`${outDir}/${circuitName}.circom`).then((cir) => {
             // WRITE .json COMPILED FILE
-            fs.writeFile(`./out/${circuitName}.json`, JSON.stringify(cir), (err) => {
+            fs.writeFile(`${outDir}/${circuitName}.json`, JSON.stringify(cir), (err) => {
                 if (err) throw err;
             });
             console.error("DONE WITH: "+ circuitName);
             // GEN NEXT CIRCUIT
-            if (currentCircuit < circuits.length)
+            if (currentCircuit + 1 < circuits.length)
               genCircuit(circuits, ++currentCircuit);
             else writeMetricsFile();
         }).catch((err) => {
@@ -54,18 +68,17 @@ let baseCircuit;
 
 function compileCircuits() {
   fs.readFile("./rollup_base.circom", 'utf8', function(err,data){
-      const circuits = [];
-      if (!err) {
-          baseCircuit = (data);
-          for (var tx = constrainRange.txs.from; tx <= constrainRange.txs.to; tx += constrainRange.txs.step) {
-            for (var level = constrainRange.levels.from; level <= constrainRange.levels.to; level += constrainRange.levels.step) {
-              circuits.push([tx, level]);
-            }
-          }
-      } else {
-          console.error("Error loading base circuit: ", err);
+    if (err) throw err;
+    const circuits = [];
+    baseCircuit = (data);
+    for (var tx = constrainRange.txs.from; tx <= constrainRange.txs.to; tx += constrainRange.txs.step) {
+      for (var level = constrainRange.levels.from; level <= constrainRange.levels.to; level += constrainRange.levels.step) {
+        circuits.push([tx, level]);
       }
-      genCircuit(circuits, 0)
+    }
+    try {fs.mkdirSync(outDir);}
+    catch {}
+    genCircuit(circuits, 0);
   });
 }
 
@@ -90,5 +103,37 @@ function writeMetricsFile() {
   });
 }
 
-// compileCircuits();
-writeMetricsFile();
+if (options.metrics) {
+  compileCircuits();
+  writeMetricsFile();
+}
+else if (options.transactions && options.levels) {
+  constrainRange  = {
+    txs: {
+      from: options.transactions,
+      to: options.transactions,
+      step: 1
+    },
+    levels: {
+      from: options.levels,
+      to: options.levels,
+      step: 1
+    }
+  }
+  compileCircuits();
+  if (options.input) getInputSample(options.transactions, options.levels);
+}
+else {
+  console.error("Invalid option, use --help");
+}
+async function getInputSample(NTX, NLEVELS) {
+  const db = new SMTMemDB();
+  const rollupDB = await RollupDB(db);
+  const bb = await rollupDB.buildBatch(NTX, NLEVELS);
+  
+  await bb.build();
+  const input = bb.getInput();
+  fs.writeFile(`./rollup_${NTX}x${NLEVELS}_sampleInput.json`, JSON.stringify(zkSnark.stringifyBigInts(input)), (err) => {
+    if (err) throw err;
+  });
+}

@@ -1,11 +1,5 @@
 # Proof Service
-Service used to generate Zero Knowledge proofs (zkSNARK) using hardware acceleration.
-
-## Compile the circuit
-1. cd into proof-generator/src/circuit
-2. edit compiler.js to specify the number of maximum transactions and the levels of the tree that wil use the circuit
-3. run: `node --max_old_space_size=4000 compiler.js`.
-
+API server used to integrate [cusnark](https://github.com/iden3/cusnarks) for generating proofs using GPU acceleration.
 
 ## API
 
@@ -15,7 +9,7 @@ In order to make life easier some [open source tools](https://swagger.io/tools/o
 - Generate server code: endpoints and validation.
 - Host a nice looking and interactive documentation.
 
-***All the following commands are supposed to be run from the root of this git repo***
+***All the following commands are supposed to be run from the root of this git repo, unless the oposite is said***
 
 ###  View / Edit the specification
 
@@ -46,12 +40,13 @@ By doing so, consistency between documentation and the deployed service is ensur
 When changes to spec.yaml are made, the generated code should be updated, without overwriting the actual code and changes should be merged. To do so:
 
 0. Install Docker (if you don't have it already)
-1. `docker pull swaggerapi/swagger-codegen-cli-v3:3.0.11`
-2. Export code in nodejs-server language: `docker run --rm --name swagger-codegen -v ${PWD}/proof-generator:/local swaggerapi/swagger-codegen-cli-v3:3.0.11 generate -i /local/spec.yaml -l nodejs-server -o /local/codegen` ***Note that you can use other languages, for instance to generate client code***
-3. Check differences between fresh generated code (proof-generator/codegen) and current server code (proof-generator/code). It's recommended to use a diff tool such as [Meld](http://meldmerge.org/) to see changes and merge them. In general the changing parts are: proof-generator/src/api/swagger.yaml (take all the changes from the codegen version), files under the controller directory (only take the function definitions and inputs from codegen), files under the service directory (only take the function definitions and the example values in case the logic is not implemented yet and inputs from codegen) *If permission errors are thrown, run:* `sudo chown -R $USER proof-generator/codegen`
+1. Export code in nodejs-server language: `docker run --rm --name swagger-codegen -v ${PWD}/proof-generator:/local swaggerapi/swagger-codegen-cli generate -i /local/spec.yaml -l nodejs-server -o /local/codegen` ***Note that you can use other languages, for instance to generate client code***
+2. Check differences between fresh generated code (proof-generator/codegen) and current server code (proof-generator/code). It's recommended to use a diff tool such as [Meld](http://meldmerge.org/) to see changes and merge them. In general the changing parts are: proof-generator/src/api/swagger.yaml (take all the changes from the codegen version), files under the controller directory (only take the function definitions and inputs from codegen), files under the service directory (only take the function definitions and the example values in case the logic is not implemented yet and inputs from codegen) *If permission errors are thrown, run:* `sudo chown -R $USER proof-generator/codegen`
 
 ### Run the API server
 
+0. Compile the circuit: `node --max_old_space_size=4000 compiler.js -t 4 -l 8`. (Replace 4 and 8 for the desired number of transactions/levels) (Run the comand from proof-generator/src/circuit directory). Edit ProofGeneratorService to use one of the compiled circuits (*const circuitFile = ...*).
+0. ***MISSING EXPLANATION: config-example.json ==> config.json + cusnarks setup***
 1. Run the server: `cd proof-generator/src && npm start | cd ../..`
 2. The server will be listening at http://localhost:8080. To easily test changes, the specification can be imported in [Postman](https://www.getpostman.com/) as a collection (In postman: import -> path/to/repoDirectory/proof-generator/spec.yaml).
 3. To stop the server: `Ctrl+C`
@@ -68,8 +63,14 @@ In order to offer access to the API documentation to consumers and developers, [
 3. Use your browser: http://localhost:80
 4. To stop the server: `docker kill swagger-ui`
 
-- Publish the doc on [swagger hub](https://app.swaggerhub.com/apis/rollupJuniors/Rollup)
-
 ## Deploy
 
 TBD
+
+## TO DO
+
+0. Back to realness (HAVE A LOOK AT: "// UNCOMMENT FOR REALNESS")
+0. Move config const values into a config.json
+1. Implement cancel call ==> not implemented on cusnarks yet (blocking dep)
+2. Test generate call
+3. Improve validation and descriptions 

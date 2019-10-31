@@ -77,3 +77,4 @@ proof-generator/codegen
 proof-generator/src/circuit/*.json
 proof-generator/src/circuit/*.csv
 proof-generator/src/circuit/out/
+proof-generator/config.json

@@ -5,6 +5,8 @@ info:
   version: "0.0.1"
   title: "Rollup Proof Generator"
 host: "localhost:8080"
+schemes:
+- "http"
 paths:
   /input:
     post:
@@ -94,37 +96,13 @@ paths:
 definitions:
   input:
     type: "object"
-    required:
-    - "amount1"
-    - "amount2"
-    - "ax"
-    - "ax1"
-    - "ax2"
-    - "ay"
-    - "ay1"
-    - "ay2"
-    - "ethAddr"
-    - "ethAddr1"
-    - "ethAddr2"
-    - "feePlanCoins"
-    - "feePlanFees"
-    - "isOld0_1"
-    - "isOld0_2"
-    - "loadAmount"
-    - "nonce1"
-    - "nonce2"
-    - "oldKey1"
-    - "oldKey2"
-    - "oldValue1"
-    - "oldValue2"
-    - "r8x"
-    - "r8y"
-    - "rqTxData"
-    - "s"
-    - "siblings1"
-    - "siblings2"
-    - "txData"
     properties:
+      oldStRoot:
+        type: "string"
+        example: "12345678123456781234567812345678"
+        description: "Root of the old state tree hashed, encoded as a string representing\
+          \ a 256 bits unsigned integer"
+        pattern: "^\\d{1,78}$"
       feePlanCoins:
         type: "integer"
         example: 0
@@ -139,68 +117,46 @@ definitions:
         minimum: 0
       txData:
         type: "array"
-        example:
-        - "0"
-        - "0"
-        - "1294077440023230710144016724176942272334582932281947479092973291962369"
-        - "431359146674410236714672241732596457699132774224023767129425975443457"
         description: "???????, encoded as a string representing a 256 bits unsigned\
           \ integer"
-        items: {}
+        items:
+          type: "string"
+          example: "12345678123456781234567812345678"
+          pattern: "^\\d{1,78}$"
       rqTxData:
         type: "array"
-        example:
-        - 0
-        - 0
-        - 0
-        - 0
         description: "???????"
         items:
           type: "integer"
+          example: 0
           minimum: 0
       s:
         type: "array"
-        example:
-        - 0
-        - 0
-        - 0
-        - 0
         description: "???????"
         items:
           type: "integer"
+          example: 0
           minimum: 0
       r8x:
         type: "array"
-        example:
-        - 0
-        - 0
-        - 0
-        - 0
         description: "???????"
         items:
           type: "integer"
+          example: 0
           minimum: 0
       r8y:
         type: "array"
-        example:
-        - 0
-        - 0
-        - 0
-        - 0
         description: "???????"
         items:
           type: "integer"
+          example: 0
           minimum: 0
       loadAmount:
         type: "array"
-        example:
-        - 0
-        - 0
-        - 1000
-        - 0
         description: "???????"
         items:
           type: "integer"
+          example: 0
           minimum: 0
       ethAddr:
         type: "array"
@@ -240,14 +196,10 @@ definitions:
         items: {}
       ay1:
         type: "array"
-        example:
-        - 0
-        - 0
-        - 4660
-        - "8221948295571505153368741349618427496143137236526643398342942827546824861670"
+        example: {}
         description: "???????"
         items: {}
-      amount1:
+      ammount1:
         type: "array"
         example:
         - 0
@@ -276,42 +228,18 @@ definitions:
         items: {}
       siblings1:
         type: "array"
-        example:
-        - - 0
-          - 0
-          - 0
-          - 0
-          - 0
-          - 0
-          - 0
-          - 0
-        - - 0
-          - 0
-          - 0
-          - 0
-          - 0
-          - 0
-          - 0
-          - 0
-        - - 0
-          - 0
-          - 0
-          - 0
-          - 0
-          - 0
-          - 0
-          - 0
-        - - "0"
-          - "0"
-          - "0"
-          - "0"
-          - "0"
-          - "0"
-          - "0"
-          - "0"
         description: "???????"
         items:
           type: "array"
+          example:
+          - 0
+          - 0
+          - 0
+          - 0
+          - 0
+          - 0
+          - 0
+          - 0
           items: {}
       isOld0_1:
         type: "array"
@@ -358,7 +286,7 @@ definitions:
         - 4660
         description: "???????"
         items: {}
-      amount2:
+      ammount2:
         type: "array"
         example:
         - 0
@@ -387,42 +315,18 @@ definitions:
         items: {}
       siblings2:
         type: "array"
-        example:
-        - - 0
-          - 0
-          - 0
-          - 0
-          - 0
-          - 0
-          - 0
-          - 0
-        - - 0
-          - 0
-          - 0
-          - 0
-          - 0
-          - 0
-          - 0
-          - 0
-        - - 0
-          - 0
-          - 0
-          - 0
-          - 0
-          - 0
-          - 0
-          - 0
-        - - "0"
-          - "0"
-          - "0"
-          - "0"
-          - "0"
-          - "0"
-          - "0"
-          - "0"
         description: "???????"
         items:
           type: "array"
+          example:
+          - 0
+          - 0
+          - 0
+          - 0
+          - 0
+          - 0
+          - 0
+          - 0
           items: {}
       isOld0_2:
         type: "array"
@@ -455,6 +359,214 @@ definitions:
         description: "???????"
         items: {}
     description: "Set of input signals required to generate a proof"
+    example:
+      oldStRoot: "0"
+      feePlanCoins: 0
+      feePlanFees: 0
+      txData:
+      - "0"
+      - "0"
+      - "0"
+      - "0"
+      rqTxData:
+      - 0
+      - 0
+      - 0
+      - 0
+      s:
+      - 0
+      - 0
+      - 0
+      - 0
+      r8x:
+      - 0
+      - 0
+      - 0
+      - 0
+      r8y:
+      - 0
+      - 0
+      - 0
+      - 0
+      loadAmount:
+      - 0
+      - 0
+      - 0
+      - 0
+      ethAddr:
+      - 0
+      - 0
+      - 0
+      - 0
+      ax:
+      - 0
+      - 0
+      - 0
+      - 0
+      ay:
+      - 0
+      - 0
+      - 0
+      - 0
+      step:
+      - 0
+      - 0
+      - 0
+      - 0
+      ax1:
+      - 0
+      - 0
+      - 0
+      - 0
+      ay1:
+      - 0
+      - 0
+      - 0
+      - 0
+      amount1:
+      - 0
+      - 0
+      - 0
+      - 0
+      nonce1:
+      - 0
+      - 0
+      - 0
+      - 0
+      ethAddr1:
+      - 0
+      - 0
+      - 0
+      - 0
+      siblings1:
+      - - 0
+        - 0
+        - 0
+        - 0
+        - 0
+        - 0
+        - 0
+        - 0
+        - 0
+      - - 0
+        - 0
+        - 0
+        - 0
+        - 0
+        - 0
+        - 0
+        - 0
+        - 0
+      - - 0
+        - 0
+        - 0
+        - 0
+        - 0
+        - 0
+        - 0
+        - 0
+        - 0
+      - - 0
+        - 0
+        - 0
+        - 0
+        - 0
+        - 0
+        - 0
+        - 0
+        - 0
+      isOld0_1:
+      - 0
+      - 0
+      - 0
+      - 0
+      oldKey1:
+      - 0
+      - 0
+      - 0
+      - 0
+      oldValue1:
+      - 0
+      - 0
+      - 0
+      - 0
+      ax2:
+      - 0
+      - 0
+      - 0
+      - 0
+      ay2:
+      - 0
+      - 0
+      - 0
+      - 0
+      amount2:
+      - 0
+      - 0
+      - 0
+      - 0
+      nonce2:
+      - 0
+      - 0
+      - 0
+      - 0
+      ethAddr2:
+      - 0
+      - 0
+      - 0
+      - 0
+      siblings2:
+      - - 0
+        - 0
+        - 0
+        - 0
+        - 0
+        - 0
+        - 0
+        - 0
+        - 0
+      - - 0
+        - 0
+        - 0
+        - 0
+        - 0
+        - 0
+        - 0
+        - 0
+        - 0
+      - - 0
+        - 0
+        - 0
+        - 0
+        - 0
+        - 0
+        - 0
+        - 0
+        - 0
+      - - 0
+        - 0
+        - 0
+        - 0
+        - 0
+        - 0
+        - 0
+        - 0
+        - 0
+      isOld0_2:
+      - 0
+      - 0
+      - 0
+      - 0
+      oldKey2:
+      - 0
+      - 0
+      - 0
+      - 0
+      oldValue2:
+      - 0
+      - 0
+      - 0
+      - 0
   status:
     type: "object"
     required:
@@ -475,9 +587,14 @@ definitions:
         type: "string"
         description: "successfully generated proof. When this field is included in\
           \ the response the value of status will always be `Finished`"
+      pubData:
+        type: "string"
+        description: "public data used in the proof generation. When this field is\
+          \ included in the response the value of status will always be `Finished`"
     example:
       status: "Finished"
-      proof: "add propper example here as well"
+      proof: "add propper example"
+      pubData: "add propper example here as well"
   Error:
     type: "object"
     required:

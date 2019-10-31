@@ -52,8 +52,25 @@ function buildWitnessBin(witness) {
         writeBigInt(h, witness[i]);
     }
     return buff;
-} 
+}
+
+async function writeWitnessBin(witness, file) {
+    return new Promise( (resolve, reject) => {
+        let bin;
+        try {
+            bin = buildWitnessBin(witness);
+        } catch (error) {
+            reject(error);
+            return
+        }
+        let wstream = fs.createWriteStream(file);
+        wstream.write(Buffer.from(bin));
+        wstream.end();
+        wstream.on('finish', resolve);
+        wstream.on('error', reject);
+    });
+}
 
 module.exports = {
-    buildWitnessBin,
+    writeWitnessBin,
 };

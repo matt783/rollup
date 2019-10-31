@@ -24,6 +24,7 @@
   },
   "devDependencies": {
     "circom": "0.0.34",
-    "circomlib": "0.0.19"
+    "circomlib": "0.0.19",
+    "yargs": "^14.2.0"
   }
 }

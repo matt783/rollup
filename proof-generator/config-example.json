@@ -1,0 +1,10 @@
+{
+    "circuitFile": "/home/tester/production/cusnarks/circuits/r1cs4M_circuit.json",
+    "proofFile": "/home/tester/production/cusnarks/circuits/r1cs4M_proof.json",
+    "publicDataFile": "/home/tester/production/cusnarks/circuits/r1cs4M_pd.json",
+    "witnessFile": "/home/tester/production/cusnarks/circuits/r1cs4M_w.dat",
+    "pysnarks": "/home/tester/production/cusnarks/src/python/pysnarks.py",
+    "provingKey": "/home/tester/production/cusnarks/circuits/r1cs4M_pk.bin",
+    "verifyingKey": "/home/tester/production/cusnarks/circuits/r1cs4M_vk.json",
+    "cudaList": "1,2"
+}
