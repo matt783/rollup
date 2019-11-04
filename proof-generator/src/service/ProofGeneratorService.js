@@ -99,14 +99,10 @@ function genProof() {
   cudaProofGenerator()
     .then((cmdRes) => {
       if (cmdRes.stdout === "") {
-        console.error("ERROR GENERATING PROOF: cusnark server wasn't ready. Starting the server and trying again");
-        startProofGenerator()
-          .then((res) => {
-            console.error("START SERVER RESPOMSE: ",res);
-            // CHECK RESPONSE
-            // genProof();
-          })
-          .catch(err => console.error("ERROR STARTING SERVER: ", err));
+        console.error("ERROR GENERATING PROOF: path wasnt set. Set it and retry");
+        exec("export LD_LIBRARY_PATH=/home/tester/production/cusnarks/lib:$LD_LIBRARY_PATH")
+          .then(res => console.error("START SERVER RESPOMSE: ",res))
+          .catch(err => console.error("ERROR SETTING PATH: ", err));
       }
       console.error("SUCCESS GENERATING PROOF: ", cmdRes);
       // TODO: CHECK cmdRes status => error / success
@@ -143,17 +139,14 @@ python3 pysnarks.py -m p \
 -w ${config.witnessFile} \
 -p ${config.proofFile} \
 -pd ${config.publicDataFile} \
+-pk ${config.provingKey} \
+-vk ${config.verifyingKey} \
 -v 1`;
-  console.error("cmd; ", cmd);
-  
-  // execute cuSNARKs call
   return await exec(cmd);
 }
 
 async function startProofGenerator() {
   const cmd = `cd ${config.pysnarkPath} && CUDA_VISIBLE_DEVICES=1,2 python3 pysnarks.py -m p -pk ${config.provingKey} -vk ${config.verifyingKey}`;  
-  console.error("start server command: ", cmd);
-  
   return await exec(cmd);
 }
 
