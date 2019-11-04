@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
-import { Button, Container, Form} from 'semantic-ui-react';
+import { Button, Container, Form, Menu, Icon} from 'semantic-ui-react';
 import { checkconfig, createConfig } from '../actions/config-actions'
+import { Link } from 'react-router-dom';
 
 class Config extends Component {
   constructor(props) {
@@ -28,6 +29,17 @@ class Config extends Component {
   render() {
     return(
       <Container>
+        <Menu secondary>
+          <Menu.Menu position='right'>
+            <Link to={'/'}>
+              <Menu.Item
+                name="initView"
+              >
+                <Icon name="reply"/>Back
+              </Menu.Item>
+            </Link>
+          </Menu.Menu>
+        </Menu>
         <h1>Config</h1>
         <h3>Check Config</h3>
         <Button onClick={this.handleClick}>Check</Button>

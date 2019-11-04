@@ -3,22 +3,22 @@ import './App.css';
 import {BrowserRouter as Router, Route } from 'react-router-dom';
 import { connect } from 'react-redux';
 
-import HeaderApp from "./components/headerApp";
-import InitView from "./components/initView";
-import CreateWallet from "./components/createWallet2";
+import HeaderApp from "./components/header-app";
+import InitView from "./views/init-view";
+import CreateWallet from "./views/create-wallet";
 import Config from "./components/config";
-import LoadFiles from "./components/loadFiles";
+import LoadFiles from "./components/load-files";
 import Deposit from "./components/deposit";
 import Send from "./components/send";
 import Withdraw from "./components/withdraw";
-import DepositOnTop from "./components/depositOnTop";
-import ForceWithdraw from "./components/forcewithdraw";
+import DepositOnTop from "./components/deposit-on-top";
+import ForceWithdraw from "./components/force-withdraw";
+import ChooseAction from "./views/choose-action/containers/choose-action";
 
 class App extends Component {
 
   render(){
     return (
-      <div>
         <React.Fragment>
           <Route exact path="/" render={() => 
             <InitView />
@@ -33,42 +33,59 @@ class App extends Component {
           <Route exact path="/loadfiles" render={() =>
             <LoadFiles />
           }/>
+          <Route exact path="/actions" render={() =>
+            <ChooseAction />
+          }/>
           <Route exact path="/deposit" render={() =>
-            <Deposit 
-              wallet = {this.props.wallet}
-              config = {this.props.config}
-              abiRollup = {this.props.abiRollup}
-            />
+            <div>
+              <HeaderApp />
+              <Deposit 
+                wallet = {this.props.wallet}
+                config = {this.props.config}
+                abiRollup = {this.props.abiRollup}
+              />
+            </div>
           }/>
           <Route exact path="/depositontop" render={() =>
-            <DepositOnTop 
-              wallet = {this.props.wallet}
-              config = {this.props.config}
-              abiRollup = {this.props.abiRollup}
-            />
+            <div>
+              <HeaderApp />
+              <DepositOnTop 
+                wallet = {this.props.wallet}
+                config = {this.props.config}
+                abiRollup = {this.props.abiRollup}
+              />
+            </div>
           }/>
           <Route exact path="/send" render={() =>
-            <Send 
-              wallet = {this.props.wallet}
-              config = {this.props.config}
-            />
+            <div>
+              <HeaderApp />
+              <Send 
+                wallet = {this.props.wallet}
+                config = {this.props.config}
+              />
+            </div>
           }/>
           <Route exact path="/forcewithdraw" render={() =>
-            <ForceWithdraw 
-              wallet = {this.props.wallet}
-              config = {this.props.config}
-              abiRollup = {this.props.abiRollup}
-            />
+            <div>
+              <HeaderApp />
+              <ForceWithdraw 
+                wallet = {this.props.wallet}
+                config = {this.props.config}
+                abiRollup = {this.props.abiRollup}
+              />
+            </div>
           }/>
           <Route exact path="/withdraw" render={() =>
-            <Withdraw 
-              wallet = {this.props.wallet}
-              config = {this.props.config}
-              abiRollup = {this.props.abiRollup}
-            />
+            <div>
+              <HeaderApp />
+              <Withdraw 
+                wallet = {this.props.wallet}
+                config = {this.props.config}
+                abiRollup = {this.props.abiRollup}
+              />
+            </div>
           }/>
         </React.Fragment>
-      </div>
     );
   }
 }

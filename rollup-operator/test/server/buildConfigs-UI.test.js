@@ -108,11 +108,9 @@ contract("Operator Server", (accounts) => {
     it("Create wallets with funs", async () => {
         const walletFunder = await Wallet.fromMnemonic(mnemonic, 1);
         await fs.writeFileSync(abiRollupPath, JSON.stringify(Rollup.abi));
-        await createWallets(4, 50, passString, insRollup.address, walletFunder.ethWallet.wallet, 2, 
+        await createWallets(4, 10, passString, insRollup.address, walletFunder.ethWallet.wallet, 2, 
             insTokenRollup.address, TokenRollup.abi, "http://localhost:8545", 
             walletsPath, mnemonic);
-        const encWallet = JSON.parse(await fs.readFileSync(walletsPath+"/1wallet.json"));
-        await Wallet.fromEncryptedJson(encWallet, "foo");
         console.log(insRollup.address);
     });
 });
