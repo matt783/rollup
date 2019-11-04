@@ -1,11 +1,11 @@
 import React,{Component} from 'react';
-import { Menu, Segment } from 'semantic-ui-react';
+import { Menu} from 'semantic-ui-react';
 
 class MenuActions extends Component {
 
     render() {
         return (
-            <Menu fuild widths={2} color="violet">
+            <Menu widths={2} color="violet">
                 <Menu.Item
                     name='onchain'
                     active={this.props.activeItem === 'onchain'}

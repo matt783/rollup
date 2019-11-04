@@ -3,6 +3,7 @@ import { Container, Header, Divider, Message} from 'semantic-ui-react';
 import { Redirect } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { loadFiles } from '../../../actions/actions';
+import { readFile } from '../../../utils/wallet-utils';
 
 import ModalImport from '../components/modal-import';
 import ButtonGroupInit from '../components/button-group-init';
@@ -27,11 +28,11 @@ class InitView extends Component {
   handleClick = async () => {
     if (this.state.wallet === '' || this.state.config === '' || this.state.abiRollup === '') {
       console.log("Incorrect File");
-      this.setState({ok: FILE_STATE.ERROR})
+      this.setState({ok: FILE_STATE.ERROR});
     } else {
-      this.setState({ok: FILE_STATE.UPLOADED})
+      this.setState({ok: FILE_STATE.UPLOADED});
     }
-    this.setState({ open: false })
+    this.setState({ open: false });
   }
 
   handleChange = (e, id) => {
@@ -69,14 +70,13 @@ class InitView extends Component {
         {messages}
         <Header
           as='h1'
-          content='Rollup'
           style={{
             fontSize: '4em',
             fontWeight: 'normal',
             marginBottom: 0,
             marginTop: '3em',
           }}
-        />
+        >Rollup</Header>
         <Divider/>
         <ButtonGroupInit
           toggleModal = {this.toggleModal}

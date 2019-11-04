@@ -1,5 +1,6 @@
 import React,{Component} from 'react';
-import { Header, Container } from 'semantic-ui-react';
+import { Header, Container, Menu, Icon } from 'semantic-ui-react';
+import { Link } from 'react-router-dom';
 import MenuActions from '../components/menu-actions';
 import MenuOnchain from '../components/menu-onchain';
 import MenuOffchain from '../components/menu-offchain';
@@ -23,9 +24,19 @@ class ChooseAction extends Component {
     }
     return (
       <Container textAlign="center">
+        <Menu secondary>
+          <Menu.Menu position='right'>
+            <Link to={'/'}>
+              <Menu.Item
+                name="initView"
+              >
+                <Icon name="reply"/>Back
+              </Menu.Item>
+            </Link>
+          </Menu.Menu>
+        </Menu>
         <Header
         as='h1'
-        content='Choose Action'
         style={{
           fontSize: '4em',
           fontWeight: 'normal',

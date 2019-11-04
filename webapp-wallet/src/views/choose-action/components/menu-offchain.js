@@ -1,16 +1,19 @@
 import React,{Component} from 'react';
-import { Button } from 'semantic-ui-react';
+import { Button, Container } from 'semantic-ui-react';
 import { Link } from 'react-router-dom';
 
 class MenuOffchain extends Component {
 
     render() {
         return (
-          <Button.Group vertical>
-            <Link to={'/send'}>
-              <Button size='massive' color='blue'>Send</Button>
+          <Container>
+            <Link to={'/actions/send'}>
+              <Button size='big'>Send</Button>
             </Link>
-          </Button.Group>
+            <Link to={'/actions/send'}>
+              <Button size='big'>Withdraw</Button>
+            </Link>
+          </Container>
         );
     }
 }

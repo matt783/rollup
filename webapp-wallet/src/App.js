@@ -8,11 +8,11 @@ import InitView from "./views/init-view";
 import CreateWallet from "./views/create-wallet";
 import Config from "./components/config";
 import LoadFiles from "./components/load-files";
-import Deposit from "./components/deposit";
-import Send from "./components/send";
-import Withdraw from "./components/withdraw";
-import DepositOnTop from "./components/deposit-on-top";
-import ForceWithdraw from "./components/force-withdraw";
+import Deposit from "./views/deposit";
+import Send from "./views/send";
+import Withdraw from "./views/withdraw";
+import DepositOnTop from "./views/deposit-on-top";
+import ForceWithdraw from "./views/force-withdraw";
 import ChooseAction from "./views/choose-action/containers/choose-action";
 
 class App extends Component {
@@ -36,9 +36,8 @@ class App extends Component {
           <Route exact path="/actions" render={() =>
             <ChooseAction />
           }/>
-          <Route exact path="/deposit" render={() =>
+          <Route exact path="/actions/deposit" render={() =>
             <div>
-              <HeaderApp />
               <Deposit 
                 wallet = {this.props.wallet}
                 config = {this.props.config}
@@ -46,9 +45,8 @@ class App extends Component {
               />
             </div>
           }/>
-          <Route exact path="/depositontop" render={() =>
+          <Route exact path="/actions/depositontop" render={() =>
             <div>
-              <HeaderApp />
               <DepositOnTop 
                 wallet = {this.props.wallet}
                 config = {this.props.config}
@@ -56,18 +54,16 @@ class App extends Component {
               />
             </div>
           }/>
-          <Route exact path="/send" render={() =>
+          <Route exact path="/actions/send" render={() =>
             <div>
-              <HeaderApp />
               <Send 
                 wallet = {this.props.wallet}
                 config = {this.props.config}
               />
             </div>
           }/>
-          <Route exact path="/forcewithdraw" render={() =>
+          <Route exact path="/actions/forcewithdraw" render={() =>
             <div>
-              <HeaderApp />
               <ForceWithdraw 
                 wallet = {this.props.wallet}
                 config = {this.props.config}
@@ -75,9 +71,8 @@ class App extends Component {
               />
             </div>
           }/>
-          <Route exact path="/withdraw" render={() =>
+          <Route exact path="/actions/withdraw" render={() =>
             <div>
-              <HeaderApp />
               <Withdraw 
                 wallet = {this.props.wallet}
                 config = {this.props.config}
