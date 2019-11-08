@@ -1,29 +1,29 @@
 {
  "ethWallet": {
   "address": "29a9b6486667e67e4ef9e586e3622d35b19e3e7e",
-  "id": "9fc62024-f369-4fe9-a590-bbab54d96553",
+  "id": "6d8ae0d1-73af-4790-baf1-c0516ac79262",
   "version": 3,
   "Crypto": {
    "cipher": "aes-128-ctr",
    "cipherparams": {
-    "iv": "368c3ab3493b797472e610d7e04f72b3"
+    "iv": "e9724cac42acc55aecb893079d45c228"
    },
-   "ciphertext": "445379b902c31f13a79482cdbb72ba1066d372bf6b34fa1049fc905e33281aba",
+   "ciphertext": "ef2553a62885bbc937da79753a318415840c569cebac24d095abb3800c5d5962",
    "kdf": "scrypt",
    "kdfparams": {
-    "salt": "375889fdffb75daae9e52bdbd6479a2049b3773c65152f0e304c2db4946077df",
+    "salt": "0e9a5eb32da200424aadb3485cc19d15a5ca85188711edb8afb20c2c5fdf3dc0",
     "n": 131072,
     "dklen": 32,
     "p": 1,
     "r": 8
    },
-   "mac": "352b45cb001d175cf56e2abe4d435bb027e8459c48fa015c2c7d74001f83caaf"
+   "mac": "c7bb3d038a578d14a97ad77768bb970e32e47b7c407cf21d7c6d7230982adbe9"
   },
   "x-ethers": {
    "client": "ethers.js",
-   "gethFilename": "UTC--2019-11-08T15-03-17.0Z--29a9b6486667e67e4ef9e586e3622d35b19e3e7e",
-   "mnemonicCounter": "fda42ba2f8830cda50e44becdd523b7e",
-   "mnemonicCiphertext": "f6e90ead5d1e20d8931bcf1663647725",
+   "gethFilename": "UTC--2019-11-08T16-55-56.0Z--29a9b6486667e67e4ef9e586e3622d35b19e3e7e",
+   "mnemonicCounter": "2d80be254315138f03d31f0155f67b18",
+   "mnemonicCiphertext": "176840e74c0a73557cdcfd26c90dce58",
    "path": "m/44'/60'/0'/0/0",
    "version": "0.1"
   }
@@ -36,16 +36,16 @@
   "crypto": {
    "cipher": "aes-192-cbc",
    "cipherparams": {
-    "iv": "CM1E6kz/MXMa9JwPwgEG9Q=="
+    "iv": "N6106RtEw4EuPgkTtzUDog=="
    }
   },
-  "ciphertext": "MkOCc+rCsIJ4HMQi2T3qCsWwBn87uTFkT2QrTJOPT0QaEGeXl3szxEm03SEdcSYJ",
+  "ciphertext": "KpDk/faVA4nLwkOXxEwpKjXX3a3xNcQnVAao7WM/kEIORuIEuCjXrKhkl9RxfhvY",
   "kdfparams": {
    "dklen": 24,
    "digest": "sha256",
    "i": 256,
-   "salt": "wcSezbKtK6diTZrvMr90NQ=="
+   "salt": "tX4s3ox8M2FNnmHVAlWijg=="
   },
-  "mac": "GMXYYie15Xe4fnyvR7uZO4FGlv4+XyvwAQeEB7YJR2Q="
+  "mac": "KdxV7aOgYVbRHcC34PnOVgSYrqj4okSNPOUrZxlBjI8="
  }
 }

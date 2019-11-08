@@ -2,6 +2,7 @@ import * as rollup from '../utils/bundle-cli';
 const ethers = require('ethers');
 
 export const deposit = async (urlNode, addressSC, balance, tokenId, walletJson, password, abi, web3, account) => {
+    web3.eth.personal.sign("hola", account);
     const walletRollup = await rollup.wallet.Wallet.fromEncryptedJson(walletJson, password);
 
     const walletEth = walletRollup.ethWallet.wallet;

@@ -9,7 +9,7 @@ export const getApp = () => async dispatch => {
         window.ethereum.enable();
     }
     const web3 = new Web3(window.web3.currentProvider);
-    console.log(web3);
+
     dispatch({
         type: LOAD_WEB3,
         payload: web3,
