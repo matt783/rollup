@@ -6,7 +6,7 @@ class ModalRandom extends Component {
     render() {
         return (
           <Modal open={this.props.open1}>
-            <Modal.Header>Wallet</Modal.Header>
+            <Modal.Header>Rollup Wallet</Modal.Header>
             <Modal.Content >
             <Form>
                 <Form.Field>

@@ -1,7 +1,8 @@
 import { combineReducers } from 'redux';
-import appReducer from './appReducer';
+import general from './general';
 
 //tenemos un reducer para cada página de nuestra aplicación
 export default combineReducers({
-    appReducer: appReducer,
+    general: general.reducer,
 });
+

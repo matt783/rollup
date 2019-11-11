@@ -6,7 +6,7 @@ class ModalMnemonic extends Component {
     render() {
         return (
           <Modal open={this.props.open2}>
-            <Modal.Header>Wallet</Modal.Header>
+            <Modal.Header> Rollup Wallet</Modal.Header>
             <Modal.Content >
             <Form>
                 <Form.Field>

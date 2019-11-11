@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import { Link } from 'react-router-dom';
 
-import {createRandomWallet, createWalletfromMnemonic, createWalletfromJson} from "../../../actions/create-actions";
+import {createRandomWallet, createWalletfromMnemonic, createWalletfromJson} from "../create-actions";
 
 import { Button, Container, Menu, Header, Divider, Icon} from 'semantic-ui-react';
 import ModalRandom from '../components/modal-random';
@@ -74,7 +74,7 @@ class CreateWallet extends Component {
         <Container textAlign='center'>
           <Header
             as='h1'
-            content='Create Wallet'
+            content='Create Rollup Wallet'
             style={{
               fontSize: '4em',
               fontWeight: 'normal',
@@ -85,9 +85,9 @@ class CreateWallet extends Component {
         </Container>
         <Divider/>
         <Button.Group widths='3' size='massive'>
-          <Button color='violet' onClick={() => this.setState({open1: true})}>Random</Button>
-          <Button color='violet' onClick={() => this.setState({open2: true})}>From Mnemonic</Button>
-          <Button color='violet' onClick={() => this.setState({open3: true})}>Import</Button>
+          <Button color='violet' onClick={() => this.setState({open1: true})}>Create New Rollup Wallet</Button>
+          <Button color='violet' onClick={() => this.setState({open2: true})}>Create from Mnemonic</Button>
+          <Button color='violet' onClick={() => this.setState({open3: true})}>Import Wallet</Button>
         </Button.Group>
         <ModalRandom
           open1 = {this.state.open1}

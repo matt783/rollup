@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import { Container, Header, Divider, Message} from 'semantic-ui-react';
 import { Redirect } from 'react-router-dom';
 import { connect } from 'react-redux';
-import { loadFiles } from '../../../actions/actions';
+import { handleLoadFiles } from '../../../state/general/actions';
 
 import ModalImport from '../components/modal-import';
 import ButtonGroupInit from '../components/button-group-init';
@@ -21,7 +21,7 @@ class InitView extends Component {
 
   componentWillUnmount() {
     if(this.state.ok === FILE_STATE.UPLOADED){
-      this.props.loadFiles(this.state.wallet, this.state.config, this.state.abiRollup, this.state.abiTokens);
+      this.props.handleLoadFiles(this.state.wallet, this.state.config, this.state.abiRollup, this.state.abiTokens);
     }
   }
 
@@ -59,7 +59,7 @@ class InitView extends Component {
   
   render(){
     let messages;
-    if(this.state.ok === FILE_STATE.ERROR) {
+    if(this.state.ok === FILE_STATE.ERROR || this.props.errorFiles !== '') {
       messages = 
       <Container>
         <Message negative> Error </Message>
@@ -96,4 +96,4 @@ class InitView extends Component {
   }
 }
 
-export default connect(null, { loadFiles })(InitView);
+export default connect(null, { handleLoadFiles })(InitView);

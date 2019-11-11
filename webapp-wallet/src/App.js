@@ -12,7 +12,8 @@ import Withdraw from "./views/withdraw";
 import DepositOnTop from "./views/deposit-on-top";
 import ForceWithdraw from "./views/force-withdraw";
 import ChooseAction from "./views/choose-action/containers/choose-action";
-import { getApp } from "./actions/actions";
+
+import { handleWeb3Load } from "./state/general/actions";
 
 class App extends Component {
   // componentDidCatch
@@ -22,7 +23,7 @@ class App extends Component {
 
   componentDidMount = async () => {
     try {
-      await this.props.getApp();
+      await this.props.handleWeb3Load();
       window.ethereum.on('accountsChanged', (accounts) => {
           this.setState({account: accounts[0]}, () => console.log(this.state.account));
       })
@@ -35,7 +36,9 @@ class App extends Component {
     return (
         <React.Fragment>
           <Route exact path="/" render={() => 
-            <InitView />
+            <InitView
+              errorFiles = {this.props.errorFiles}
+            />
           }
           />
           <Route exact path="/createWallet" render={() =>
@@ -65,6 +68,8 @@ class App extends Component {
                 wallet = {this.props.wallet}
                 config = {this.props.config}
                 abiRollup = {this.props.abiRollup}
+                abiTokens = {this.props.abiTokens}
+                web3 = {this.props.web3}
                 account = {this.state.account}
               />
             </div>
@@ -104,12 +109,13 @@ class App extends Component {
 }
 
 const mapStateToProps = state => ({
-  wallet: state.appReducer.wallet,
-  config: state.appReducer.config,
-  abiRollup: state.appReducer.abiRollup,
-  abiTokens: state.appReducer.abiTokens,
-  web3: state.appReducer.web3,
+  wallet: state.general.wallet,
+  config: state.general.config,
+  abiRollup: state.general.abiRollup,
+  abiTokens: state.general.abiTokens,
+  web3: state.general.web3,
+  errorFiles: state.general.errorFiles,
 })
 
 
-export default connect(mapStateToProps, { getApp })(App);
+export default connect(mapStateToProps, { handleWeb3Load })(App);

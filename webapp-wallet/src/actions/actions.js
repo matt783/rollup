@@ -42,7 +42,7 @@ export const loadRollupAbi = (abiFile) => async (dispatch) => {
         payload: abiRollup,
     });
 };
-export const loadConfig= (configFile) => async (dispatch) => {
+export const loadConfig = (configFile) => async (dispatch) => {
     const config = await readFile(configFile);
 
     dispatch({
