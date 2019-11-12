@@ -1,57 +1,30 @@
-const axios = require('axios');
-const { Wallet } = require('../utils/wallet');
-const { readFile } = require('../utils/wallet-utils');
+import * as rollup from '../utils/bundle-cli';
+import * as operator from '../utils/bundle-op';
 
-export const beforeSend = async (configFile, walletFile) => {
-    const config = await readFile(configFile);
-    const wallet = await readFile(walletFile);
-    const files = { config, wallet };
-    return files;
-};
+const { stringifyBigInts } = require('snarkjs');
+const CliExternalOperator = require('../../../../rollup-operator/src/cli-external-operator');
 
-export const send = async (UrlOperator, idTo, amount, walletJson, password, tokenId, userFee) => {
-    const walletRollup = await Wallet.fromEncryptedJson(walletJson, password);
-    const walletBaby = walletRollup.babyjubWallet;
+export const send = async (urlOperator, idTo, amount, walletJson, password, tokenId, userFee, idFrom) => {
 
-    return new Promise(((resolve, reject) => {
-        axios.get(`${UrlOperator}/offchain/info/${walletBaby.publicKey[0].toString()}/${walletBaby.publicKey[1].toString()}`).then((response) => {
-            let coorectLeaf = [];
-            for (const leaf of response.data) {
-                if (leaf.tokenId === tokenId) {
-                    coorectLeaf = leaf;
-                }
-            }
-            if (coorectLeaf === []) {
-                reject("There're no leafs with this wallet (babyjub) and this tokenID");
-            }
-            const transaction = {
-                fromIdx: coorectLeaf.id,
-                toIdx: idTo,
-                coin: tokenId,
-                amount,
-                nonce: coorectLeaf.nonce,
-                userFee,
-                rqOffset: 0,
-                onChain: 0,
-                newAccount: 0,
-            };
+    const apiOperator = new operator.cliExternalOperator.CliExternalOperator(urlOperator);
+    const walletRollup = await rollup.wallet.Wallet.fromEncryptedJson(walletJson, password);
 
-            walletRollup.signRollupTx(transaction); // sign included in transaction
-            const parsetransaction = JSON.parse(JSON.stringify({ transaction }, (key, value) =>// convert bigint to Strings
-                (typeof value === 'bigint'
-                    ? value.toString()
-                    : value), // return everything else unchanged
-            ));
-            console.log('SEND');
-            axios.post(`${UrlOperator}/offchain/send`, parsetransaction).then((response) => {
-                resolve(response.status);
-            })
-                .catch((error) => {
-                    reject(error);
-                });
-        })
-            .catch((error) => {
-                reject(error);
-            });
-    }));
-};
+    const responseLeaf = await apiOperator.getInfoByIdx(idFrom);
+    const tx = {
+        fromIdx: responseLeaf.data.idx,
+        toIdx: idTo,
+        coin: tokenId,
+        amount,
+        nonce: responseLeaf.data.nonce,
+        userFee,
+        rqOffset: 0,
+        onChain: 0,
+        newAccount: 0,
+    };
+
+    walletRollup.signRollupTx(tx); // sign included in transaction
+    const parseTx = stringifyBigInts(tx);// convert bigint to Strings
+
+    const res = await apiOperator.sendOffChainTx(parseTx);
+    return res.status;
+}

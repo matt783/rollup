@@ -1,29 +1,29 @@
 {
  "ethWallet": {
   "address": "cfd704f95247a5efdbf4c3a48dfe3ac445bd806a",
-  "id": "9b89ec9f-6cb2-42fb-bff0-607aa97fb95b",
+  "id": "715eaf35-05b2-4d8c-aac9-fd27ca1f4e4f",
   "version": 3,
   "Crypto": {
    "cipher": "aes-128-ctr",
    "cipherparams": {
-    "iv": "e2c775d04e5c56bcc65e55fa2cc23c09"
+    "iv": "723d4b3627a69d11d026ae9f2ea7e9e9"
    },
-   "ciphertext": "adf379bdd7d7e4d8c96ef92a0fcfbebb6fb189fb294a156aa6b8263bbb62d2c2",
+   "ciphertext": "5c23baf0824527bf6b4d8cb9860e070fca1826108a5a344c1637801fbde19e1b",
    "kdf": "scrypt",
    "kdfparams": {
-    "salt": "a7059b4f3d290a08dfe584e8b5261af2acf226fac99602a60224586afcfd31b0",
+    "salt": "357d47d238d7fa448f90120e99f72c7561c8f89582d39a3338849a76e674981e",
     "n": 131072,
     "dklen": 32,
     "p": 1,
     "r": 8
    },
-   "mac": "e6ae1390597bcfb806c8a03e697263c53296103890666cfd6c79285922bfebd8"
+   "mac": "00b403d06469cd6eb91dd14b18d6eac87a4c54e96965aa33ef867a8c0b279a68"
   },
   "x-ethers": {
    "client": "ethers.js",
-   "gethFilename": "UTC--2019-11-08T16-56-08.0Z--cfd704f95247a5efdbf4c3a48dfe3ac445bd806a",
-   "mnemonicCounter": "174e58d614b12201732377ad71902b8d",
-   "mnemonicCiphertext": "2b39589880fc3c1e8658f81078d6a8ea",
+   "gethFilename": "UTC--2019-11-12T17-18-37.0Z--cfd704f95247a5efdbf4c3a48dfe3ac445bd806a",
+   "mnemonicCounter": "785f3c2c8631bcde1b1f65b3f4e7b21a",
+   "mnemonicCiphertext": "33610241f337a775208ff2d58978ed92",
    "path": "m/44'/60'/0'/0/6",
    "version": "0.1"
   }
@@ -36,16 +36,16 @@
   "crypto": {
    "cipher": "aes-192-cbc",
    "cipherparams": {
-    "iv": "M+nAUwk7vZoU0zd1iN3JXg=="
+    "iv": "YPDChsxHlDrPplI9OAp0vw=="
    }
   },
-  "ciphertext": "nff61wijEVF4wW9xqZe1tDhTywl8iXcHSoo1GmobMYSNWh2F2Do6aAL3fEy65GOG",
+  "ciphertext": "unWcEtD30lk0vwqTzu7OA43jRkHlhAZNEO5zE9dHXIWoszrazFAANQaiSfg0KY8P",
   "kdfparams": {
    "dklen": 24,
    "digest": "sha256",
    "i": 256,
-   "salt": "SWGwjdniQCQdFbF6oM/gQg=="
+   "salt": "Kc9VnpGdZ3aboNkaALvMyw=="
   },
-  "mac": "thMTGAbE9uAH6wA8LQ5Inwlxf2OpafzHjaxSVmqmeiI="
+  "mac": "DVF0+zCXO4AioylLxwMMDJkrWOOdj+nuCS7FKsHgztY="
  }
 }

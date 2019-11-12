@@ -1,17 +1,17 @@
 import * as rollup from '../utils/bundle-cli';
 const ethers = require('ethers');
 
-export const deposit = async (urlNode, addressSC, balance, tokenId, walletJson, password, abi, web3, account) => {
+export const deposit = async (urlNode, addressSC, balance, tokenId, walletJson, password, ethAddress, abi, web3, account) => {
 
     const walletRollup = await rollup.wallet.Wallet.fromEncryptedJson(walletJson, password);
 
     const walletEth = walletRollup.ethWallet.wallet;
-    const address = await walletEth.address;
+    const address = ethAddress || await walletEth.getAddress();
     const walletBaby = walletRollup.babyjubWallet;
 
     const pubKeyBabyjub = [walletBaby.publicKey[0].toString(), walletBaby.publicKey[1].toString()];
     const contractWithSigner = new web3.eth.Contract(abi, addressSC);
-
+    console.log(account);
     const overrides = {
         from: account,
         gasLimit: 800000,

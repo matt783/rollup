@@ -1,1 +1,3 @@
 test/wallets/
+src/utils/bundle-cli.js
+src/utils/bundle-cli-old.js

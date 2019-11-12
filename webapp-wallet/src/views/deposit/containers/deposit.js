@@ -22,7 +22,7 @@ class Deposit extends Component {
       const tokenId = parseInt(this.tokenIdRef.current.value);
       const nodeEth = config.nodeEth;
       const addressSC = config.address;
-      const res = await rollup.onchain.deposit.deposit(nodeEth, addressSC, amount, tokenId, wallet, password, abiRollup);
+      const res = await rollup.onchain.deposit.deposit(nodeEth, addressSC, amount, tokenId, wallet, password, undefined, abiRollup);
       console.log(res);
     } catch(error){
       console.log(error.message);
@@ -38,7 +38,7 @@ class Deposit extends Component {
       const nodeEth = config.nodeEth;
       const addressSC = config.address;
       const account = this.props.account;
-      const res = await deposit(nodeEth, addressSC, amount, tokenId, wallet, password, abiRollup, web3, account);
+      const res = await deposit(nodeEth, addressSC, amount, tokenId, wallet, password, undefined, abiRollup, web3, account);
       console.log("RES: ", res);
     } catch(error){
       console.log(error.message);

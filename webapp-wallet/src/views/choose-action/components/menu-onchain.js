@@ -37,6 +37,12 @@ class MenuOnchain extends Component {
                     <Link to={'/actions/depositontop'}>
                       <Button size='big'>Deposit On Top</Button>
                     </Link>
+                    <Link to={'/actions/transfer'}>
+                      <Button size='big'>Transfer</Button>
+                    </Link>
+                    <Link to={'/actions/depositandtransfer'}>
+                      <Button size='big'>Transfer and Deposit</Button>
+                    </Link>
                     <Link to={'/actions/forcewithdraw'}>
                       <Button size='big'>Force Withdraw</Button>
                     </Link>

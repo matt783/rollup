@@ -1,12 +1,14 @@
 import React, { Component } from "react";
 import './App.css';
-import {BrowserRouter as Router, Route } from 'react-router-dom';
+import { Route } from 'react-router-dom';
 import { connect } from 'react-redux';
 
 import InitView from "./views/init-view";
 import CreateWallet from "./views/create-wallet";
 import Config from "./views/create-config";
 import Deposit from "./views/deposit";
+import Transfer from "./views/transfer";
+import DepositAndTransfer from "./views/deposit-and-transfer";
 import Send from "./views/send";
 import Withdraw from "./views/withdraw";
 import DepositOnTop from "./views/deposit-on-top";
@@ -74,6 +76,30 @@ class App extends Component {
               />
             </div>
           }/>
+          <Route exact path="/actions/transfer" render={() =>
+            <div>
+              <Transfer 
+                wallet = {this.props.wallet}
+                config = {this.props.config}
+                abiRollup = {this.props.abiRollup}
+                abiTokens = {this.props.abiTokens}
+                web3 = {this.props.web3}
+                account = {this.state.account}
+              />
+            </div>
+          }/>
+          <Route exact path="/actions/depositandtransfer" render={() =>
+            <div>
+              <DepositAndTransfer 
+                wallet = {this.props.wallet}
+                config = {this.props.config}
+                abiRollup = {this.props.abiRollup}
+                abiTokens = {this.props.abiTokens}
+                web3 = {this.props.web3}
+                account = {this.state.account}
+              />
+            </div>
+          }/>
           <Route exact path="/actions/send" render={() =>
             <div>
               <Send 
@@ -90,6 +116,7 @@ class App extends Component {
                 config = {this.props.config}
                 abiRollup = {this.props.abiRollup}
                 account = {this.state.account}
+                web3 = {this.props.web3}
               />
             </div>
           }/>
@@ -100,6 +127,7 @@ class App extends Component {
                 config = {this.props.config}
                 abiRollup = {this.props.abiRollup}
                 account = {this.state.account}
+                web3 = {this.props.web3}
               />
             </div>
           }/>

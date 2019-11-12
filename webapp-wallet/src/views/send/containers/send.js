@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-// import { send } from '../actions/send-actions';
 import { Form, Container, Button } from 'semantic-ui-react';
 import * as rollup from '../../../utils/bundle-cli';
 import ButtonToActionsView from '../../../base-ui/button-actions-view';
@@ -26,7 +25,7 @@ class Send extends Component {
     const fee = parseInt(this.feeRef.current.value);
     const operator = config.operator;
     const idFrom = parseInt(this.idFromRef.current.value);
-    
+
     const res = await rollup.offchain.send.send(operator, idTo, amount, wallet, password, tokenId, fee, idFrom);
     console.log("SEND: " + res);
   }
@@ -40,6 +39,10 @@ class Send extends Component {
           <Form.Field>
             <label>ID To</label>
             <input type="text" ref={this.idToRef}/>
+          </Form.Field>
+          <Form.Field>
+            <label>ID From</label>
+            <input type="text" ref={this.idFromRef}/>
           </Form.Field>
           <Form.Field>
             <label>Amount</label>

@@ -11,7 +11,7 @@ class ForceWithdraw extends Component {
     this.amountRef = React.createRef();
     this.passwordRef = React.createRef();
     this.tokenIdRef = React.createRef();
-    this.idToRef = React.createRef();
+    this.idFromRef = React.createRef();
   }
 
   handleClick = async () => {
@@ -20,11 +20,10 @@ class ForceWithdraw extends Component {
 
     const amount = parseInt(this.amountRef.current.value);
     const password = this.passwordRef.current.value;
-    const tokenId = parseInt(this.tokenIdRef.current.value);
-    const idTo = parseInt(this.idToRef.current.value);
+    const idFrom = parseInt(this.idFromRef.current.value);
     const nodeEth = config.nodeEth;
     const addressSC = config.address;
-    const res = await rollup.onchain.forceWithdraw.forceWithdraw(nodeEth, addressSC, amount, tokenId, wallet, password, abiRollup, idTo);
+    const res = await rollup.onchain.forceWithdraw.forceWithdraw(nodeEth, addressSC, amount, wallet, password, abiRollup, idFrom);
     console.log(res);
   }
 
@@ -34,13 +33,12 @@ class ForceWithdraw extends Component {
 
     const amount = parseInt(this.amountRef.current.value);
     const password = this.passwordRef.current.value;
-    const tokenId = parseInt(this.tokenIdRef.current.value);
-    const idTo = parseInt(this.idToRef.current.value);
+    const idFrom = parseInt(this.idFromRef.current.value);
     const nodeEth = config.nodeEth;
     const addressSC = config.address;
     const account = this.props.account;
 
-    const res = await forceWithdraw(nodeEth, addressSC, amount, wallet, password, abiRollup, idTo, web3, account);
+    const res = await forceWithdraw(nodeEth, addressSC, amount, wallet, password, abiRollup, idFrom, web3, account);
     console.log(res);
   }
 
@@ -59,12 +57,8 @@ class ForceWithdraw extends Component {
             <input type="password" ref={this.passwordRef}/>
           </Form.Field>
           <Form.Field>
-            <label>Token ID</label>
-            <input type="text" ref={this.tokenIdRef}/>
-          </Form.Field>
-          <Form.Field>
-            <label>ID To</label>
-            <input type="text" ref={this.idToRef}/>
+            <label>ID From</label>
+            <input type="text" ref={this.idFromRef}/>
           </Form.Field>
           <Button type="submit" onClick={this.handleClick}>Force Withdraw</Button>
           <Button type="submit" onClick={this.handleClick2}>Force Withdraw Metamask</Button>

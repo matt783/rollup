@@ -1,4 +1,4 @@
-/* eslint-disable */
+/* eslint-disable*/
 (function(f){if(typeof exports==="object"&&typeof module!=="undefined"){module.exports=f()}else if(typeof define==="function"&&define.amd){define([],f)}else{var g;if(typeof window!=="undefined"){g=window}else if(typeof global!=="undefined"){g=global}else if(typeof self!=="undefined"){g=self}else{g=this}g.rollup = f()}})(function(){var define,module,exports;return (function(){function r(e,n,t){function o(i,f){if(!n[i]){if(!e[i]){var c="function"==typeof require&&require;if(!f&&c)return c(i,!0);if(u)return u(i,!0);var a=new Error("Cannot find module '"+i+"'");throw a.code="MODULE_NOT_FOUND",a}var p=n[i]={exports:{}};e[i][0].call(p.exports,function(r){var n=e[i][1][r];return o(n||r)},p,p.exports,r,e,n,t)}return n[i].exports}for(var u="function"==typeof require&&require,i=0;i<t.length;i++)o(t[i]);return o}return r})()({1:[function(require,module,exports){
 module.exports = require('./lib/axios');
 },{"./lib/axios":3}],2:[function(require,module,exports){
@@ -46540,13 +46540,16 @@ module.exports = {
 };
 
 },{"bn.js":50,"eth-lib/lib/hash":83,"number-to-bn":123,"underscore":172,"utf8":173}],177:[function(require,module,exports){
-
+// const Db = require('./src/db');
+// const KeyContainer = require('./src/kc');
 const ethereumWallet = require('./src/ethereum-wallet');
 const wallet = require('./src/wallet');
 const onchain = require('./src/actions/onchain/onchain');
 const offchain = require('./src/actions/offchain/offchain');
 
 module.exports = {
+    /* Db,
+    KeyContainer, */
     ethereumWallet,
     wallet,
     onchain,
@@ -48214,14 +48217,14 @@ const { Wallet } = require('../../wallet.js');
  * @param abi abi of rollup contract
  * @param UrlOperator URl from operator
 */
-async function depositAndTransfer(urlNode, addressSC, loadAmount, amount, tokenId, walletJson, password, abi, toId) {
+async function depositAndTransfer(urlNode, addressSC, loadAmount, amount, tokenId, walletJson, password, ethAddress, abi, toId) {
     const walletRollup = await Wallet.fromEncryptedJson(walletJson, password);
     let walletEth = walletRollup.ethWallet.wallet;
     const walletBaby = walletRollup.babyjubWallet;
     const provider = new ethers.providers.JsonRpcProvider(urlNode);
     const pubKeyBabyjub = [walletBaby.publicKey[0].toString(), walletBaby.publicKey[1].toString()];
     walletEth = walletEth.connect(provider);
-    const address = await walletEth.getAddress();
+    const address = ethAddress || await walletEth.getAddress();
     const contractWithSigner = new ethers.Contract(addressSC, abi, walletEth);
     const overrides = {
         gasLimit: 800000,
@@ -48255,7 +48258,7 @@ const { Wallet } = require('../../wallet.js');
  * @param abi abi of rollup contract
  * @param UrlOperator URl from operator
 */
-async function depositOnTop(urlNode, addressSC, balance, tokenId, walletJson, password, abi, idFrom) {
+async function depositOnTop(urlNode, addressSC, balance, tokenId, walletJson, password, abi, IdTo) {
     const walletRollup = await Wallet.fromEncryptedJson(walletJson, password);
     let walletEth = walletRollup.ethWallet.wallet;
     const provider = new ethers.providers.JsonRpcProvider(urlNode);
@@ -48267,7 +48270,7 @@ async function depositOnTop(urlNode, addressSC, balance, tokenId, walletJson, pa
     };
 
     try {
-        return await contractWithSigner.depositOnTop(idFrom, balance, tokenId, overrides);
+        return await contractWithSigner.depositOnTop(IdTo, balance, tokenId, overrides);
     } catch (error) {
         throw new Error(`Message error: ${error.message}`);
     }
@@ -48292,14 +48295,14 @@ const { Wallet } = require('../../wallet.js');
  * @param password for decrypt the Wallet
  * @param abi abi of rollup contract
 */
-async function deposit(urlNode, addressSC, balance, tokenId, walletJson, password, abi) {
+async function deposit(urlNode, addressSC, balance, tokenId, walletJson, password, ethAddress, abi) {
     const walletRollup = await Wallet.fromEncryptedJson(walletJson, password);
     let walletEth = walletRollup.ethWallet.wallet;
     const walletBaby = walletRollup.babyjubWallet;
     const provider = new ethers.providers.JsonRpcProvider(urlNode);
     const pubKeyBabyjub = [walletBaby.publicKey[0].toString(), walletBaby.publicKey[1].toString()];
     walletEth = walletEth.connect(provider);
-    const address = await walletEth.getAddress();
+    const address = ethAddress || await walletEth.getAddress();
     const contractWithSigner = new ethers.Contract(addressSC, abi, walletEth);
     const overrides = {
         gasLimit: 800000,
@@ -48326,13 +48329,12 @@ const { Wallet } = require('../../wallet.js');
  * @param urlNode URL of the ethereum node
  * @param addressSC rollup address
  * @param balance amount to transfer to the leaf of exit tree
- * @param tokenId token type identifier
  * @param walletJson from this one can obtain the ethAddress and babyPubKey
  * @param password for decrypt the Wallet
  * @param abi abi of rollup contract
  * @param UrlOperator URl from operator
  */
-async function forceWithdraw(urlNode, addressSC, balance, tokenId, walletJson, password, abi, idFrom) {
+async function forceWithdraw(urlNode, addressSC, balance, walletJson, password, abi, idFrom) {
     const walletRollup = await Wallet.fromEncryptedJson(walletJson, password);
     let walletEth = walletRollup.ethWallet.wallet;
     const provider = new ethers.providers.JsonRpcProvider(urlNode);

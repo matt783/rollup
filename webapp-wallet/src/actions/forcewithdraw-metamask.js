@@ -1,7 +1,7 @@
 const ethers = require('ethers');
 
 export const forceWithdraw = async (urlNode, addressSC, balance, walletJson, password, abi, idFrom, web3, account) => {
-
+    console.log(account);
     const contractWithSigner = new web3.eth.Contract(abi, addressSC);
     const overrides = {
         from: account,
@@ -15,8 +15,3 @@ export const forceWithdraw = async (urlNode, addressSC, balance, walletJson, pas
         throw new Error(`Message error: ${error.message}`);
     }
 };
-
-export const approve = async (addressTokens, abiTokens, web3, addressRollup, amountToken, account) => {
-    const contractTokensBot = new web3.eth.Contract(abiTokens, addressTokens);
-    await contractTokensBot.methods.approve(addressRollup, amountToken).send({from: account});// config.Json address of rollupSC
-}
