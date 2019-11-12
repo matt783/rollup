@@ -21,6 +21,8 @@
 #### Account 11 -> Operator
 - `$ node admin-op-cli.js loadWallet -o http://127.0.0.1:9000 --pk 426e207623fe2772c74cc3ffb2797aef4885a0c09ba53795fc58a8d4ca72a7b3`
 - `$ node admin-op-cli.js register --operator http://127.0.0.1:9000 --stake 2`
+o
+- `$ node admin-op-cli.js register --operator http://127.0.0.1:9000 --stake 2 --pk 426e207623fe2772c74cc3ffb2797aef4885a0c09ba53795fc58a8d4ca72a7b3`
 
 #### When the operator doesn't work
 - `$ node admin-op-cli.js unregister --operator http://127.0.0.1:9000 --id 2`
