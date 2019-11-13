@@ -2,8 +2,6 @@
 /* global contract */
 /* global web3 */
 
-const chai = require("chai");
-const { expect } = chai;
 const { addBlocks } = require("../../../test/contracts/helpers/timeTravel");
 const ethers = require("ethers");
 const TokenRollup = artifacts.require("../contracts/test/TokenRollup");
@@ -28,11 +26,9 @@ contract("Operator", (accounts) => {
 
     // Clients
     let cliAdminOp;
-    let cliExternalOp;
 
     // Url
     const urlAdminOp = "http://127.0.0.1:9000";
-    const urlExternalOp = "http://127.0.0.1:9001";
 
     // Constants to move to a specific era
     const slotPerEra = 20;
@@ -59,10 +55,9 @@ contract("Operator", (accounts) => {
 
         // Load clients
         cliAdminOp = new CliAdminOp(urlAdminOp);
-        cliExternalOp = new CliExternalOp(urlExternalOp);
 
         // load operator wallet with funds
-        let privateKey = "0x0123456789012345678901234567890123456789012345678901234567890123";
+        let privateKey = "9cda99025a6803a5e2d88c1f1620c28f7a7586d3c69612bdf2281d0bd9a46aa3";
         walletOp = new ethers.Wallet(privateKey);
         const initBalance = 1000;
         await web3.eth.sendTransaction({to: walletOp.address, from: owner,
@@ -81,4 +76,14 @@ contract("Operator", (accounts) => {
         await cliAdminOp.register(stake, url, seed);
     });
 
+    it("Should move to era 2", async () => {
+        const genesisBlock = Number(await insRollupPoS.genesisBlock());
+        let currentBlock = await web3.eth.getBlockNumber();
+        await addBlocks(genesisBlock - currentBlock + 1); // move to era 0
+        await timeout(5000); // wait time to add all blocks
+        await addBlocks(blockPerEra); // move to era 1
+        await timeout(5000); // wait time to add all blocks
+        await addBlocks(blockPerEra); // move to era 2
+        await timeout(5000); // wait time to add all blocks
+    });
 });

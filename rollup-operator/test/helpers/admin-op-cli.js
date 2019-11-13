@@ -6,11 +6,11 @@ const { argv } = require("yargs")
     .alias("o", "operator")
     .alias("s", "stake")
     .alias("pk", "privateKey")
-    .alias("id", "operatorId");
+    .alias("id", "operatorid");
 
 const operatorUrl = (argv.operator) ? argv.operator : "nooperator";
 const stake = (argv.stake) ? argv.stake : "nostake";
-const operatorId = (argv.operatorId) ? argv.operatorId : "noid";
+const operatorid = (argv.operatorid) ? argv.operatorid : "noid";
 const privateKey = (argv.privateKey) ? argv.privateKey : "noprivatekey";
 const passphrase = "foo";
 
@@ -31,11 +31,9 @@ const passphrase = "foo";
                     throw new Error("No stake");
                 } else {
                     const walletOp = new ethers.Wallet(privateKey);
+                    console.log(walletOp);
                     const walletOpEnc = await walletOp.encrypt(passphrase);
                     await cliAdminOp.loadWallet(walletOpEnc, passphrase);
-                    console.log("REGISTER");
-                    console.log(cliAdminOp);
-                    console.log(stake);
                     const url = "localhost";
                     const seed = "rollup"; 
                     await cliAdminOp.register(stake, url, seed);
@@ -46,10 +44,17 @@ const passphrase = "foo";
         }
         if (argv._[0].toUpperCase() === "UNREGISTER") {
             try {
-                if(operatorId === "noid") {
+                if(operatorid === "noid") {
+                    console.log(operatorid);
                     throw new Error("No OP ID");
-                } else {
-                    await cliAdminOp.unregister(operatorId);
+                } else if (privateKey === "noprivatekey") {
+                    throw new Error("No PK");
+                }else {
+                    const walletOp = new ethers.Wallet(privateKey);
+                    console.log(walletOp);
+                    const walletOpEnc = await walletOp.encrypt(passphrase);
+                    await cliAdminOp.loadWallet(walletOpEnc, passphrase);
+                    await cliAdminOp.unregister(operatorid);
                 }
             } catch (e) {
                 console.log(e);
