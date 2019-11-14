@@ -6,7 +6,9 @@
 #### Account 12
 0xbD00f770320606512885cbb5223c86FbA96aB510
 9cda99025a6803a5e2d88c1f1620c28f7a7586d3c69612bdf2281d0bd9a46aa3
-
+#### Account 13
+0x13a24Bc9d60cCd1e976C094205d6D422c93eCE2C
+6d6a0a0e3bb712b55406f50f5cd6df3eea8bb38bfada4a5e1a7ac90a4a43919e
 
 ### Terminal 1
 `$ ganache-cli -a 100 --defaultBalanceEther 10000 -m "hard crop gallery regular neglect weekend fatal stamp eight flock inch doll"`
@@ -34,7 +36,7 @@ o
 
 #### When the operator doesn't work
 - `$ node admin-op-cli.js unregister --operator http://127.0.0.1:9000 --id 2`
-- `$ node admin-op-cli.js unregister --operator http://127.0.0.1:9000 --id 1 --pk 426e207623fe2772c74cc3ffb2797aef4885a0c09ba53795fc58a8d4ca72a7b3`
+- `$ node admin-op-cli.js unregister --operator http://127.0.0.1:9002 --id 1 --pk 9cda99025a6803a5e2d88c1f1620c28f7a7586d3c69612bdf2281d0bd9a46aa3`
 
 ### Terminal 6
 `/git/iden3/rollup/webapp-wallet`

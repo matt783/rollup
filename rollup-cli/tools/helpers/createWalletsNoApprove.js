@@ -1,9 +1,9 @@
 /* eslint-disable no-await-in-loop */
 const fs = require('fs');
 const ethers = require('ethers');
-const { Wallet } = require('../../../rollup-cli/src/wallet');
+const { Wallet } = require('../../src/wallet');
 
-async function createWallets(numWallets, amountToken, passString, addressRollup, walletEthFunder,
+async function createWalletsNoApprove(numWallets, amountToken, passString, addressRollup, walletEthFunder,
     amountEther, addressTokens, abiTokens, node, path, mnemonic) {
     const pathNewWallets = (path) || '../../tools/resourcesBot/wallets';
     if (!fs.existsSync(pathNewWallets)) {
@@ -33,10 +33,10 @@ async function createWallets(numWallets, amountToken, passString, addressRollup,
         }
         // guardar wallets:
         const encWalletI = await wallets[i].toEncryptedJson(passString);
-        fs.writeFileSync(`${pathNewWallets}/${i}wallet-no-approve.json`, JSON.stringify(encWalletI, null, 1), 'utf-8');
+        fs.writeFileSync(`${pathNewWallets}/${i}wallet-UI.json`, JSON.stringify(encWalletI, null, 1), 'utf-8');
 
         // provide funds
-        let walletEth = wallets[i].ethWallet.wallet.connect(provider);
+        const walletEth = wallets[i].ethWallet.wallet.connect(provider);
         const balance = await walletEth.getBalance();
         const address = await walletEth.getAddress();
         if (ethers.utils.formatEther(balance) < amountEther) { // if dont have enough funds:
@@ -51,10 +51,11 @@ async function createWallets(numWallets, amountToken, passString, addressRollup,
         if (parseInt(tokens._hex, 16) < amountToken) {
             await contractTokensFunder.transfer(address, amountToken);
         }
+        // approve tokens.
     }
     return wallets;
 }
 
 module.exports = {
-    createWallets,
+    createWalletsNoApprove,
 };

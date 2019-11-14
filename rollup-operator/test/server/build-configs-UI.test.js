@@ -32,7 +32,7 @@ contract("Operator Server", (accounts) => {
 
     const maxTx = 10;
     const maxOnChainTx = 5;
-    const tokenInitialAmount = 1000;
+    const tokenInitialAmount = 10000;
 
     let insPoseidonUnit;
     let insTokenRollup;
@@ -111,10 +111,10 @@ contract("Operator Server", (accounts) => {
         const walletFunder = await Wallet.fromMnemonic(mnemonic, 1);
         await fs.writeFileSync(abiRollupPath, JSON.stringify(Rollup.abi));
         await fs.writeFileSync(tokensPath, JSON.stringify(TokenRollup.abi));
-        await createWallets(4, 10, passString, insRollup.address, walletFunder.ethWallet.wallet, 2, 
+        /*await createWallets(4, 100, passString, insRollup.address, walletFunder.ethWallet.wallet, 2, 
             insTokenRollup.address, TokenRollup.abi, "http://localhost:8545", 
-            walletsPath, mnemonic);
-        await createWalletsNoApprove(4, 10, passString, insRollup.address, walletFunder.ethWallet.wallet, 2, 
+            walletsPath, mnemonic);*/
+        await createWalletsNoApprove(4, 100, passString, insRollup.address, walletFunder.ethWallet.wallet, 2, 
             insTokenRollup.address, TokenRollup.abi, "http://localhost:8545", 
             walletsPath, mnemonic);
         console.log("ROLLUP address: ", insRollup.address);

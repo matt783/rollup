@@ -1,5 +1,5 @@
-import * as rollup from '../utils/bundle-cli';
-import * as operator from '../utils/bundle-op';
+import * as rollup from '../utils/rollup-cli';
+import * as operator from '../utils/rollup-operator';
 
 const { stringifyBigInts } = require('snarkjs');
 const CliExternalOperator = require('../../../../rollup-operator/src/cli-external-operator');

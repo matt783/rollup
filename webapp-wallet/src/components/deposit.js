@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 // import { deposit } from '../actions/deposit-actions';
 import { Form, Container, Button } from 'semantic-ui-react';
-import * as rollup from '../utils/bundle-cli';
+import * as rollup from '../utils/rollup-cli';
 
 class Deposit extends Component {
   

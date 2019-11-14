@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { Form, Container, Button } from 'semantic-ui-react';
-import * as rollup from '../../../utils/bundle-cli';
+import * as rollup from '../../../utils/rollup-cli';
 import ButtonToActionsView from '../../../base-ui/button-actions-view';
 
 class Send extends Component {

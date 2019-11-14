@@ -1,4 +1,4 @@
-import * as rollup from '../../utils/bundle-cli';
+import * as rollup from '../../utils/rollup-cli';
 const FileSaver = require('file-saver');
 const { readFile } = require('../../utils/wallet-utils');
 

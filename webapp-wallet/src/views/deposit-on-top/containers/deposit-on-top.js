@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 // import { depositOnTop } from '../actions/depositontop-actions';
 import { Form, Container, Button } from 'semantic-ui-react';
-import * as rollup from '../../../utils/bundle-cli';
+import * as rollup from '../../../utils/rollup-cli';
 import { depositOnTop, approve } from '../../../actions/depositontop-metamask';
 import ButtonToActionsView from '../../../base-ui/button-actions-view';
 

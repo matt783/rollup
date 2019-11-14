@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { Form, Container, Button } from 'semantic-ui-react';
 import ButtonToActionsView from '../../../base-ui/button-actions-view';
 import { deposit, approve } from '../../../actions/deposit-metamask';
-import * as rollup from '../../../utils/bundle-cli';
+import * as rollup from '../../../utils/rollup-cli';
 
 class Deposit extends Component {
   

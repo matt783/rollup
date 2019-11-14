@@ -1,4 +1,4 @@
-import * as operator from '../utils/bundle-op';
+import * as operator from '../utils/rollup-operator';
 
 export const withdraw = async (urlNode, addressSC, balance, walletJson, password, abi, urlOperator, idFrom, numExitRoot, web3, account) => {
     const apiOperator = new  operator.cliExternalOperator(urlOperator);

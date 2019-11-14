@@ -1,5 +1,4 @@
 import { LOAD_FILES, LOAD_ABI, LOAD_CONFIG, LOAD_WALLET, LOAD_WEB3 } from './types';
-// import * as rollup from '../utils/bundle-cli';
 const { readFile } = require('../utils/wallet-utils');
 const Web3 = require('web3');
 

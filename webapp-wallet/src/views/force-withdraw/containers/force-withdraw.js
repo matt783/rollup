@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { Form, Container, Button } from 'semantic-ui-react';
 import { forceWithdraw } from '../../../actions/forcewithdraw-metamask';
-import * as rollup from '../../../utils/bundle-cli';
+import * as rollup from '../../../utils/rollup-cli';
 import ButtonToActionsView from '../../../base-ui/button-actions-view';
 
 class ForceWithdraw extends Component {

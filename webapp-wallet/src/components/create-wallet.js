@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import {createRandomWallet, createWalletfromMnemonic, createWalletfromJson} from "../actions/create-actions";
 import { Button, Divider, Container, Form, Header } from 'semantic-ui-react';
-import * as rollup from '../utils/bundle-cli';
+import * as rollup from '../utils/rollup-cli';
 
 class CreateWallet extends Component {
 

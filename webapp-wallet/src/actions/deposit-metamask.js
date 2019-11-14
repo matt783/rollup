@@ -1,4 +1,4 @@
-import * as rollup from '../utils/bundle-cli';
+import * as rollup from '../utils/rollup-cli';
 const ethers = require('ethers');
 
 export const deposit = async (urlNode, addressSC, balance, tokenId, walletJson, password, ethAddress, abi, web3, account) => {
