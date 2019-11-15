@@ -35,7 +35,7 @@ contract("Operator", (accounts) => {
     const urlAdminOp = "http://127.0.0.1:9000";
 
     //Id operator
-    const id = 1;
+    const id = 0;
 
     // Operator wallet
     const passphrase = "passphrase";

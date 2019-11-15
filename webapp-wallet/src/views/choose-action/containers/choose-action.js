@@ -43,7 +43,7 @@ class ChooseAction extends Component {
           marginBottom: 0,
           marginTop: '1em',
         }}>
-          Choose Action
+          Rollup Network
         </Header>
         <MenuActions 
           handleItemClick = {this.handleItemClick}

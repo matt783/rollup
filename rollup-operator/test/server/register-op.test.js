@@ -88,4 +88,16 @@ contract("Operator", (accounts) => {
         await addBlocks(blockPerEra); // move to era 2
         await timeout(5000); // wait time to add all blocks
     });
+
+    it("Should set pool conversion table", async () => {
+        const conversion = {
+            0: {
+                token: "ROLL",
+                price: 20,
+                decimals: 18
+            }
+        };
+        const res = await cliAdminOp.setConversion(conversion);
+        console.log(res);
+    });
 });

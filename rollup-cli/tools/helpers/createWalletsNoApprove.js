@@ -25,7 +25,7 @@ async function createWalletsNoApprove(numWallets, amountToken, passString, addre
         throw Error("Account funder don't have enough tokens");
     }
 
-    for (let i = 1; i <= numWallets; i++) {
+    for (let i = 4; i <= numWallets + 4; i++) {
         if (mnemonic) {
             wallets[i] = await Wallet.fromMnemonic(mnemonic, i - 1);
         } else {
