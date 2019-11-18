@@ -1,6 +1,5 @@
 import * as CONSTANTS from './constants';
 const Web3 = require('web3');
-const { readFile } = require('../../utils/wallet-utils');
 
 function loadWeb3() {
   return {
@@ -64,15 +63,15 @@ function loadFilesError(error) {
   }
 }
 
-export function handleLoadFiles(walletFile, configFile, abiFile, abiTokensFile) {
+export function handleLoadFiles(wallet, config, abiRollup, abiTokens) {
   return function(dispatch) {
     dispatch(loadFiles());
     return new Promise( async (resolve) => {
       try {
-        const wallet = await readFile(walletFile);
-        const config = await readFile(configFile);
-        const abiRollup = await readFile(abiFile);
-        const abiTokens = await readFile(abiTokensFile);
+        localStorage.setItem('wallet', JSON.stringify(wallet));
+        localStorage.setItem('config', JSON.stringify(config));
+        localStorage.setItem('abiRollup', JSON.stringify(abiRollup));
+        localStorage.setItem('abiTokens', JSON.stringify(abiTokens));
         dispatch(loadFilesSuccess(wallet, config, abiRollup, abiTokens));
         resolve({wallet, config, abiRollup, abiTokens});
       } catch(error) {

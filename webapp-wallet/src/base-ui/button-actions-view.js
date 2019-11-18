@@ -8,6 +8,13 @@ class ButtonToActionsView extends Component {
         return (
           <Menu secondary>
             <Menu.Menu position='right'>
+              <Link to={'/'}>
+                <Menu.Item
+                  name="initView"
+                >
+                  <Icon name="upload"/>Import another wallet
+                </Menu.Item>
+              </Link>
               <Link to={'/actions'}>
                 <Menu.Item
                   name="actions"

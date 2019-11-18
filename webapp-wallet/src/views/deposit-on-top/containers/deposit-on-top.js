@@ -1,10 +1,11 @@
 import React, { Component } from 'react';
-// import { depositOnTop } from '../actions/depositontop-actions';
-import { Form, Container, Button } from 'semantic-ui-react';
-import * as rollup from '../../../utils/rollup-cli';
-import { depositOnTop, approve } from '../../../actions/depositontop-metamask';
-import ButtonToActionsView from '../../../base-ui/button-actions-view';
+import { connect } from 'react-redux';
 
+import { Form, Container, Button, Message, Icon } from 'semantic-ui-react';
+/* import * as rollup from '../../../utils/rollup-cli';
+import { depositOnTop, approve } from '../../../actions/depositontop-metamask'; */
+import { handleSendDepositOnTop, handleSendDepositOnTopMetamask } from '../../../state/deposit-on-top-tx/actions';
+import ButtonToActionsView from '../../../base-ui/button-actions-view';
 class DepositOnTop extends Component {
   
   constructor(props) {
@@ -27,14 +28,14 @@ class DepositOnTop extends Component {
 
       const nodeEth = config.nodeEth;
       const addressSC = config.address;
-      const res = await rollup.onchain.depositOnTop.depositOnTop(nodeEth, addressSC, amount, tokenId, wallet, password, abiRollup, idTo);
+      const res = await this.props.handleSendDepositOnTop(nodeEth, addressSC, amount, tokenId, wallet, password, abiRollup, idTo);
       console.log(res);
     } catch(error){
       console.log(error.message);
     }
   }
 
-  handleClick2 = async () => {
+  /* handleClick2 = async () => {
     try {
       const { wallet, config, abiRollup, web3 } = this.props;
 
@@ -51,8 +52,8 @@ class DepositOnTop extends Component {
     } catch(error){
       console.log(error.message);
     }
-  }
-
+  } */
+  
   handleClick3 = async () => {
     try {
       const { wallet, config, abiRollup, web3, abiTokens } = this.props;
@@ -66,11 +67,37 @@ class DepositOnTop extends Component {
       const nodeEth = config.nodeEth;
       const addressSC = config.address;
       const account = this.props.account;
-      await approve(addressTokens, abiTokens, web3, addressSC, amount, account);
-      const res = await depositOnTop(nodeEth, addressSC, amount, tokenId, wallet, password, abiRollup, idTo, web3, account);
+      const res = await this.props.handleSendDepositOnTopMetamask(nodeEth, addressSC, amount, tokenId, wallet, password, abiRollup, idTo, web3, account, addressTokens, abiTokens);
       console.log("RES: ", res);
     } catch(error){
       console.log(error.message);
+    }
+  }
+
+  getMessage = () => {
+    if (this.props.isLoadingDeposit === true) {
+      return <Message icon color='orange'>
+              <Icon name='circle notched' loading />
+              <Message.Content>
+                <Message.Header>Waiting for the transaction...</Message.Header>
+              </Message.Content>
+            </Message>;
+    } else if (this.props.errorDeposit !== '') {
+      return <Message icon color='red'>
+              <Icon name='exclamation' />
+              <Message.Content>
+                <Message.Header>Error! {this.errorDeposit}</Message.Header>
+              </Message.Content>
+            </Message>;
+    } else if (this.props.successDeposit === true) {
+      return <Message icon color='green'>
+              <Icon name='check' />
+              <Message.Content>
+                <Message.Header>Transaction done!</Message.Header>
+              </Message.Content>
+            </Message>;
+    } else {
+      return '';
     }
   }
 
@@ -78,6 +105,7 @@ class DepositOnTop extends Component {
     return(
       <Container>
         <ButtonToActionsView/>
+        {this.getMessage()}
         <h1>Deposit On Top</h1>
         <Form>
           <Form.Field>
@@ -101,7 +129,7 @@ class DepositOnTop extends Component {
             <input type="text" ref={this.addressTokensRef}/>
           </Form.Field>
           <Button type="submit" onClick={this.handleClick}>Deposit</Button>
-          <Button type="submit" onClick={this.handleClick2}>Deposit With Metamask (No approve)</Button>
+          {/*<Button type="submit" onClick={this.handleClick2}>Deposit With Metamask (No approve)</Button>*/}
           <Button type="submit" onClick={this.handleClick3}>Deposit With Metamask (+ Approve)</Button>
         </Form>
         <br/>
@@ -110,4 +138,10 @@ class DepositOnTop extends Component {
   }
 }
 
-export default DepositOnTop;
+const mapStateToProps = state => ({
+  isLoadingDeposit: state.depositOnTopTx.isLoadingDeposit,
+  errorDeposit: state.depositOnTopTx.errorDeposit,
+  successDeposit: state.depositOnTopTx.successDeposit,
+})
+
+export default connect(mapStateToProps, { handleSendDepositOnTop, handleSendDepositOnTopMetamask })(DepositOnTop);

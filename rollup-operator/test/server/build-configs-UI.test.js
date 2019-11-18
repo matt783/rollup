@@ -17,9 +17,9 @@ const configTestPath = path.join(__dirname, "../config/test.json");
 const { Wallet } = require("../../../rollup-cli/src/wallet");
 const { createWallets } = require("../../../rollup-cli/tools/helpers/createWallets");
 const { createWalletsNoApprove } = require("../../../rollup-cli/tools/helpers/createWalletsNoApprove");
-const walletsPath = path.join(__dirname, "../../../webapp-wallet/test/wallets");
-const abiRollupPath = path.join(__dirname, "../../../webapp-wallet/test/rollupabi.json");
-const tokensPath = path.join(__dirname, "../../../webapp-wallet/test/tokensabi.json");
+const walletsPath = path.join(__dirname, "../../../webapp-wallet/src/test/wallets");
+const abiRollupPath = path.join(__dirname, "../../../webapp-wallet/src/test/rollupabi.json");
+const tokensPath = path.join(__dirname, "../../../webapp-wallet/src/test/tokensabi.json");
 const mnemonic = "hard crop gallery regular neglect weekend fatal stamp eight flock inch doll";
 const passString = "foo";
 

@@ -3,6 +3,7 @@ import './App.css';
 import { Route } from 'react-router-dom';
 import { connect } from 'react-redux';
 
+import InfoWallet from "./base-ui/info-wallet";
 import InitView from "./views/init-view";
 import CreateWallet from "./views/create-wallet";
 import Config from "./views/create-config";
@@ -15,7 +16,7 @@ import DepositOnTop from "./views/deposit-on-top";
 import ForceWithdraw from "./views/force-withdraw";
 import ChooseAction from "./views/choose-action/containers/choose-action";
 
-import { handleWeb3Load } from "./state/general/actions";
+import { handleWeb3Load, handleLoadFiles } from "./state/general/actions";
 
 class App extends Component {
   // componentDidCatch
@@ -29,10 +30,20 @@ class App extends Component {
       window.ethereum.on('accountsChanged', (accounts) => {
           this.setState({account: accounts[0]}, () => console.log(this.state.account));
       })
+      if(localStorage.getItem('wallet') !== null){
+        const wallet = localStorage.getItem('wallet');
+        const config = localStorage.getItem('config');
+        const abiRollup = localStorage.getItem('abiRollup');
+        const abiTokens = localStorage.getItem('abiTokens');
+        await this.props.handleLoadFiles(JSON.parse(wallet), JSON.parse(config), JSON.parse(abiRollup), JSON.parse(abiTokens));
+      }
+  
     } catch (error) {
       console.log(error);
     }
   }
+
+  componen
 
   render(){
     return (
@@ -50,10 +61,19 @@ class App extends Component {
             <Config />
           }/>
           <Route exact path="/actions" render={() =>
-            <ChooseAction />
+            <div>
+              <ChooseAction 
+                wallet = {this.props.wallet}
+                account = {this.state.account} 
+              />
+            </div>
           }/>
           <Route exact path="/actions/deposit" render={() =>
             <div>
+              <InfoWallet 
+                wallet = {this.props.wallet} 
+                account = {this.state.account}
+              />
               <Deposit 
                 wallet = {this.props.wallet}
                 config = {this.props.config}
@@ -66,6 +86,10 @@ class App extends Component {
           }/>
           <Route exact path="/actions/depositontop" render={() =>
             <div>
+              <InfoWallet 
+                wallet = {this.props.wallet} 
+                account = {this.state.account}
+              />
               <DepositOnTop 
                 wallet = {this.props.wallet}
                 config = {this.props.config}
@@ -78,6 +102,10 @@ class App extends Component {
           }/>
           <Route exact path="/actions/transfer" render={() =>
             <div>
+              <InfoWallet 
+                wallet = {this.props.wallet} 
+                account = {this.state.account}
+              />
               <Transfer 
                 wallet = {this.props.wallet}
                 config = {this.props.config}
@@ -90,6 +118,10 @@ class App extends Component {
           }/>
           <Route exact path="/actions/depositandtransfer" render={() =>
             <div>
+              <InfoWallet 
+                wallet = {this.props.wallet} 
+                account = {this.state.account}
+              />
               <DepositAndTransfer 
                 wallet = {this.props.wallet}
                 config = {this.props.config}
@@ -102,6 +134,10 @@ class App extends Component {
           }/>
           <Route exact path="/actions/send" render={() =>
             <div>
+              <InfoWallet 
+                wallet = {this.props.wallet} 
+                account = {this.state.account}
+              />
               <Send 
                 wallet = {this.props.wallet}
                 config = {this.props.config}
@@ -111,6 +147,10 @@ class App extends Component {
           }/>
           <Route exact path="/actions/forcewithdraw" render={() =>
             <div>
+              <InfoWallet 
+                wallet = {this.props.wallet} 
+                account = {this.state.account}
+              />
               <ForceWithdraw 
                 wallet = {this.props.wallet}
                 config = {this.props.config}
@@ -122,6 +162,10 @@ class App extends Component {
           }/>
           <Route exact path="/actions/withdraw" render={() =>
             <div>
+              <InfoWallet 
+                wallet = {this.props.wallet} 
+                account = {this.state.account}
+              />
               <Withdraw 
                 wallet = {this.props.wallet}
                 config = {this.props.config}
@@ -146,4 +190,4 @@ const mapStateToProps = state => ({
 })
 
 
-export default connect(mapStateToProps, { handleWeb3Load })(App);
+export default connect(mapStateToProps, { handleWeb3Load, handleLoadFiles })(App);

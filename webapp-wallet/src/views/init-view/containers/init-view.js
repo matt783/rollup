@@ -6,7 +6,12 @@ import { handleLoadFiles } from '../../../state/general/actions';
 
 import ModalImport from '../components/modal-import';
 import ButtonGroupInit from '../components/button-group-init';
-import { FILES, FILE_STATE } from '../../../constants';
+import { FILE_STATE } from '../../../constants';
+
+const { readFile } = require('../../../utils/wallet-utils');
+const config = require('../../../test/config.json');
+const abiRollup = require('../../../test/rollupabi.json');
+const abiTokens = require('../../../test/tokensabi.json');
 
 class InitView extends Component {
 
@@ -19,14 +24,20 @@ class InitView extends Component {
     ok: FILE_STATE.EMPTY,
   }
 
-  componentWillUnmount() {
-    if(this.state.ok === FILE_STATE.UPLOADED){
-      this.props.handleLoadFiles(this.state.wallet, this.state.config, this.state.abiRollup, this.state.abiTokens);
+  async componentWillUnmount() {
+    try {
+      if(this.state.ok === FILE_STATE.UPLOADED){
+        const walletJson =  await readFile(this.state.wallet);
+        await this.props.handleLoadFiles(walletJson, config, abiRollup, abiTokens);
+      }
+    } catch(err) {
+      console.log(err);
     }
+
   }
 
   handleClick = async () => {
-    if (this.state.wallet === '' || this.state.config === '' || this.state.abiRollup === '') {
+    if (this.state.wallet === '' || config === undefined || abiRollup === undefined || abiTokens === undefined) {
       console.log("Incorrect File");
       this.setState({ok: FILE_STATE.ERROR});
     } else {
@@ -35,18 +46,10 @@ class InitView extends Component {
     this.setState({ open: false });
   }
 
-  handleChange = (e, id) => {
+  handleChange = (e) => {
     e.preventDefault();
     const files = e.target.files;
-    if(id === FILES.WALLET) {
-      this.setState({wallet: files[0]});
-    } else if (id === FILES.CONFIG) {
-      this.setState({config: files[0]});
-    } else if (id === FILES.ABI) {
-      this.setState({abiRollup: files[0]});
-    } else if (id === FILES.ABI_TOKENS) {
-      this.setState({abiTokens: files[0]});
-    }
+    this.setState({wallet: files[0]});
   }
 
   renderRedirect = () => {

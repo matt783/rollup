@@ -48,13 +48,13 @@ function general(state = initialState, action) {
             abiTokens: action.payload.abiTokens,
             isLoadingFiles: false,
             errorFiles: ''
-          }
+          };
     case CONSTANTS.LOAD_FILES_ERROR:
           return {
             ...state,
             isLoadingFiles: false,
             errorFiles: action.error,
-          }
+          };
     default:
       return state;
   }

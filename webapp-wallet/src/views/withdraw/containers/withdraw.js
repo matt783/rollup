@@ -1,7 +1,11 @@
 import React, { Component } from 'react';
-import { Form, Container, Button } from 'semantic-ui-react';
-import * as rollup from '../../../utils/rollup-cli';
-import { withdraw } from '../../../actions/withdraw-metamask';
+import { connect } from 'react-redux';
+
+import { Form, Container, Button, Message, Icon } from 'semantic-ui-react';
+/* import * as rollup from '../../../utils/rollup-cli';
+import { withdraw } from '../../../actions/withdraw-metamask';*/
+import { handleSendWithdraw, handleSendWithdrawMetamask } from '../../../state/withdraw-tx/actions';
+
 import ButtonToActionsView from '../../../base-ui/button-actions-view';
 
 class Withdraw extends Component {
@@ -24,7 +28,7 @@ class Withdraw extends Component {
     const nodeEth = config.nodeEth;
     const addressSC = config.address;
     const operator = config.operator;
-    const res = await rollup.onchain.withdraw.withdraw(nodeEth, addressSC, amount, wallet, password, abiRollup, operator, idFrom, numExitRoot);
+    const res = await this.props.handleSendWithdraw(nodeEth, addressSC, amount, wallet, password, abiRollup, operator, idFrom, numExitRoot);
     console.log(res);
   }
 
@@ -38,14 +42,42 @@ class Withdraw extends Component {
     const nodeEth = config.nodeEth;
     const addressSC = config.address;
     const operator = config.operator;
-    const res = await withdraw(nodeEth, addressSC, amount, wallet, password, abiRollup, operator, idFrom, numExitRoot, web3, account);
+    const res = await this.props.handleSendWithdrawMetamask(nodeEth, addressSC, amount, wallet, password, abiRollup, operator, idFrom, numExitRoot, web3, account);
     console.log(res);
+  }
+
+  getMessage = () => {
+    if (this.props.isLoadingWithdraw === true) {
+      return <Message icon color='orange'>
+              <Icon name='circle notched' loading />
+              <Message.Content>
+                <Message.Header>Waiting for the transaction...</Message.Header>
+              </Message.Content>
+            </Message>;
+    } else if (this.props.errorWithdraw !== '') {
+      return <Message icon color='red'>
+              <Icon name='exclamation' />
+              <Message.Content>
+                <Message.Header>Error! {this.errorWithdraw}</Message.Header>
+              </Message.Content>
+            </Message>;
+    } else if (this.props.successWithdraw === true) {
+      return <Message icon color='green'>
+              <Icon name='check' />
+              <Message.Content>
+                <Message.Header>Transaction done!</Message.Header>
+              </Message.Content>
+            </Message>;
+    } else {
+      return '';
+    }
   }
 
   render() {
     return(
       <Container>
         <ButtonToActionsView/>
+        {this.getMessage()}
         <h1>Withdraw</h1>
         <Form>
           <Form.Field>
@@ -73,4 +105,11 @@ class Withdraw extends Component {
   }
 }
 
-export default Withdraw;
+
+const mapStateToProps = state => ({
+  isLoadingWithdraw: state.withdrawTx.isLoadingWithdraw,
+  errorWithdraw: state.withdrawTx.errorWithdraw,
+  successWithdraw: state.withdrawTx.successWithdraw,
+})
+
+export default connect(mapStateToProps, { handleSendWithdraw, handleSendWithdrawMetamask })(Withdraw);

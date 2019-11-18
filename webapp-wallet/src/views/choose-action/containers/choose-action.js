@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 import MenuActions from '../components/menu-actions';
 import MenuOnchain from '../components/menu-onchain';
 import MenuOffchain from '../components/menu-offchain';
+import InfoWallet from '../../../base-ui/info-wallet';
 
 class ChooseAction extends Component {
   state = { activeItem: '' }
@@ -24,8 +25,19 @@ class ChooseAction extends Component {
     }
     return (
       <Container textAlign="center">
+        <InfoWallet 
+          wallet = {this.props.wallet}
+          account = {this.props.account}  
+        />
         <Menu secondary>
           <Menu.Menu position='right'>
+          <Link to={'/'}>
+            <Menu.Item
+              name="initView"
+            >
+              <Icon name="upload"/>Import another wallet
+            </Menu.Item>
+          </Link>
             <Link to={'/'}>
               <Menu.Item
                 name="initView"

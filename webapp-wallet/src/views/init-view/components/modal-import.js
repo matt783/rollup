@@ -1,6 +1,5 @@
 import React,{Component} from 'react';
 import { Button, Modal, Form, Icon} from 'semantic-ui-react';
-import { FILES } from '../../../constants';
 
 class ModalImport extends Component {
 
@@ -12,19 +11,7 @@ class ModalImport extends Component {
               <Form>
                 <Form.Field>
                   <label>Wallet</label>
-                  <input type="file" onChange={(e) => this.props.handleChange(e, FILES.WALLET)}/>
-                </Form.Field>
-                <Form.Field>
-                  <label>Rollup ABI</label>
-                  <input type="file" onChange={(e) => this.props.handleChange(e, FILES.ABI)}/>
-                </Form.Field>
-                <Form.Field>
-                  <label>Config File</label>
-                  <input type="file" onChange={(e) => this.props.handleChange(e, FILES.CONFIG)}/>
-                </Form.Field>
-                <Form.Field>
-                  <label>Tokens ABI</label>
-                  <input type="file" onChange={(e) => this.props.handleChange(e, FILES.ABI_TOKENS)}/>
+                  <input type="file" onChange={(e) => this.props.handleChange(e)}/>
                 </Form.Field>
               </Form>
             </Modal.Content>
