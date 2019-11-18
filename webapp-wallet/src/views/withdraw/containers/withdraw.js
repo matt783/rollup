@@ -12,6 +12,9 @@ class Withdraw extends Component {
   
   constructor(props) {
     super(props);
+    this.state = {
+      res: '',
+    }
     this.amountRef = React.createRef();
     this.passwordRef = React.createRef();
     this.idFromRef = React.createRef();
@@ -43,6 +46,7 @@ class Withdraw extends Component {
     const addressSC = config.address;
     const operator = config.operator;
     const res = await this.props.handleSendWithdrawMetamask(nodeEth, addressSC, amount, wallet, password, abiRollup, operator, idFrom, numExitRoot, web3, account);
+    this.setState({res});
     console.log(res);
   }
 
@@ -66,6 +70,7 @@ class Withdraw extends Component {
               <Icon name='check' />
               <Message.Content>
                 <Message.Header>Transaction done!</Message.Header>
+                View on <a href={`https://etherscan.io/tx/${this.state.res.transactionHash}`}> Etherscan </a>
               </Message.Content>
             </Message>;
     } else {

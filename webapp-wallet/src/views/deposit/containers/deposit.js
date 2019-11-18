@@ -12,6 +12,9 @@ class Deposit extends Component {
   
   constructor(props) {
     super(props);
+    this.state = {
+      res: '',
+    }
     this.amountRef = React.createRef();
     this.passwordRef = React.createRef();
     this.tokenIdRef = React.createRef();
@@ -62,6 +65,7 @@ class Deposit extends Component {
       /*await approve(addressTokens, abiTokens, web3, addressSC, amount, account);
       const res = await deposit(nodeEth, addressSC, amount, tokenId, wallet, password, undefined, abiRollup, web3, account);*/
       const res = await this.props.handleSendDepositMetamask(nodeEth, addressSC, amount, tokenId, wallet, password, undefined, abiRollup, web3, account, addressTokens, abiTokens);
+      this.setState({res});
       console.log("RES: ", res);
     } catch(error){
       console.log(error.message);
@@ -88,6 +92,7 @@ class Deposit extends Component {
               <Icon name='check' />
               <Message.Content>
                 <Message.Header>Transaction done!</Message.Header>
+                View on <a href={`https://etherscan.io/tx/${this.state.res.transactionHash}`}> Etherscan </a>
               </Message.Content>
             </Message>;
     } else {

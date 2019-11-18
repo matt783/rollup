@@ -11,6 +11,9 @@ class ForceWithdraw extends Component {
   
   constructor(props) {
     super(props);
+    this.state = {
+      res: '',
+    }
     this.amountRef = React.createRef();
     this.passwordRef = React.createRef();
     this.tokenIdRef = React.createRef();
@@ -42,6 +45,7 @@ class ForceWithdraw extends Component {
     const account = this.props.account;
 
     const res = await this.props.handleSendForcewithdrawMetamask(nodeEth, addressSC, amount, wallet, password, abiRollup, idFrom, web3, account);
+    this.setState({res});
     console.log(res);
   }
 
@@ -58,6 +62,7 @@ class ForceWithdraw extends Component {
               <Icon name='exclamation' />
               <Message.Content>
                 <Message.Header>Error! {this.errorForcewithdraw}</Message.Header>
+                View on <a href={`https://etherscan.io/tx/${this.state.res.transactionHash}`}> Etherscan </a>
               </Message.Content>
             </Message>;
     } else if (this.props.successForcewithdraw === true) {

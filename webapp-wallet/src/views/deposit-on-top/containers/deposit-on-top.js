@@ -10,6 +10,9 @@ class DepositOnTop extends Component {
   
   constructor(props) {
     super(props);
+    this.state = {
+      res: '',
+    }
     this.amountRef = React.createRef();
     this.passwordRef = React.createRef();
     this.tokenIdRef = React.createRef();
@@ -68,6 +71,7 @@ class DepositOnTop extends Component {
       const addressSC = config.address;
       const account = this.props.account;
       const res = await this.props.handleSendDepositOnTopMetamask(nodeEth, addressSC, amount, tokenId, wallet, password, abiRollup, idTo, web3, account, addressTokens, abiTokens);
+      this.setState({res});
       console.log("RES: ", res);
     } catch(error){
       console.log(error.message);
@@ -94,6 +98,7 @@ class DepositOnTop extends Component {
               <Icon name='check' />
               <Message.Content>
                 <Message.Header>Transaction done!</Message.Header>
+                View on <a href={`https://etherscan.io/tx/${this.state.res.transactionHash}`}> Etherscan </a>
               </Message.Content>
             </Message>;
     } else {
