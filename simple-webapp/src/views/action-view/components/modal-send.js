@@ -39,7 +39,7 @@ class ModalSend extends Component {
       const fee = parseInt(this.feeRef.current.value);
       const operator = config.operator;
       const idFrom = parseInt(this.idFromRef.current.value);
-  
+      console.log(idTo);
       const res = await this.props.handleSendSend(operator, idTo, amount, wallet, password, tokenId, fee, idFrom);
       console.log(res);
     }
@@ -74,7 +74,7 @@ class ModalSend extends Component {
               </Form>
             </Modal.Content>
             <Modal.Actions>
-              <Button color="blue">
+              <Button color="blue" onClick={this.handleClick}>
                 <Icon name="arrow right"/>Send
               </Button>
               <Button color="red" onClick={this.props.toggleModalSend}>

@@ -95,15 +95,24 @@ function sendSendError(error) {
 
 export function handleSendSend(operator, idTo, amount, wallet, password, tokenId, fee, idFrom) {
   return function(dispatch) {
-    dispatch(sendSend());;
+    dispatch(sendSend());
     return new Promise(async (resolve) => {
       try {
+        console.log(operator)
+        console.log(idTo)
+        console.log(amount)
+        console.log(wallet)
+        console.log(password)
+        console.log(tokenId)
+        console.log(fee)
+        console.log(idFrom)
+
         const res = await rollup.offchain.send.send(operator, idTo, amount, wallet, password, tokenId, fee, idFrom);
         dispatch(sendSendSuccess());
         resolve(res);
       } catch(error) {
         dispatch(sendSendError(error.message));
-        resolve(error.message)
+        resolve(error.message);
       }
     })
   }

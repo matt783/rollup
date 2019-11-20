@@ -36,3 +36,42 @@ export function handleLoadWallet(walletFile, password) {
     })
   }
 }
+
+function loadFiles() {
+  return {
+    type: CONSTANTS.LOAD_FILES,
+  };
+}
+
+function loadFilesSuccess(config, abiRollup, abiTokens) {
+  return {
+    type: CONSTANTS.LOAD_FILES_SUCCESS,
+    payload: { config, abiRollup, abiTokens },
+    error: '',
+  }
+}
+
+function loadFilesError(error) {
+  return {
+    type: CONSTANTS.LOAD_FILES_ERROR,
+    error,
+  }
+}
+
+export function handleLoadFiles(config, abiRollup, abiTokens) {
+  return function(dispatch) {
+    console.log("LOAD")
+    dispatch(loadFiles());
+    return new Promise( async (resolve) => {
+      try {
+        console.log("LOADSUC")
+        dispatch(loadFilesSuccess(config, abiRollup, abiTokens));
+        console.log("LOADSUC2")
+        resolve({config, abiRollup, abiTokens});
+      } catch(error) {
+        console.log("LOADERR")
+        dispatch(loadFilesError(error));
+      }
+    })
+  }
+}
