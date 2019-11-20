@@ -16,7 +16,7 @@ class InitView extends Component {
       super(props);
       this.passwordRef = React.createRef();
       this.fileNameRef = React.createRef();
-      this. state = {
+      this.state = {
         isLoaded: false,
         modalImport: false,
         modalCreate: false,
