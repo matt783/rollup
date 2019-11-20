@@ -1,5 +1,5 @@
 import * as CONSTANTS from './constants';
-import * as rollup from '../../utils/bundle-cli';
+// import * as rollup from '../../utils/bundle-cli';
 const { readFile } = require('../../utils/utils');
 
 function loadWallet() {
