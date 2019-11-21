@@ -39,6 +39,18 @@ export function handleLoadWallet(walletFile, password) {
   }
 }
 
+export function resetWallet() {
+  return function(dispatch) {
+    return new Promise( async () => {
+      try {
+        dispatch(loadWalletSuccess('',''));
+      } catch(error) {
+        dispatch(loadWalletError(error));
+      }
+    })
+  }
+}
+
 function loadFiles() {
   return {
     type: CONSTANTS.LOAD_FILES,

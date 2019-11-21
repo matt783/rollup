@@ -37,7 +37,7 @@ class ModalSend extends Component {
       const fee = parseInt(this.feeRef.current.value);
       const operator = config.operator;
       const idFrom = parseInt(this.idFromRef.current.value);
-
+      this.props.toggleModalSend();
       const res = await this.props.handleSendSend(operator, idTo, amount, wallet, password, tokenId, fee, idFrom);
       console.log(res);
     }

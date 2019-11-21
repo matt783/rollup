@@ -10,7 +10,6 @@ class ModalDeposit extends Component {
       super(props);
       this.amountRef = React.createRef();
       this.tokenIdRef = React.createRef();
-      this.addressTokensRef = React.createRef();
     }
 
     handeClick = async () => {
@@ -20,6 +19,7 @@ class ModalDeposit extends Component {
         const tokenId = parseInt(this.tokenIdRef.current.value);
         const nodeEth = config.nodeEth;
         const addressSC = config.address;
+        this.props.toggleModalDeposit();
         const res = await this.props.handleSendDeposit(nodeEth, addressSC, amount, tokenId, wallet, password, undefined, abiRollup);
         console.log(res);
       } catch(error){
@@ -40,10 +40,6 @@ class ModalDeposit extends Component {
                 <Form.Field>
                   <label>Token ID</label>
                   <input type="text" ref={this.tokenIdRef}/>
-                </Form.Field>
-                <Form.Field>
-                  <label>Address Token SC</label>
-                  <input type="text" ref={this.addressTokensRef}/>
                 </Form.Field>
               </Form>
             </Modal.Content>

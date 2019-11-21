@@ -7,6 +7,7 @@ import InfoWallet from '../components/info-wallet';
 import ModalDeposit from '../components/modal-deposit';
 import ModalWithdraw from '../components/modal-withdraw';
 import ModalSend from '../components/modal-send';
+import MessageTx from '../components/message-tx';
 
 class ActionView extends Component {
 
@@ -37,6 +38,7 @@ class ActionView extends Component {
     return (
       <Container textAlign="center">
         <MenuBack />
+        <MessageTx />
         <Header
         as='h1'
         style={{
@@ -53,6 +55,7 @@ class ActionView extends Component {
         />
         <InfoWallet
           wallet = {this.props.wallet}
+          apiOperator = {this.props.apiOperator}
         />
         <ModalDeposit
           modalDeposit = {this.state.modalDeposit}
@@ -73,7 +76,8 @@ class ActionView extends Component {
 }
 
 const mapStateToProps = state => ({
-  wallet: state.general.wallet
+  wallet: state.general.wallet,
+  apiOperator: state.general.apiOperator
 })
 
 export default connect(mapStateToProps, { })(ActionView);

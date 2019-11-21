@@ -1,7 +1,5 @@
 import React, { Component } from 'react';
-import { connect } from 'react-redux';
 import { Table, Button, Input, Container, Icon } from 'semantic-ui-react';
-// import { getBalance } from '../../../state/general/actions';
 
 class InfoWallet extends Component {
 
@@ -11,14 +9,42 @@ class InfoWallet extends Component {
     rollupTokens: 0,
   }
 
-  componentDidMount() {
+  async componentDidMount() {
     try{
       if(this.props.wallet !== '' && this.state.address !== `0x${this.props.wallet.ethWallet.address}`){
         this.setState({address: `0x${this.props.wallet.ethWallet.address}`});
-        // this.props.getBalance(this.props.wallet);
+        /*const filters = {
+          ethAddr: `0x${this.props.wallet.ethWallet.address}`
+        }
+        const infoAccount = await this.props.apiOperator.getAccounts(filters);
+        let amount = 0;
+        let ids = [];
+        for (let id in infoAccount.data) {
+          ids.push(infoAccount.data[id].idx)
+          amount = amount + parseInt(infoAccount.data[id].amount);
+        }
+        this.setState({rollupTokens: amount})*/
       }
     }catch(e){
         console.log(e);
+    }
+  }
+
+  async componentDidUpdate() {
+    try {
+      if(this.props.wallet !== '') {
+        const filters = {
+          ethAddr: `0x${this.props.wallet.ethWallet.address}`
+        }
+        const infoAccount = await this.props.apiOperator.getAccounts(filters);
+        let amount = 0;
+        for (let id in infoAccount.data) {
+          amount = amount + parseInt(infoAccount.data[id].amount);
+        }
+        this.setState({rollupTokens: amount});
+      }
+    }catch (err) {
+        console.log(err);
     }
   }
 
@@ -100,4 +126,4 @@ class InfoWallet extends Component {
   }
 }
 
-export default /*connect(null, { getBalance })*/(InfoWallet);
+export default InfoWallet;

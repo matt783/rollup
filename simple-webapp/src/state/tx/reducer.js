@@ -9,10 +9,7 @@ const initialState = {
   errorWithdraw: '',
   isLoadingSend: false,
   successSend: false,
-  errorSend: '',
-  isLoadingSend0: false,
-  successSend0: false,
-  errorSend0: '',
+  errorSend: ''
 };
 
 function transactions(state = initialState, action) {
@@ -80,27 +77,6 @@ function transactions(state = initialState, action) {
               successSend: false,
               errorSend: action.error,
             };
-      case CONSTANTS.SEND_SEND0:
-          return {
-              ...state,
-              isLoadingSend0: true,
-              successSend0: false,
-              errorSend0: '',
-            };
-      case CONSTANTS.SEND_SEND0_SUCCESS: 
-          return {
-                ...state,
-                isLoadingSend0: false,
-                successSend0: true,
-                errorSend0: '',
-              };
-      case CONSTANTS.SEND_SEND0_ERROR:
-          return {
-                ...state,
-                isLoadingSend0: false,
-                successSend0: false,
-                errorSend0: action.error,
-              }; 
       default:
           return state;
   }
