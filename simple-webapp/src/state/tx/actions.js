@@ -59,7 +59,7 @@ function sendWithdrawError(error) {
 
 export function handleSendWithdraw(nodeEth, addressSC, amount, wallet, password, abiRollup, operator, idFrom, numExitRoot) {
   return function(dispatch) {
-    dispatch(sendWithdraw());;
+    dispatch(sendWithdraw());
     return new Promise(async (resolve) => {
       try {
         const res = await rollup.onchain.withdraw.withdraw(nodeEth, addressSC, amount, wallet, password, abiRollup, operator, idFrom, numExitRoot);
@@ -98,15 +98,6 @@ export function handleSendSend(operator, idTo, amount, wallet, password, tokenId
     dispatch(sendSend());
     return new Promise(async (resolve) => {
       try {
-        console.log(operator)
-        console.log(idTo)
-        console.log(amount)
-        console.log(wallet)
-        console.log(password)
-        console.log(tokenId)
-        console.log(fee)
-        console.log(idFrom)
-
         const res = await rollup.offchain.send.send(operator, idTo, amount, wallet, password, tokenId, fee, idFrom);
         dispatch(sendSendSuccess());
         resolve(res);

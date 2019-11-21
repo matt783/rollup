@@ -32,6 +32,8 @@ function general(state = initialState, action) {
       return {
         ...state,
         isLoadingWallet: false,
+        wallet: '',
+        password: '',
         errorWallet: action.error,
       }
     case CONSTANTS.LOAD_FILES:

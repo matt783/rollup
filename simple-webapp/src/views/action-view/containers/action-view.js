@@ -1,4 +1,5 @@
 import React,{Component} from 'react';
+import { connect } from 'react-redux';
 import { Header, Container, Divider } from 'semantic-ui-react';
 import MenuBack from '../components/menu';
 import MenuActions from '../components/menu-actions';
@@ -50,7 +51,9 @@ class ActionView extends Component {
         <MenuActions
           handleItemClick = {this.handleItemClick}
         />
-        <InfoWallet />
+        <InfoWallet
+          wallet = {this.props.wallet}
+        />
         <ModalDeposit
           modalDeposit = {this.state.modalDeposit}
           toggleModalDeposit = {this.toggleModalDeposit}
@@ -69,5 +72,8 @@ class ActionView extends Component {
   }
 }
 
+const mapStateToProps = state => ({
+  wallet: state.general.wallet
+})
 
-export default ActionView;
+export default connect(mapStateToProps, { })(ActionView);

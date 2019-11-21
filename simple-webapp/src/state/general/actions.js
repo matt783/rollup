@@ -1,5 +1,5 @@
 import * as CONSTANTS from './constants';
-// import * as rollup from '../../utils/bundle-cli';
+import * as rollup from '../../utils/bundle-cli';
 const { readFile } = require('../../utils/utils');
 
 function loadWallet() {
@@ -29,6 +29,7 @@ export function handleLoadWallet(walletFile, password) {
     return new Promise( async () => {
       try {
         const wallet = await readFile(walletFile);
+        await rollup.wallet.Wallet.fromEncryptedJson(wallet, password);
         dispatch(loadWalletSuccess(wallet, password));
       } catch(error) {
         dispatch(loadWalletError(error));
@@ -60,16 +61,12 @@ function loadFilesError(error) {
 
 export function handleLoadFiles(config, abiRollup, abiTokens) {
   return function(dispatch) {
-    console.log("LOAD")
     dispatch(loadFiles());
     return new Promise( async (resolve) => {
       try {
-        console.log("LOADSUC")
         dispatch(loadFilesSuccess(config, abiRollup, abiTokens));
-        console.log("LOADSUC2")
         resolve({config, abiRollup, abiTokens});
       } catch(error) {
-        console.log("LOADERR")
         dispatch(loadFilesError(error));
       }
     })

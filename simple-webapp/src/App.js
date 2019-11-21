@@ -1,12 +1,13 @@
 import React, { Component } from "react";
 import { Route } from 'react-router-dom';
+import { connect } from 'react-redux';
 import './App.css';
 
 import InitView from "./views/init-view";
 import ActionView from "./views/action-view";
 
 class App extends Component {
-
+  
   render(){
     return (
       <React.Fragment>
@@ -40,6 +41,8 @@ class App extends Component {
   }
 }
 
+const mapStateToProps = state => ({
+  wallet: state.general.wallet,
+})
 
-
-export default App;
+export default connect(mapStateToProps, { })(App);;
