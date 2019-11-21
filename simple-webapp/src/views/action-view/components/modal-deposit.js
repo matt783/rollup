@@ -9,16 +9,14 @@ class ModalDeposit extends Component {
     constructor(props) {
       super(props);
       this.amountRef = React.createRef();
-      this.passwordRef = React.createRef();
       this.tokenIdRef = React.createRef();
       this.addressTokensRef = React.createRef();
     }
 
     handeClick = async () => {
       try {
-        const { wallet, config, abiRollup } = this.props;
+        const { wallet, config, abiRollup, password } = this.props;
         const amount = parseInt(this.amountRef.current.value);
-        const password = this.passwordRef.current.value;
         const tokenId = parseInt(this.tokenIdRef.current.value);
         const nodeEth = config.nodeEth;
         const addressSC = config.address;
@@ -38,10 +36,6 @@ class ModalDeposit extends Component {
                 <Form.Field>
                   <label>Amount</label>
                   <input type="text" ref={this.amountRef}/>
-                </Form.Field>
-                <Form.Field>
-                  <label>Password</label>
-                  <input type="password" ref={this.passwordRef}/>
                 </Form.Field>
                 <Form.Field>
                   <label>Token ID</label>
@@ -69,7 +63,8 @@ class ModalDeposit extends Component {
 const mapStateToProps = state => ({
   wallet: state.general.wallet,
   config: state.general.config,
-  abiRollup: state.general.abiRollup
+  abiRollup: state.general.abiRollup,
+  password: state.general.password
 })
 
 export default connect(mapStateToProps, { handleSendDeposit })(ModalDeposit);

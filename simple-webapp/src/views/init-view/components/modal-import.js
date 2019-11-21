@@ -1,7 +1,15 @@
 import React,{Component} from 'react';
-import { Button, Modal, Form, Icon} from 'semantic-ui-react';
+import { Button, Modal, Form, Icon, Message} from 'semantic-ui-react';
 
 class ModalImport extends Component {
+
+    isLoading = () => {
+      if(this.props.isLoadingWallet === true) {
+        return <Message warning><Icon name='circle notched' loading />We are checking your wallet...</Message>
+      } else if (this.props.errorWallet !== '') {
+        return <Message error><Icon name='close'/>Invalid Wallet or Password</Message>
+      }
+    }
 
     render() {
         return (
@@ -18,6 +26,7 @@ class ModalImport extends Component {
                   <input type="password" ref={this.props.passwordRef}/>
                 </Form.Field>
               </Form>
+              {this.isLoading()}
             </Modal.Content>
             <Modal.Actions>
               <Button color="blue" onClick={this.props.handleClickImport}>

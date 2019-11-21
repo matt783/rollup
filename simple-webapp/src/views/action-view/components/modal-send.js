@@ -23,23 +23,21 @@ class ModalSend extends Component {
       super(props);
       this.idToRef = React.createRef();
       this.amountRef = React.createRef();
-      this.passwordRef = React.createRef();
       this.tokenIdRef = React.createRef();
       this.feeRef = React.createRef();
       this.idFromRef = React.createRef();
     }
   
     handleClick = async () => {
-      const { wallet, config } = this.props;
+      const { wallet, config, password } = this.props;
   
       const idTo = parseInt(this.idToRef.current.value);
       const amount = parseInt(this.amountRef.current.value);
-      const password = this.passwordRef.current.value;
       const tokenId = parseInt(this.tokenIdRef.current.value);
       const fee = parseInt(this.feeRef.current.value);
       const operator = config.operator;
       const idFrom = parseInt(this.idFromRef.current.value);
-      console.log(idTo);
+
       const res = await this.props.handleSendSend(operator, idTo, amount, wallet, password, tokenId, fee, idFrom);
       console.log(res);
     }
@@ -58,10 +56,6 @@ class ModalSend extends Component {
                 <Form.Field>
                   <label>Amount</label>
                   <input type="text" ref={this.amountRef}/>
-                </Form.Field>
-                <Form.Field>
-                  <label>Password</label>
-                  <input type="password" ref={this.passwordRef}/>
                 </Form.Field>
                 <Form.Field>
                   <label>Token ID</label>
@@ -88,7 +82,8 @@ class ModalSend extends Component {
 
 const mapStateToProps = state => ({
   wallet: state.general.wallet,
-  config: state.general.config
+  config: state.general.config,
+  password: state.general.password,
 })
 
 export default connect(mapStateToProps, { handleSendSend })(ModalSend);

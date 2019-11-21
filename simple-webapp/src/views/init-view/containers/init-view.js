@@ -29,6 +29,12 @@ class InitView extends Component {
       }
     }
 
+    componentDidUpdate = () => {
+      if(this.props.isLoadingWallet === false && this.props.wallet !== '') {
+        this.setState({isLoaded: true, modalImport: false});
+      }
+    }
+
     handleChangeWallet = (e) => {
       e.preventDefault();
       const files = e.target.files;
@@ -37,11 +43,15 @@ class InitView extends Component {
 
     handleClickImport = async () => {
       try {
-        this.props.handleLoadWallet(this.state.walletImport, this.passwordRef.current.value);
-        this.props.handleLoadFiles(config, abiRollup, abiTokens);
-        this.setState({ modalImport: false, isLoaded: true });
+        if(this.state.walletImport === '' || this.passwordRef.current.value === '') {
+          console.log(this.passwordRef.current.value)
+          throw new Error("Incorrect wallet or password");
+        } else {
+          this.props.handleLoadWallet(this.state.walletImport, this.passwordRef.current.value);
+          this.props.handleLoadFiles(config, abiRollup, abiTokens);
+        }
       } catch (err) {
-        console.log(err);
+        console.log(err.message);
       }
     }
 
@@ -101,6 +111,8 @@ class InitView extends Component {
               handleChangeWallet = {this.handleChangeWallet}
               handleClickImport = {this.handleClickImport}
               passwordRef = {this.passwordRef}
+              isLoadingWallet = {this.props.isLoadingWallet}
+              errorWallet = {this.props.errorWallet}
             />
             {this.renderRedirect()}
           </Container>
@@ -108,4 +120,11 @@ class InitView extends Component {
     }
 }
 
-export default connect(null, { handleLoadWallet, handleLoadFiles })(InitView);
+const mapStateToProps = state => ({
+  isLoadingWallet: state.general.isLoadingWallet,
+  wallet: state.general.wallet,
+  errorWallet: state.general.errorWallet,
+})
+
+
+export default connect(mapStateToProps, { handleLoadWallet, handleLoadFiles })(InitView);
