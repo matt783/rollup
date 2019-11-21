@@ -7,7 +7,7 @@ import ModalImport from '../components/modal-import';
 import ModalCreate from '../components/modal-create';
 
 import * as rollup from '../../../utils/bundle-cli';
-import { handleLoadWallet, handleLoadFiles } from '../../../state/general/actions';
+import { handleLoadWallet, handleLoadFiles, handleLoadOperator } from '../../../state/general/actions';
 const FileSaver = require('file-saver');
 
 const config = require('../../../test/config.json');
@@ -49,6 +49,7 @@ class InitView extends Component {
         } else {
           this.props.handleLoadWallet(this.state.walletImport, this.passwordRef.current.value);
           this.props.handleLoadFiles(config, abiRollup, abiTokens);
+          this.props.handleLoadOperator(config);
         }
       } catch (err) {
         console.log(err.message);
@@ -127,4 +128,4 @@ const mapStateToProps = state => ({
 })
 
 
-export default connect(mapStateToProps, { handleLoadWallet, handleLoadFiles })(InitView);
+export default connect(mapStateToProps, { handleLoadWallet, handleLoadFiles, handleLoadOperator })(InitView);

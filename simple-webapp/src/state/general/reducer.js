@@ -10,6 +10,9 @@ const initialState = {
   config: '',
   abiRollup: '',
   abiTokens: '',
+  isLoadingOp: false,
+  apiOperator: '',
+  errorOp: '',
 };
 
 function general(state = initialState, action) {
@@ -57,6 +60,25 @@ function general(state = initialState, action) {
           isLoadingFiles: false,
           errorFiles: action.error,
       };
+      case CONSTANTS.LOAD_OPERATOR:
+        return {
+            ...state,
+            isLoadingOp: true,
+            errorOp: '',
+        }
+      case CONSTANTS.LOAD_OPERATOR_SUCCESS:
+        return {
+            ...state,
+            isLoadingOp: false,
+            apiOperator: action.payload,
+            errorOp: ''
+        };
+      case CONSTANTS.LOAD_OPERATOR_ERROR:
+        return {
+            ...state,
+            isLoadingOp: false,
+            errorOp: action.error,
+        };
     default:
       return state;
   }

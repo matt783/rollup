@@ -1,5 +1,7 @@
 import React, { Component } from 'react';
+import { connect } from 'react-redux';
 import { Table, Button, Input, Container, Icon } from 'semantic-ui-react';
+// import { getBalance } from '../../../state/general/actions';
 
 class InfoWallet extends Component {
 
@@ -13,6 +15,7 @@ class InfoWallet extends Component {
     try{
       if(this.props.wallet !== '' && this.state.address !== `0x${this.props.wallet.ethWallet.address}`){
         this.setState({address: `0x${this.props.wallet.ethWallet.address}`});
+        // this.props.getBalance(this.props.wallet);
       }
     }catch(e){
         console.log(e);
@@ -97,4 +100,4 @@ class InfoWallet extends Component {
   }
 }
 
-export default InfoWallet;
+export default /*connect(null, { getBalance })*/(InfoWallet);

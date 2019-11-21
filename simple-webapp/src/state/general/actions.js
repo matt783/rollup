@@ -1,5 +1,6 @@
 import * as CONSTANTS from './constants';
 import * as rollup from '../../utils/bundle-cli';
+import * as operator from '../../utils/bundle-op';
 const { readFile } = require('../../utils/utils');
 
 function loadWallet() {
@@ -68,6 +69,42 @@ export function handleLoadFiles(config, abiRollup, abiTokens) {
         resolve({config, abiRollup, abiTokens});
       } catch(error) {
         dispatch(loadFilesError(error));
+      }
+    })
+  }
+}
+
+function loadOperator() {
+  return {
+    type: CONSTANTS.LOAD_OPERATOR,
+  };
+}
+
+function loadOperatorSuccess(apiOperator) {
+  return {
+    type: CONSTANTS.LOAD_OPERATOR_SUCCESS,
+    payload: apiOperator,
+    error: '',
+  }
+}
+
+function loadOperatorError(error) {
+  return {
+    type: CONSTANTS.LOAD_OPERATOR_ERROR,
+    error,
+  }
+}
+
+export function handleLoadOperator(config) {
+  return function(dispatch) {
+    dispatch(loadOperator())
+    return new Promise( async (resolve) => {
+      try{
+        const apiOperator = new operator.cliExternalOperator(config.operator);
+        dispatch(loadOperatorSuccess(apiOperator));
+      } catch(error) {
+        console.log(error)
+        dispatch(loadOperatorError(error))
       }
     })
   }
