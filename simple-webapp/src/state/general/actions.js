@@ -57,10 +57,10 @@ function loadFiles() {
   };
 }
 
-function loadFilesSuccess(config, abiRollup, abiTokens) {
+function loadFilesSuccess(config, abiRollup, abiTokens, walletFunder) {
   return {
     type: CONSTANTS.LOAD_FILES_SUCCESS,
-    payload: { config, abiRollup, abiTokens },
+    payload: { config, abiRollup, abiTokens, walletFunder },
     error: '',
   }
 }
@@ -72,12 +72,12 @@ function loadFilesError(error) {
   }
 }
 
-export function handleLoadFiles(config, abiRollup, abiTokens) {
+export function handleLoadFiles(config, abiRollup, abiTokens, walletFunder) {
   return function(dispatch) {
     dispatch(loadFiles());
     return new Promise( async (resolve) => {
       try {
-        dispatch(loadFilesSuccess(config, abiRollup, abiTokens));
+        dispatch(loadFilesSuccess(config, abiRollup, abiTokens, walletFunder));
         resolve({config, abiRollup, abiTokens});
       } catch(error) {
         dispatch(loadFilesError(error));

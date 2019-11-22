@@ -2,6 +2,7 @@ import React,{Component} from 'react';
 import { connect } from 'react-redux';
 import { Header, Container, Divider } from 'semantic-ui-react';
 
+import { handleGetTokens, handleApprove } from '../../../state/tx/actions'
 import MenuBack from '../components/menu';
 import MenuActions from '../components/menu-actions';
 import InfoWallet from '../components/info-wallet';
@@ -38,6 +39,17 @@ class ActionView extends Component {
   toggleModalWithdraw =() => {this.setState(prev => ({ modalWithdraw: !prev.modalWithdraw }))}
   toggleModalSend =() => {this.setState(prev => ({ modalSend: !prev.modalSend }))}
 
+  handleClickGetTokens = () => {
+    this.props.handleGetTokens(this.props.config.nodeEth, this.props.walletFunder, "0x7dFc5b5D172db3941f669770f9993b1df250B560",this.props.abiTokens, this.props.wallet, this.props.password);
+  }
+
+  handleClickApprove = async (addressTokens, amountToken) => {
+    const res = await this.props.handleApprove(addressTokens, this.props.abiTokens, this.props.wallet,
+      amountToken, this.props.config.address, this.props.password, this.props.config.nodeEth)
+    console.log(res);
+  }
+  
+
   render() {
     return (
       <Container textAlign="center">
@@ -60,7 +72,7 @@ class ActionView extends Component {
         <InfoWallet
           wallet = {this.props.wallet}
           apiOperator = {this.props.apiOperator}
-          handleApprove = {this.handleApprove}
+          handleClickApprove = {this.handleClickApprove}
           addressTokensRef = {this.addressTokensRef}
           amountTokensRef = {this.amountTokensRef}
           handleClickGetTokens = {this.handleClickGetTokens}
@@ -87,8 +99,9 @@ const mapStateToProps = state => ({
   wallet: state.general.wallet,
   apiOperator: state.general.apiOperator,
   abiTokens: state.general.abiTokens,
+  walletFunder: state.general.walletFunder,
   config: state.general.config,
   password: state.general.password,
 })
 
-export default connect(mapStateToProps, { })(ActionView);
+export default connect(mapStateToProps, { handleGetTokens, handleApprove })(ActionView);

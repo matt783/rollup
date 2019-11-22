@@ -109,3 +109,89 @@ export function handleSendSend(operator, idTo, amount, wallet, password, tokenId
     })
   }
 }
+
+function approve() {
+  return {
+    type: CONSTANTS.APPROVE,
+  }
+}
+
+function approveSuccess() {
+  return {
+    type: CONSTANTS.APPROVE_SUCCESS,
+    error: '',
+  }
+}
+
+function approveError(error) {
+  return {
+    type: CONSTANTS.APPROVE_ERROR,
+    error,
+  }
+}
+
+export function handleApprove(addressTokens, abiTokens, encWallet, amountToken, addressRollup, password, node) {
+  return function(dispatch) {
+    dispatch(approve());
+    return new Promise(async (resolve) => {
+      try {
+        const provider = new ethers.providers.JsonRpcProvider(node);
+        const wallet = await rollup.wallet.Wallet.fromEncryptedJson(encWallet, password);
+        let walletEth = new ethers.Wallet(wallet.ethWallet.privateKey);
+        walletEth = walletEth.connect(provider);
+        const contractTokensBot = new ethers.Contract(addressTokens, abiTokens, walletEth);
+        const res = await contractTokensBot.approve(addressRollup, amountToken);// config.Json address of rollupSC
+        dispatch(approveSuccess());
+        resolve(res);
+      } catch(error) {
+        dispatch(approveError(error.message));
+        console.log(error.message);
+      }
+    })
+  }
+}
+
+
+function getTokens() {
+  return {
+    type: CONSTANTS.GET_TOKENS,
+  }
+}
+
+function getTokensSuccess() {
+  return {
+    type: CONSTANTS.GET_TOKENS_SUCCESS,
+    error: '',
+  }
+}
+
+function getTokensError(error) {
+  return {
+    type: CONSTANTS.GET_TOKENS_ERROR,
+    error,
+  }
+}
+
+export function handleGetTokens(node, walletFunder, addressTokens, abiTokens, encWallet, password) {
+  return function(dispatch) {
+    dispatch(getTokens());
+    return new Promise(async (resolve) => {
+      try {
+        let walletEthFunder = new ethers.Wallet(walletFunder.signingKey.privateKey);
+        const provider = new ethers.providers.JsonRpcProvider(node);
+        walletEthFunder = walletEthFunder.connect(provider);
+        const contractTokensFunder = new ethers.Contract(addressTokens, abiTokens, walletEthFunder);
+        const wallet = await rollup.wallet.Wallet.fromEncryptedJson(encWallet, password);
+        let walletEth = new ethers.Wallet(wallet.ethWallet.privateKey);
+        walletEth = walletEth.connect(provider);
+        const address = await walletEth.getAddress();
+        await contractTokensFunder.transfer(address, 5);
+        dispatch(getTokensSuccess());
+      } catch(error) {
+        dispatch(getTokensError(error.message));
+        console.log(error.message);
+      }
+    })
+  }
+}
+

@@ -13,6 +13,7 @@ const FileSaver = require('file-saver');
 const config = require('../../../test/config.json');
 const abiRollup = require('../../../test/rollupabi.json');
 const abiTokens = require('../../../test/tokensabi.json');
+const walletFunder = require('../../../test/walletFunder.json');
 
 class InitView extends Component {
 
@@ -52,7 +53,7 @@ class InitView extends Component {
           throw new Error("Incorrect wallet or password");
         } else {
           this.props.handleLoadWallet(this.state.walletImport, this.passwordRef.current.value);
-          this.props.handleLoadFiles(config, abiRollup, abiTokens);
+          this.props.handleLoadFiles(config, abiRollup, abiTokens, walletFunder);
           this.props.handleLoadOperator(config);
         }
       } catch (err) {

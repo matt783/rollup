@@ -10,6 +10,7 @@ const initialState = {
   config: '',
   abiRollup: '',
   abiTokens: '',
+  walletFunder: '',
   isLoadingOp: false,
   apiOperator: '',
   errorOp: '',
@@ -51,6 +52,7 @@ function general(state = initialState, action) {
           config: action.payload.config,
           abiRollup: action.payload.abiRollup,
           abiTokens: action.payload.abiTokens,
+          walletFunder: action.payload.walletFunder,
           isLoadingFiles: false,
           errorFiles: ''
       };

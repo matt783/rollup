@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { Table, Button, Input, Container, Icon } from 'semantic-ui-react';
 
 class InfoWallet extends Component {
+
   constructor(props){
     super(props);
     this.state = {
@@ -13,7 +14,6 @@ class InfoWallet extends Component {
     this.amountTokensRef = React.createRef();
   }
   
-
   async componentDidMount() {
     try{
       if(this.props.wallet !== '' && this.state.address !== `0x${this.props.wallet.ethWallet.address}`){
@@ -53,6 +53,10 @@ class InfoWallet extends Component {
     }
   }
 
+  handleClick = () => {
+    this.props.handleClickApprove(this.addressTokensRef.current.value, this.amountTokensRef.current.value);
+  }
+
   importedWallet = () => {
     if(this.state.address === '0x0000000000000000000000000000000000000000'){
       return <div>
@@ -64,8 +68,8 @@ class InfoWallet extends Component {
     }
   }
   render() {
-    return (
-      <Container>
+    return (     
+        <Container>
           <Table padded>
             <Table.Header>
               <Table.Row>
@@ -79,6 +83,56 @@ class InfoWallet extends Component {
               </Table.Cell>
               <Table.Cell colSpan='2'>
                 {this.importedWallet()}
+              </Table.Cell>
+            </Table.Row>
+            <Table.Row>
+              <Table.Cell colSpan='3'>
+                Balance
+              </Table.Cell>
+            </Table.Row>
+            <Table.Row>
+              <Table.Cell>
+                ETH: 
+              </Table.Cell>
+              <Table.Cell>
+                {this.state.eth} 
+              </Table.Cell>
+              <Table.Cell textAlign='center'>
+                <Button content="GET ETHER"/>
+              </Table.Cell>
+            </Table.Row>
+            <Table.Row>
+              <Table.Cell>
+                TOKENS: 
+              </Table.Cell>
+              <Table.Cell>
+                {this.state.rollupTokens} 
+              </Table.Cell>
+              <Table.Cell textAlign='center'>
+                <Button content="GET TOKENS" onClick={this.props.handleClickGetTokens}/>
+              </Table.Cell>
+            </Table.Row>
+            <Table.Row>
+              <Table.Cell colSpan='3'>
+                Approve tokens
+              </Table.Cell>
+            </Table.Row>
+            <Table.Row>
+              <Table.Cell>
+                Amount Tokens:
+              </Table.Cell>
+              <Table.Cell colSpan='2'>
+                <input type="text" ref={this.amountTokensRef}/>
+              </Table.Cell>
+            </Table.Row>
+            <Table.Row>
+              <Table.Cell>
+                Address SC Tokens:
+              </Table.Cell>
+              <Table.Cell colSpan='2'>
+                <input type='text' placeholder='0x0000000000000000000000000000000000000000' 
+                 ref={this.addressTokensRef} size='40'/>
+                  <Button content="APPROVE" onClick={this.handleClick}/>
               </Table.Cell>
             </Table.Row>
           </Table.Body>
