@@ -10,3 +10,6 @@ export const SEND_SEND_ERROR = 'SEND_SEND_ERROR';
 export const SEND_SEND0 = 'SEND_SEND0';
 export const SEND_SEND0_SUCCESS = 'SEND_SEND0_SUCCESS';
 export const SEND_SEND0_ERROR = 'SEND_SEND0_ERROR';
+export const APPROVE = 'APPROVE';
+export const APPROVE_SUCCESS = 'APPROVE_SUCCESS';
+export const APPROVE_ERROR = 'APPROVE_ERROR';

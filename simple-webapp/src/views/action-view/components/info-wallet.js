@@ -2,12 +2,17 @@ import React, { Component } from 'react';
 import { Table, Button, Input, Container, Icon } from 'semantic-ui-react';
 
 class InfoWallet extends Component {
-
-  state = {
-    address: '0x0000000000000000000000000000000000000000',
-    eth: 0,
-    rollupTokens: 0,
+  constructor(props){
+    super(props);
+    this.state = {
+      address: '0x0000000000000000000000000000000000000000',
+      eth: 0,
+      rollupTokens: 0,
+    };
+    this.addressTokensRef = React.createRef();
+    this.amountTokensRef = React.createRef();
   }
+  
 
   async componentDidMount() {
     try{
@@ -74,49 +79,6 @@ class InfoWallet extends Component {
               </Table.Cell>
               <Table.Cell colSpan='2'>
                 {this.importedWallet()}
-              </Table.Cell>
-            </Table.Row>
-            <Table.Row>
-              <Table.Cell colSpan='3'>
-                Balance
-              </Table.Cell>
-            </Table.Row>
-            <Table.Row>
-              <Table.Cell>
-                ETH: 
-              </Table.Cell>
-              <Table.Cell>
-                {this.state.eth} 
-              </Table.Cell>
-              <Table.Cell textAlign='center'>
-                <Button content="GET ETHER"/>
-              </Table.Cell>
-            </Table.Row>
-            <Table.Row>
-              <Table.Cell>
-                TOKENS: 
-              </Table.Cell>
-              <Table.Cell>
-                {this.state.rollupTokens} 
-              </Table.Cell>
-              <Table.Cell textAlign='center'>
-                <Button content="GET TOKENS"/>
-              </Table.Cell>
-            </Table.Row>
-            <Table.Row>
-              <Table.Cell colSpan='3'>
-                Approve tokens
-              </Table.Cell>
-            </Table.Row>
-            <Table.Row>
-              <Table.Cell>
-                Address SC Tokens:
-              </Table.Cell>
-              <Table.Cell colSpan='2'>
-                <Input type='text' placeholder='0x0000000000000000000000000000000000000000' fluid>
-                  <input />
-                  <Button content="APPROVE"/>
-                </Input>
               </Table.Cell>
             </Table.Row>
           </Table.Body>

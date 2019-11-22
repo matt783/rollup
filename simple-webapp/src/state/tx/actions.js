@@ -1,5 +1,6 @@
 import * as CONSTANTS from './constants';
 import * as rollup from '../../utils/bundle-cli';
+const ethers = require('ethers');
 
 function sendDeposit() {
   return {

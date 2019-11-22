@@ -1,6 +1,7 @@
 import React,{Component} from 'react';
 import { connect } from 'react-redux';
 import { Header, Container, Divider } from 'semantic-ui-react';
+
 import MenuBack from '../components/menu';
 import MenuActions from '../components/menu-actions';
 import InfoWallet from '../components/info-wallet';
@@ -10,12 +11,15 @@ import ModalSend from '../components/modal-send';
 import MessageTx from '../components/message-tx';
 
 class ActionView extends Component {
-
-  state = { 
-    activeItem: '',
-    modalDeposit: false,
-    modalWithdraw: false,
-    modalSend: false
+  
+  constructor(props){
+    super(props);
+    this.state = { 
+      activeItem: '',
+      modalDeposit: false,
+      modalWithdraw: false,
+      modalSend: false
+    };
   }
 
   handleItemClick = (e, { name }) => {
@@ -56,6 +60,10 @@ class ActionView extends Component {
         <InfoWallet
           wallet = {this.props.wallet}
           apiOperator = {this.props.apiOperator}
+          handleApprove = {this.handleApprove}
+          addressTokensRef = {this.addressTokensRef}
+          amountTokensRef = {this.amountTokensRef}
+          handleClickGetTokens = {this.handleClickGetTokens}
         />
         <ModalDeposit
           modalDeposit = {this.state.modalDeposit}
@@ -77,7 +85,10 @@ class ActionView extends Component {
 
 const mapStateToProps = state => ({
   wallet: state.general.wallet,
-  apiOperator: state.general.apiOperator
+  apiOperator: state.general.apiOperator,
+  abiTokens: state.general.abiTokens,
+  config: state.general.config,
+  password: state.general.password,
 })
 
 export default connect(mapStateToProps, { })(ActionView);

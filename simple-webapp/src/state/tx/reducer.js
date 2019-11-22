@@ -9,7 +9,10 @@ const initialState = {
   errorWithdraw: '',
   isLoadingSend: false,
   successSend: false,
-  errorSend: ''
+  errorSend: '',
+  isLoadingApprove: false,
+  successApprove: false,
+  errorApprove: '',
 };
 
 function transactions(state = initialState, action) {
@@ -76,6 +79,27 @@ function transactions(state = initialState, action) {
               isLoadingSend: false,
               successSend: false,
               errorSend: action.error,
+            };
+      case CONSTANTS.APPROVE:
+          return {
+                ...state,
+                isLoadingApprove: true,
+                successApprove: false,
+                errorApprove: '',
+              };
+      case CONSTANTS.APPROVE_SUCCESS: 
+          return {
+              ...state,
+              isLoadingApprove: false,
+              successApprove: true,
+              errorApprove: '',
+            };
+      case CONSTANTS.APPROVE_ERROR:
+          return {
+              ...state,
+              isLoadingApprove: false,
+              successApprove: false,
+              errorApprove: action.error,
             };
       default:
           return state;
