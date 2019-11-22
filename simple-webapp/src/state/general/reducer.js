@@ -14,6 +14,10 @@ const initialState = {
   isLoadingOp: false,
   apiOperator: '',
   errorOp: '',
+  isLoadingInfoAccount: false,
+  balance: 0,
+  tokens: 0,
+  errorInfoAccount: '',
 };
 
 function general(state = initialState, action) {
@@ -79,8 +83,28 @@ function general(state = initialState, action) {
         return {
             ...state,
             isLoadingOp: false,
-            errorOp: action.error,
+            errorInfoOp: action.error,
         };
+        case CONSTANTS.INFO_ACCOUNT:
+          return {
+              ...state,
+              isLoadingInfoAccount: true,
+              errorInfoAccount: '',
+          }
+        case CONSTANTS.INFO_ACCOUNT_SUCCESS:
+          return {
+              ...state,
+              isLoadingInfoAccount: false,
+              balance: action.payload.balance,
+              tokens: action.payload.tokens,
+              errorInfoAccount: ''
+          };
+        case CONSTANTS.INFO_ACCOUNT_ERROR:
+          return {
+              ...state,
+              isLoadingInfoAccount: false,
+              errorInfoAccount: action.error,
+          };
     default:
       return state;
   }

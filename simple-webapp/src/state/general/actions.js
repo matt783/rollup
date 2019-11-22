@@ -2,6 +2,7 @@ import * as CONSTANTS from './constants';
 import * as rollup from '../../utils/bundle-cli';
 import * as operator from '../../utils/bundle-op';
 const { readFile } = require('../../utils/utils');
+const ethers = require('ethers');
 
 function loadWallet() {
   return {
@@ -121,3 +122,51 @@ export function handleLoadOperator(config) {
     })
   }
 }
+
+
+function infoAccount() {
+  return {
+    type: CONSTANTS.INFO_ACCOUNT,
+  };
+}
+
+function infoAccountSuccess(balance, tokens) {
+  return {
+    type: CONSTANTS.INFO_ACCOUNT_SUCCESS,
+    payload: {balance, tokens},
+    error: '',
+  }
+}
+
+function infoAccountError(error) {
+  return {
+    type: CONSTANTS.INFO_ACCOUNT_ERROR,
+    error,
+  }
+}
+
+export function handleInfoAccount(node, walletFunder, addressTokens, abiTokens, encWallet, password) {
+  return function(dispatch) {
+    dispatch(infoAccount())
+    return new Promise( async (resolve) => {
+      try{
+        const provider = new ethers.providers.JsonRpcProvider(node);
+        const wallet = await rollup.wallet.Wallet.fromEncryptedJson(encWallet, password);
+        let walletEth = new ethers.Wallet(wallet.ethWallet.privateKey)
+        walletEth = walletEth.connect(provider);
+        const balanceHex = await walletEth.getBalance();
+        const balance = ethers.utils.formatEther(balanceHex);
+        let walletEthFunder = new ethers.Wallet(walletFunder.signingKey.privateKey);
+        walletEthFunder = walletEthFunder.connect(provider);
+        const contractTokensFunder = new ethers.Contract(addressTokens, abiTokens, walletEthFunder);
+        const tokensHex = await contractTokensFunder.balanceOf(encWallet.ethWallet.address);
+        const tokens = parseInt(tokensHex._hex, 16);
+        dispatch(infoAccountSuccess(balance, tokens));
+      } catch(error) {
+        console.log(error)
+        dispatch(infoAccountError(error))
+      }
+    })
+  }
+}
+

@@ -18,38 +18,9 @@ class InfoWallet extends Component {
     try{
       if(this.props.wallet !== '' && this.state.address !== `0x${this.props.wallet.ethWallet.address}`){
         this.setState({address: `0x${this.props.wallet.ethWallet.address}`});
-        /*const filters = {
-          ethAddr: `0x${this.props.wallet.ethWallet.address}`
-        }
-        const infoAccount = await this.props.apiOperator.getAccounts(filters);
-        let amount = 0;
-        let ids = [];
-        for (let id in infoAccount.data) {
-          ids.push(infoAccount.data[id].idx)
-          amount = amount + parseInt(infoAccount.data[id].amount);
-        }
-        this.setState({rollupTokens: amount})*/
       }
     }catch(e){
         console.log(e);
-    }
-  }
-
-  async componentDidUpdate() {
-    try {
-      if(this.props.wallet !== '') {
-        const filters = {
-          ethAddr: `0x${this.props.wallet.ethWallet.address}`
-        }
-        const infoAccount = await this.props.apiOperator.getAccounts(filters);
-        let amount = 0;
-        for (let id in infoAccount.data) {
-          amount = amount + parseInt(infoAccount.data[id].amount);
-        }
-        this.setState({rollupTokens: amount});
-      }
-    }catch (err) {
-        console.log(err);
     }
   }
 
@@ -67,13 +38,32 @@ class InfoWallet extends Component {
       return this.state.address;
     }
   }
+
+  isLoadingTokens = () => {
+    /*if(this.props.isLoadingInfoAccount === false) {
+      return this.props.tokens;
+    } else {
+      return <Icon name='circle notched' loading />
+    }*/
+    return this.props.tokens;
+  }
+
+  isLoadingEthers = () => {
+    /*if(this.props.isLoadingInfoAccount === false) {
+      return this.props.balance;
+    } else {
+      return <Icon name='circle notched' loading />
+    }*/
+    return this.props.balance;
+  }
+
   render() {
     return (     
         <Container>
           <Table padded>
             <Table.Header>
               <Table.Row>
-                <Table.HeaderCell colSpan='3'>Rollup Wallet</Table.HeaderCell>
+                <Table.HeaderCell colSpan='4'>Rollup Wallet</Table.HeaderCell>
               </Table.Row>
             </Table.Header>
           <Table.Body>
@@ -81,29 +71,37 @@ class InfoWallet extends Component {
               <Table.Cell colSpan='1' width='3'>
                 Address:
               </Table.Cell>
-              <Table.Cell colSpan='2'>
+              <Table.Cell colSpan='3'>
                 {this.importedWallet()}
               </Table.Cell>
             </Table.Row>
             <Table.Row>
-              <Table.Cell colSpan='3'>
+              <Table.Cell>
                 Balance
+              </Table.Cell>
+              <Table.Cell>
+                Account
+              </Table.Cell>
+              <Table.Cell>
+                Rollup Network
+              </Table.Cell>
+              <Table.Cell>
               </Table.Cell>
             </Table.Row>
             <Table.Row>
               <Table.Cell>
                 ETH: 
               </Table.Cell>
-              <Table.Cell>
-                {this.state.eth} 
-              </Table.Cell>
-              <Table.Cell textAlign='center'>
-                <Button content="GET ETHER"/>
+              <Table.Cell colSpan='3'>
+                {this.isLoadingEthers()}
               </Table.Cell>
             </Table.Row>
             <Table.Row>
               <Table.Cell>
                 TOKENS: 
+              </Table.Cell>
+              <Table.Cell>
+                {this.isLoadingTokens()} 
               </Table.Cell>
               <Table.Cell>
                 {this.state.rollupTokens} 
@@ -113,7 +111,7 @@ class InfoWallet extends Component {
               </Table.Cell>
             </Table.Row>
             <Table.Row>
-              <Table.Cell colSpan='3'>
+              <Table.Cell colSpan='4'>
                 Approve tokens
               </Table.Cell>
             </Table.Row>
@@ -121,7 +119,7 @@ class InfoWallet extends Component {
               <Table.Cell>
                 Amount Tokens:
               </Table.Cell>
-              <Table.Cell colSpan='2'>
+              <Table.Cell colSpan='3'>
                 <input type="text" ref={this.amountTokensRef}/>
               </Table.Cell>
             </Table.Row>
@@ -129,7 +127,7 @@ class InfoWallet extends Component {
               <Table.Cell>
                 Address SC Tokens:
               </Table.Cell>
-              <Table.Cell colSpan='2'>
+              <Table.Cell colSpan='3'>
                 <input type='text' placeholder='0x0000000000000000000000000000000000000000' 
                  ref={this.addressTokensRef} size='40'/>
                   <Button content="APPROVE" onClick={this.handleClick}/>

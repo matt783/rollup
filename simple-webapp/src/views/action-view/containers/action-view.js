@@ -3,6 +3,7 @@ import { connect } from 'react-redux';
 import { Header, Container, Divider } from 'semantic-ui-react';
 
 import { handleGetTokens, handleApprove } from '../../../state/tx/actions'
+import { handleInfoAccount } from '../../../state/general/actions'
 import MenuBack from '../components/menu';
 import MenuActions from '../components/menu-actions';
 import InfoWallet from '../components/info-wallet';
@@ -21,6 +22,18 @@ class ActionView extends Component {
       modalWithdraw: false,
       modalSend: false
     };
+  }
+
+  componentDidMount = () => {
+    if(this.props.wallet !== ''){
+      this.props.handleInfoAccount(this.props.config.nodeEth, this.props.walletFunder, "0x7dFc5b5D172db3941f669770f9993b1df250B560",this.props.abiTokens, this.props.wallet, this.props.password);
+    }
+  }
+  
+  componentDidUpdate = () => {
+    if(this.props.wallet !== ''){
+      this.props.handleInfoAccount(this.props.config.nodeEth, this.props.walletFunder, "0x7dFc5b5D172db3941f669770f9993b1df250B560",this.props.abiTokens, this.props.wallet, this.props.password);
+    }
   }
 
   handleItemClick = (e, { name }) => {
@@ -76,6 +89,9 @@ class ActionView extends Component {
           addressTokensRef = {this.addressTokensRef}
           amountTokensRef = {this.amountTokensRef}
           handleClickGetTokens = {this.handleClickGetTokens}
+          balance = {this.props.balance}
+          tokens = {this.props.tokens}
+          isLoadingInfoAccount = {this.props.isLoadingInfoAccount}
         />
         <ModalDeposit
           modalDeposit = {this.state.modalDeposit}
@@ -102,6 +118,9 @@ const mapStateToProps = state => ({
   walletFunder: state.general.walletFunder,
   config: state.general.config,
   password: state.general.password,
+  balance: state.general.balance,
+  tokens: state.general.tokens,
+  isLoadingInfoAccount: state.general.isLoadingInfoAccount,
 })
 
-export default connect(mapStateToProps, { handleGetTokens, handleApprove })(ActionView);
+export default connect(mapStateToProps, { handleGetTokens, handleApprove, handleInfoAccount })(ActionView);
