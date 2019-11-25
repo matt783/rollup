@@ -21,6 +21,7 @@ class ModalDeposit extends Component {
         const addressSC = config.address;
         this.props.toggleModalDeposit();
         const res = await this.props.handleSendDeposit(nodeEth, addressSC, amount, tokenId, wallet, password, undefined, abiRollup);
+        this.props.getInfoAccount();
         console.log(res);
       } catch(error){
         console.log(error.message);

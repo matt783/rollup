@@ -22,6 +22,7 @@ class ModalWithdraw extends Component {
       const operator = config.operator;
       this.props.toggleModalWithdraw();
       const res = await this.props.handleSendWithdraw(nodeEth, addressSC, amount, wallet, password, abiRollup, operator, idFrom, numExitRoot);
+      this.props.getInfoAccount();
       console.log(res);
     }
 

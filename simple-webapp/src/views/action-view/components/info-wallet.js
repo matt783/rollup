@@ -1,5 +1,7 @@
 import React, { Component } from 'react';
-import { Table, Button, Input, Container, Icon } from 'semantic-ui-react';
+import { Table, Button, Container, Icon } from 'semantic-ui-react';
+
+// tokens address: "0x7dFc5b5D172db3941f669770f9993b1df250B560"
 
 class InfoWallet extends Component {
 
@@ -7,11 +9,13 @@ class InfoWallet extends Component {
     super(props);
     this.state = {
       address: '0x0000000000000000000000000000000000000000',
-      eth: 0,
+      loading: false,
+      firstLoading: true,
       rollupTokens: 0,
     };
     this.addressTokensRef = React.createRef();
     this.amountTokensRef = React.createRef();
+    this.getTokensRef = React.createRef();
   }
   
   async componentDidMount() {
@@ -24,8 +28,20 @@ class InfoWallet extends Component {
     }
   }
 
+  componentDidUpdate() {
+    if(this.props.isLoadingInfoAccount === true && this.state.firstLoading === true && this.state.loading === false){
+      this.setState({loading: true});
+    } else if (this.props.isLoadingInfoAccount === false && this.state.firstLoading === true && this.state.loading === true){
+      this.setState({firstLoading: false, loading: false});
+    }
+  }
+
   handleClick = () => {
     this.props.handleClickApprove(this.addressTokensRef.current.value, this.amountTokensRef.current.value);
+  }
+
+  handleClickTokens = () => {
+    this.props.handleClickGetTokens(this.getTokensRef.current.value);
   }
 
   importedWallet = () => {
@@ -40,21 +56,21 @@ class InfoWallet extends Component {
   }
 
   isLoadingTokens = () => {
-    /*if(this.props.isLoadingInfoAccount === false) {
+    if(this.state.loading === false) {
       return this.props.tokens;
     } else {
+      console.log("TOKENS")
       return <Icon name='circle notched' loading />
-    }*/
-    return this.props.tokens;
+    }
   }
 
   isLoadingEthers = () => {
-    /*if(this.props.isLoadingInfoAccount === false) {
+    if(this.state.loading === false) {
       return this.props.balance;
     } else {
+      console.log("ETHERS")
       return <Icon name='circle notched' loading />
-    }*/
-    return this.props.balance;
+    }
   }
 
   render() {
@@ -107,7 +123,8 @@ class InfoWallet extends Component {
                 {this.state.rollupTokens} 
               </Table.Cell>
               <Table.Cell textAlign='center'>
-                <Button content="GET TOKENS" onClick={this.props.handleClickGetTokens}/>
+                <input type="text" ref={this.getTokensRef}/>
+                <Button content="GET TOKENS" onClick={this.handleClickTokens}/>
               </Table.Cell>
             </Table.Row>
             <Table.Row>

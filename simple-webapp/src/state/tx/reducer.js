@@ -13,6 +13,9 @@ const initialState = {
   isLoadingApprove: false,
   successApprove: false,
   errorApprove: '',
+  isLoadingGetTokens: false,
+  successGetTokens: false,
+  errorGetTokens: '',
 };
 
 function transactions(state = initialState, action) {
@@ -101,6 +104,27 @@ function transactions(state = initialState, action) {
               successApprove: false,
               errorApprove: action.error,
             };
+      case CONSTANTS.GET_TOKENS:
+          return {
+              ...state,
+              isLoadingGetTokens: true,
+              successGetTokens: false,
+              errorGetTokens: '',
+          };
+      case CONSTANTS.GET_TOKENS_SUCCESS: 
+          return {
+              ...state,
+              isLoadingGetTokens: false,
+              successGetTokens: true,
+              errorGetTokens: '',
+          };
+      case CONSTANTS.GET_TOKENS_ERROR:
+          return {
+              ...state,
+              isLoadingGetTokens: false,
+              successGetTokens: false,
+              errorGetTokens: action.error,
+          };
       default:
           return state;
   }

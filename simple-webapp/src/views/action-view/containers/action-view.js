@@ -12,6 +12,8 @@ import ModalWithdraw from '../components/modal-withdraw';
 import ModalSend from '../components/modal-send';
 import MessageTx from '../components/message-tx';
 
+const tokensAddress = "0x7dFc5b5D172db3941f669770f9993b1df250B560";
+
 class ActionView extends Component {
   
   constructor(props){
@@ -25,14 +27,18 @@ class ActionView extends Component {
   }
 
   componentDidMount = () => {
-    if(this.props.wallet !== ''){
-      this.props.handleInfoAccount(this.props.config.nodeEth, this.props.walletFunder, "0x7dFc5b5D172db3941f669770f9993b1df250B560",this.props.abiTokens, this.props.wallet, this.props.password);
-    }
+    this.getInfoAccount();
   }
   
-  componentDidUpdate = () => {
+  /*componentDidUpdate = () => {
     if(this.props.wallet !== ''){
-      this.props.handleInfoAccount(this.props.config.nodeEth, this.props.walletFunder, "0x7dFc5b5D172db3941f669770f9993b1df250B560",this.props.abiTokens, this.props.wallet, this.props.password);
+      this.props.handleInfoAccount(this.props.config.nodeEth, this.props.walletFunder, tokensAddress,this.props.abiTokens, this.props.wallet, this.props.password);
+    }
+  }*/
+
+  getInfoAccount = () => {
+    if(this.props.wallet !== ''){
+      this.props.handleInfoAccount(this.props.config.nodeEth, this.props.walletFunder, tokensAddress, this.props.abiTokens, this.props.wallet, this.props.password);
     }
   }
 
@@ -54,6 +60,7 @@ class ActionView extends Component {
 
   handleClickGetTokens = () => {
     this.props.handleGetTokens(this.props.config.nodeEth, this.props.walletFunder, "0x7dFc5b5D172db3941f669770f9993b1df250B560",this.props.abiTokens, this.props.wallet, this.props.password);
+    this.getInfoAccount();
   }
 
   handleClickApprove = async (addressTokens, amountToken) => {
@@ -96,15 +103,18 @@ class ActionView extends Component {
         <ModalDeposit
           modalDeposit = {this.state.modalDeposit}
           toggleModalDeposit = {this.toggleModalDeposit}
+          getInfoAccount = {this.getInfoAccount}
         />
         <ModalWithdraw
           modalWithdraw = {this.state.modalWithdraw}
           toggleModalWithdraw = {this.toggleModalWithdraw}
+          getInfoAccount = {this.getInfoAccount}
         />
         <ModalSend
           modalSend = {this.state.modalSend}
           toggleModalSend = {this.toggleModalSend}
           activeItem = {this.state.activeItem}
+          getInfoAccount = {this.getInfoAccount}
         />
       </Container>
     )

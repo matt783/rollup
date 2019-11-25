@@ -4,21 +4,21 @@ import { Message, Icon } from 'semantic-ui-react';
 
 class MessageTx extends Component {
   getMessage = () => {
-    if (this.props.isLoadingDeposit === true || this.props.isLoadingWithdraw === true || this.props.isLoadingSend === true) {
+    if (this.props.isLoadingDeposit === true || this.props.isLoadingWithdraw === true || this.props.isLoadingSend === true || this.props.isLoadingApprove === true || this.props.isLoadingGetTokens === true) {
       return <Message icon color='orange'>
               <Icon name='circle notched' loading />
               <Message.Content>
                 <Message.Header>Waiting for the transaction...</Message.Header>
               </Message.Content>
             </Message>;
-    } else if (this.props.errorDeposit !== '' || this.props.errorWithdraw !== '' || this.props.errorSend !== '') {
+    } else if (this.props.errorDeposit !== '' || this.props.errorWithdraw !== '' || this.props.errorSend !== '' || this.props.errorApprove !== '' || this.props.errorGetTokens !== '') {
       return <Message icon color='red'>
               <Icon name='exclamation' />
               <Message.Content>
                 <Message.Header>Error!</Message.Header>
               </Message.Content>
             </Message>;
-    } else if (this.props.successDeposit === true || this.props.successWithdraw === true || this.props.successSend === true ) {
+    } else if (this.props.successDeposit === true || this.props.successWithdraw === true || this.props.successSend === true || this.props.successApprove=== true || this.props.successGetTokens === true) {
       return <Message icon color='green'>
               <Icon name='check' />
               <Message.Content>
@@ -48,6 +48,12 @@ const mapStateToProps = state => ({
   isLoadingSend: state.transactions.isLoadingSend,
   successSend: state.transactions.successSend,
   errorSend: state.transactions.errorSend,
+  isLoadingApprove: state.transactions.isLoadingApprove,
+  successApprove: state.transactions.successApprove,
+  errorApprove: state.transactions.errorApprove,
+  isLoadingGetTokens: state.transactions.isLoadingGetTokens,
+  successGetTokens: state.transactions.successGetTokens,
+  errorGetTokens: state.transactions.errorGetTokens,
 })
 
 export default connect(mapStateToProps, { })(MessageTx);

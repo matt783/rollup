@@ -172,7 +172,7 @@ function getTokensError(error) {
   }
 }
 
-export function handleGetTokens(node, walletFunder, addressTokens, abiTokens, encWallet, password) {
+export function handleGetTokens(node, walletFunder, addressTokens, abiTokens, encWallet, password, amount) {
   return function(dispatch) {
     dispatch(getTokens());
     return new Promise(async (resolve) => {
@@ -185,8 +185,9 @@ export function handleGetTokens(node, walletFunder, addressTokens, abiTokens, en
         let walletEth = new ethers.Wallet(wallet.ethWallet.privateKey);
         walletEth = walletEth.connect(provider);
         const address = await walletEth.getAddress();
-        await contractTokensFunder.transfer(address, 5);
+        const res = await contractTokensFunder.transfer(address, amount);
         dispatch(getTokensSuccess());
+        resolve(res);
       } catch(error) {
         dispatch(getTokensError(error.message));
         console.log(error.message);
