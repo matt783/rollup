@@ -60,7 +60,7 @@ function sendWithdrawError(error) {
   }
 }
 
-export function handleSendWithdraw(nodeEth, addressSC, amount, wallet, password, abiRollup, operator, idFrom, numExitRoot) {
+export function handleSendWithdraw(nodeEth, addressSC, wallet, password, abiRollup, operator, idFrom, numExitRoot) {
   return function(dispatch) {
     dispatch(sendWithdraw());
     return new Promise(async (resolve) => {

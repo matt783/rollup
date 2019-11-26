@@ -6,22 +6,20 @@ import { handleSendWithdraw } from '../../../state/tx/actions';
 class ModalWithdraw extends Component {
     constructor(props) {
       super(props);
-      this.amountRef = React.createRef();
       this.idFromRef = React.createRef();
       this.numExitRootRef = React.createRef();
     }
 
     handleClick = async () => {
       const { wallet, config, abiRollup, password } = this.props;
-  
-      const amount = parseInt(this.amountRef.current.value);
+
       const idFrom = parseInt(this.idFromRef.current.value);
       const numExitRoot = parseInt(this.numExitRootRef.current.value);
       const nodeEth = config.nodeEth;
       const addressSC = config.address;
       const operator = config.operator;
       this.props.toggleModalWithdraw();
-      const res = await this.props.handleSendWithdraw(nodeEth, addressSC, amount, wallet, password, abiRollup, operator, idFrom, numExitRoot);
+      const res = await this.props.handleSendWithdraw(nodeEth, addressSC, wallet, password, abiRollup, operator, idFrom, numExitRoot);
       this.props.getInfoAccount();
       console.log(res);
     }
@@ -32,10 +30,6 @@ class ModalWithdraw extends Component {
             <Modal.Header>Withdraw</Modal.Header>
             <Modal.Content >
               <Form>
-                <Form.Field>
-                  <label>Amount</label>
-                  <input type="text" ref={this.amountRef}/>
-                </Form.Field>
                 <Form.Field>
                   <label>ID From</label>
                   <input type="text" ref={this.idFromRef}/>
