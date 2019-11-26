@@ -26,7 +26,7 @@ class ActionView extends Component {
     };
   }
 
-  componentDidMount = () => {
+  componentDidMount = async () => {
     this.getInfoAccount();
   }
   
@@ -38,7 +38,7 @@ class ActionView extends Component {
 
   getInfoAccount = () => {
     if(this.props.wallet !== ''){
-      this.props.handleInfoAccount(this.props.config.nodeEth, this.props.walletFunder, tokensAddress, this.props.abiTokens, this.props.wallet, this.props.password);
+      this.props.handleInfoAccount(this.props.config.nodeEth, this.props.walletFunder, tokensAddress, this.props.abiTokens, this.props.wallet, this.props.password, this.props.config.operator);
     }
   }
 
@@ -98,6 +98,7 @@ class ActionView extends Component {
           handleClickGetTokens = {this.handleClickGetTokens}
           balance = {this.props.balance}
           tokens = {this.props.tokens}
+          tokensR = {this.props.tokensR}
           isLoadingInfoAccount = {this.props.isLoadingInfoAccount}
         />
         <ModalDeposit
@@ -130,6 +131,7 @@ const mapStateToProps = state => ({
   password: state.general.password,
   balance: state.general.balance,
   tokens: state.general.tokens,
+  tokensR: state.general.tokensR,
   isLoadingInfoAccount: state.general.isLoadingInfoAccount,
 })
 

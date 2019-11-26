@@ -130,10 +130,10 @@ function infoAccount() {
   };
 }
 
-function infoAccountSuccess(balance, tokens) {
+function infoAccountSuccess(balance, tokens, tokensR) {
   return {
     type: CONSTANTS.INFO_ACCOUNT_SUCCESS,
-    payload: {balance, tokens},
+    payload: {balance, tokens, tokensR},
     error: '',
   }
 }
@@ -145,7 +145,7 @@ function infoAccountError(error) {
   }
 }
 
-export function handleInfoAccount(node, walletFunder, addressTokens, abiTokens, encWallet, password) {
+export function handleInfoAccount(node, walletFunder, addressTokens, abiTokens, encWallet, password, operatorUrl) {
   return function(dispatch) {
     dispatch(infoAccount())
     return new Promise( async (resolve) => {
@@ -161,7 +161,17 @@ export function handleInfoAccount(node, walletFunder, addressTokens, abiTokens, 
         const contractTokensFunder = new ethers.Contract(addressTokens, abiTokens, walletEthFunder);
         const tokensHex = await contractTokensFunder.balanceOf(encWallet.ethWallet.address);
         const tokens = parseInt(tokensHex._hex, 16);
-        dispatch(infoAccountSuccess(balance, tokens));
+        const apiOperator = new operator.cliExternalOperator(operatorUrl);
+        const filters = {
+          ethAddr: `0x${encWallet.ethWallet.address}`
+        }
+        const res = await apiOperator.getAccounts(filters);
+        let tokensR = 0;
+        const numTx = res.data[res.data.length-1].idx;
+        for(let i=1; i <= numTx; i++){
+          tokensR = tokensR + parseInt(res.data.find(tx => tx.idx === i).amount);
+        }
+        dispatch(infoAccountSuccess(balance, tokens, tokensR));
       } catch(error) {
         console.log(error)
         dispatch(infoAccountError(error))
@@ -169,4 +179,47 @@ export function handleInfoAccount(node, walletFunder, addressTokens, abiTokens, 
     })
   }
 }
+/* 
+function getTokensRollup() {
+  return {
+    type: CONSTANTS.GET_TOKENS_ROLLUP,
+  };
+}
 
+function getTokensRollupSuccess(amountTokens) {
+  return {
+    type: CONSTANTS.GET_TOKENS_ROLLUP_SUCCESS,
+    payload: amountTokens,
+    error: '',
+  }
+}
+
+function getTokensRollupError(error) {
+  return {
+    type: CONSTANTS.GET_TOKENS_ROLLUP_ERROR,
+    error,
+  }
+}
+
+export function handleGetTokensRollup(operator, wallet) {
+  return function(dispatch) {
+    dispatch(getTokensRollup())
+    try {
+      const apiOperator = new operator.cliExternalOperator(operator);
+      const filters = {
+        ethAddr: `0x${wallet.ethWallet.address}`
+      }
+      const res = await apiOperator.getAccounts(filters);
+      let amountTokens = 0;
+      const numTx = res.data[res.data.length-1].idx;
+      for(let i=1; i <= numTx; i++){
+        amountTokens += res.data.find(tx => tx.idx === i).amount;
+      }
+      dispatch(getTokensRollupSuccess(amountTokens))
+    } catch(err) {
+      console.log(err);
+      dispatch(getTokensRollupError(err))
+    }
+  }
+}
+*/

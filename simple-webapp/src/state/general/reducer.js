@@ -17,6 +17,7 @@ const initialState = {
   isLoadingInfoAccount: false,
   balance: 0,
   tokens: 0,
+  tokensR: 0,
   errorInfoAccount: '',
 };
 
@@ -97,6 +98,7 @@ function general(state = initialState, action) {
               isLoadingInfoAccount: false,
               balance: action.payload.balance,
               tokens: action.payload.tokens,
+              tokensR: action.payload.tokensR,
               errorInfoAccount: ''
           };
         case CONSTANTS.INFO_ACCOUNT_ERROR:
@@ -105,6 +107,25 @@ function general(state = initialState, action) {
               isLoadingInfoAccount: false,
               errorInfoAccount: action.error,
           };
+          /*case CONSTANTS.GET_TOKENS_ROLLUP:
+            return {
+                ...state,
+                isLoadingGetTokensR: true,
+                errorGetTokensR: '',
+            }
+          case CONSTANTS.GET_TOKENS_ROLLUP_SUCCESS:
+            return {
+                ...state,
+                isLoadingGetTokensR: false,
+                tokensR: action.payload,
+                errorGetTokensR: ''
+            };
+          case CONSTANTS.GET_TOKENS_ROLLUP_ERROR:
+            return {
+                ...state,
+                isLoadingGetTokensR: false,
+                errorGetTokensR: action.error,
+            };*/
     default:
       return state;
   }

@@ -64,6 +64,15 @@ class InfoWallet extends Component {
     }
   }
 
+  isLoadingTokensR = () => {
+    if(this.state.loading === false) {
+      return this.props.tokensR;
+    } else {
+      console.log("TOKENSR")
+      return <Icon name='circle notched' loading />
+    }
+  }
+
   isLoadingEthers = () => {
     if(this.state.loading === false) {
       return this.props.balance;
@@ -120,7 +129,7 @@ class InfoWallet extends Component {
                 {this.isLoadingTokens()} 
               </Table.Cell>
               <Table.Cell>
-                {this.state.rollupTokens} 
+                {this.isLoadingTokensR()} 
               </Table.Cell>
               <Table.Cell textAlign='center'>
                 <input type="text" ref={this.getTokensRef}/>
