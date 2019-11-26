@@ -48,7 +48,7 @@ class ModalWithdraw extends Component {
             </Modal.Content>
             <Modal.Actions>
               <Button color="blue" onClick={this.handleClick}>
-                <Icon name="download"/>Withdraw
+                <Icon name="sign-out"/>Withdraw
               </Button>
               <Button color="red" onClick={this.props.toggleModalWithdraw}>
                 <Icon name="close"/>Close

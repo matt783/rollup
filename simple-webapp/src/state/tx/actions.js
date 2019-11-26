@@ -8,9 +8,10 @@ function sendDeposit() {
   };
 }
 
-function sendDepositSuccess() {
+function sendDepositSuccess(res) {
   return {
     type: CONSTANTS.SEND_DEPOSIT_SUCCESS,
+    payload: res,
     error: '',
   };
 }
@@ -28,7 +29,7 @@ export function handleSendDeposit(nodeEth, addressSC, amount, tokenId, wallet, p
     return new Promise(async (resolve) => {
       try {
         const res = await rollup.onchain.deposit.deposit(nodeEth, addressSC, amount, tokenId, wallet, password, ethAddress, abiRollup);
-        dispatch(sendDepositSuccess());
+        dispatch(sendDepositSuccess(res));
         resolve(res);
       } catch(error) {
         dispatch(sendDepositError(error.message));
@@ -44,9 +45,10 @@ function sendWithdraw() {
   };
 }
 
-function sendWithdrawSuccess() {
+function sendWithdrawSuccess(res) {
   return {
     type: CONSTANTS.SEND_WITHDRAW_SUCCESS,
+    payload: res,
     error: '',
   };
 }
@@ -64,7 +66,7 @@ export function handleSendWithdraw(nodeEth, addressSC, amount, wallet, password,
     return new Promise(async (resolve) => {
       try {
         const res = await rollup.onchain.withdraw.withdraw(nodeEth, addressSC, amount, wallet, password, abiRollup, operator, idFrom, numExitRoot);
-        dispatch(sendWithdrawSuccess());
+        dispatch(sendWithdrawSuccess(res));
         resolve(res);
       } catch(error) {
         dispatch(sendWithdrawError(error.message));
@@ -116,9 +118,10 @@ function approve() {
   }
 }
 
-function approveSuccess() {
+function approveSuccess(res) {
   return {
     type: CONSTANTS.APPROVE_SUCCESS,
+    payload: res,
     error: '',
   }
 }
@@ -141,7 +144,7 @@ export function handleApprove(addressTokens, abiTokens, encWallet, amountToken, 
         walletEth = walletEth.connect(provider);
         const contractTokensBot = new ethers.Contract(addressTokens, abiTokens, walletEth);
         const res = await contractTokensBot.approve(addressRollup, amountToken);// config.Json address of rollupSC
-        dispatch(approveSuccess());
+        dispatch(approveSuccess(res));
         resolve(res);
       } catch(error) {
         dispatch(approveError(error.message));
@@ -158,9 +161,10 @@ function getTokens() {
   }
 }
 
-function getTokensSuccess() {
+function getTokensSuccess(res) {
   return {
     type: CONSTANTS.GET_TOKENS_SUCCESS,
+    payload: res,
     error: '',
   }
 }
@@ -186,7 +190,7 @@ export function handleGetTokens(node, walletFunder, addressTokens, abiTokens, en
         walletEth = walletEth.connect(provider);
         const address = await walletEth.getAddress();
         const res = await contractTokensFunder.transfer(address, amount);
-        dispatch(getTokensSuccess());
+        dispatch(getTokensSuccess(res));
         resolve(res);
       } catch(error) {
         dispatch(getTokensError(error.message));

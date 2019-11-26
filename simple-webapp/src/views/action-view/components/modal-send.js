@@ -70,7 +70,7 @@ class ModalSend extends Component {
             </Modal.Content>
             <Modal.Actions>
               <Button color="blue" onClick={this.handleClick}>
-                <Icon name="arrow right"/>Send
+                <Icon name="share"/>Send
               </Button>
               <Button color="red" onClick={this.props.toggleModalSend}>
                 <Icon name="close"/>Close

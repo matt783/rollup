@@ -1,5 +1,5 @@
 import React,{Component} from 'react';
-import { Table, Button } from 'semantic-ui-react';
+import { Table, Button, Icon } from 'semantic-ui-react';
 
 class MenuActions extends Component {
 
@@ -21,14 +21,26 @@ class MenuActions extends Component {
                 <Table.Row>
                   <Table.Cell>
                     <Button.Group widths='2'>
-                      <Button content="Deposit" name="deposit" onClick={this.props.handleItemClick}/>
-                      <Button content="Withdraw" name="withdraw" onClick={this.props.handleItemClick}/>
+                      <Button name="deposit" onClick={this.props.handleItemClick}>
+                        <Icon name="sign-in"/>
+                        Deposit
+                      </Button>
+                      <Button name="withdraw" onClick={this.props.handleItemClick}>
+                        <Icon name="sign-out"/>
+                        Withdraw
+                      </Button>
                     </Button.Group>
                   </Table.Cell>
                   <Table.Cell>
                     <Button.Group widths='2'>
-                      <Button content="Send" name="send" onClick={this.props.handleItemClick}/>
-                      <Button content="Send 0" name="send0" onClick={this.props.handleItemClick}/>
+                      <Button name="send" onClick={this.props.handleItemClick}>
+                        <Icon name="share"/>
+                        Send
+                      </Button>
+                      <Button name="send0" onClick={this.props.handleItemClick}>
+                        <Icon name="reply"/>
+                        Send 0
+                      </Button>
                     </Button.Group>
                   </Table.Cell>
                 </Table.Row>

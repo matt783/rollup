@@ -1,6 +1,7 @@
 import * as CONSTANTS from './constants';
 
 const initialState = {
+  tx: '',
   isLoadingDeposit: false,
   successDeposit: false,
   errorDeposit: '',
@@ -31,6 +32,7 @@ function transactions(state = initialState, action) {
           return {
             ...state,
             isLoadingDeposit: false,
+            tx: action.payload,
             successDeposit: true,
             errorDeposit: '',
           };
@@ -52,6 +54,7 @@ function transactions(state = initialState, action) {
           return {
             ...state,
             isLoadingWithdraw: false,
+            tx: action.payload,
             successWithdraw: true,
             errorWithdraw: '',
           };
@@ -87,6 +90,7 @@ function transactions(state = initialState, action) {
           return {
                 ...state,
                 isLoadingApprove: true,
+                tx: action.payload,
                 successApprove: false,
                 errorApprove: '',
               };
@@ -115,6 +119,7 @@ function transactions(state = initialState, action) {
           return {
               ...state,
               isLoadingGetTokens: false,
+              tx: action.payload,
               successGetTokens: true,
               errorGetTokens: '',
           };

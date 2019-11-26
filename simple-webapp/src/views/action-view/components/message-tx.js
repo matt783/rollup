@@ -23,6 +23,7 @@ class MessageTx extends Component {
               <Icon name='check' />
               <Message.Content>
                 <Message.Header>Transaction done!</Message.Header>
+                <a href={`https://etherscan.io/tx/${this.props.tx.hash}`} target="_blank" rel="noopener noreferrer">View on Etherscan</a>
               </Message.Content>
             </Message>;
     } else {
@@ -54,6 +55,7 @@ const mapStateToProps = state => ({
   isLoadingGetTokens: state.transactions.isLoadingGetTokens,
   successGetTokens: state.transactions.successGetTokens,
   errorGetTokens: state.transactions.errorGetTokens,
+  tx: state.transactions.tx,
 })
 
 export default connect(mapStateToProps, { })(MessageTx);

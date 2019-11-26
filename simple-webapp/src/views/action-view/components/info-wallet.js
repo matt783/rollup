@@ -55,11 +55,15 @@ class InfoWallet extends Component {
     }
   }
 
+  reload = () => {
+    this.setState({firstLoading: true});
+    this.props.getInfoAccount();
+  }
+
   isLoadingTokens = () => {
     if(this.state.loading === false) {
       return this.props.tokens;
     } else {
-      console.log("TOKENS")
       return <Icon name='circle notched' loading />
     }
   }
@@ -68,7 +72,6 @@ class InfoWallet extends Component {
     if(this.state.loading === false) {
       return this.props.tokensR;
     } else {
-      console.log("TOKENSR")
       return <Icon name='circle notched' loading />
     }
   }
@@ -77,7 +80,6 @@ class InfoWallet extends Component {
     if(this.state.loading === false) {
       return this.props.balance;
     } else {
-      console.log("ETHERS")
       return <Icon name='circle notched' loading />
     }
   }
@@ -88,7 +90,10 @@ class InfoWallet extends Component {
           <Table padded>
             <Table.Header>
               <Table.Row>
-                <Table.HeaderCell colSpan='4'>Rollup Wallet</Table.HeaderCell>
+                <Table.HeaderCell colSpan='3'>Rollup Wallet</Table.HeaderCell>
+                <Table.HeaderCell textAlign="right">
+                  <Button onClick={this.reload}><Icon name="sync"/>Reload</Button>
+                </Table.HeaderCell>
               </Table.Row>
             </Table.Header>
           <Table.Body>
@@ -115,14 +120,6 @@ class InfoWallet extends Component {
             </Table.Row>
             <Table.Row>
               <Table.Cell>
-                ETH: 
-              </Table.Cell>
-              <Table.Cell colSpan='3'>
-                {this.isLoadingEthers()}
-              </Table.Cell>
-            </Table.Row>
-            <Table.Row>
-              <Table.Cell>
                 TOKENS: 
               </Table.Cell>
               <Table.Cell>
@@ -134,6 +131,14 @@ class InfoWallet extends Component {
               <Table.Cell textAlign='center'>
                 <input type="text" ref={this.getTokensRef}/>
                 <Button content="GET TOKENS" onClick={this.handleClickTokens}/>
+              </Table.Cell>
+            </Table.Row>
+            <Table.Row>
+              <Table.Cell>
+                ETH: 
+              </Table.Cell>
+              <Table.Cell colSpan='3'>
+                {this.isLoadingEthers()}
               </Table.Cell>
             </Table.Row>
             <Table.Row>

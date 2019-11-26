@@ -165,11 +165,15 @@ export function handleInfoAccount(node, walletFunder, addressTokens, abiTokens, 
         const filters = {
           ethAddr: `0x${encWallet.ethWallet.address}`
         }
-        const res = await apiOperator.getAccounts(filters);
         let tokensR = 0;
-        const numTx = res.data[res.data.length-1].idx;
-        for(let i=1; i <= numTx; i++){
-          tokensR = tokensR + parseInt(res.data.find(tx => tx.idx === i).amount);
+        try {
+          const res = await apiOperator.getAccounts(filters);
+          const numTx = res.data[res.data.length-1].idx;
+          for(let i=1; i <= numTx; i++){
+            tokensR = tokensR + parseInt(res.data.find(tx => tx.idx === i).amount);
+          }
+        } catch(err) {
+          tokensR = 0;
         }
         dispatch(infoAccountSuccess(balance, tokens, tokensR));
       } catch(error) {

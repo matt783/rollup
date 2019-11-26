@@ -46,7 +46,7 @@ class ModalDeposit extends Component {
             </Modal.Content>
             <Modal.Actions>
               <Button color="blue" onClick={this.handeClick}>
-                <Icon name="upload"/>Deposit
+                <Icon name="sign-in"/>Deposit
               </Button>
               <Button color="red" onClick={this.props.toggleModalDeposit}>
                 <Icon name="close"/>Close

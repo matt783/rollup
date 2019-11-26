@@ -29,13 +29,8 @@ class ActionView extends Component {
   componentDidMount = async () => {
     this.getInfoAccount();
   }
-  
-  /*componentDidUpdate = () => {
-    if(this.props.wallet !== ''){
-      this.props.handleInfoAccount(this.props.config.nodeEth, this.props.walletFunder, tokensAddress,this.props.abiTokens, this.props.wallet, this.props.password);
-    }
-  }*/
 
+  
   getInfoAccount = () => {
     if(this.props.wallet !== ''){
       this.props.handleInfoAccount(this.props.config.nodeEth, this.props.walletFunder, tokensAddress, this.props.abiTokens, this.props.wallet, this.props.password, this.props.config.operator);
@@ -58,8 +53,8 @@ class ActionView extends Component {
   toggleModalWithdraw =() => {this.setState(prev => ({ modalWithdraw: !prev.modalWithdraw }))}
   toggleModalSend =() => {this.setState(prev => ({ modalSend: !prev.modalSend }))}
 
-  handleClickGetTokens = () => {
-    this.props.handleGetTokens(this.props.config.nodeEth, this.props.walletFunder, "0x7dFc5b5D172db3941f669770f9993b1df250B560",this.props.abiTokens, this.props.wallet, this.props.password);
+  handleClickGetTokens = (amountTokens) => {
+    this.props.handleGetTokens(this.props.config.nodeEth, this.props.walletFunder, tokensAddress, this.props.abiTokens, this.props.wallet, this.props.password, amountTokens);
     this.getInfoAccount();
   }
 
@@ -100,6 +95,7 @@ class ActionView extends Component {
           tokens = {this.props.tokens}
           tokensR = {this.props.tokensR}
           isLoadingInfoAccount = {this.props.isLoadingInfoAccount}
+          getInfoAccount = {this.getInfoAccount}
         />
         <ModalDeposit
           modalDeposit = {this.state.modalDeposit}
