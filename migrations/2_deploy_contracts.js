@@ -7,12 +7,13 @@ const Rollup = artifacts.require("../contracts/Rollup");
 const TokenRollup = artifacts.require("../contracts/test/TokenRollup");
 const RollupPoS = artifacts.require("../contracts/RollupPoS");
 
-const maxTx = 4;
-const maxOnChainTx = 2;
-const initialAmount = 1000;
+const maxTx = 10;
+const maxOnChainTx = 5;
+const initialAmount = (1e+100).toLocaleString("fullwide", {useGrouping:false});
 let insPoseidonUnit;
 
 module.exports = async function (deployer, network, accounts) {
+
     const C = new web3.eth.Contract(poseidonUnit.abi);
     insPoseidonUnit = await C.deploy({ data: poseidonUnit.createCode() })
         .send({ gas: 2500000, from: accounts[0] });

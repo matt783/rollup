@@ -7,7 +7,14 @@
     "doc": "doc"
   },
   "scripts": {
-    "test": "mocha"
+    "test": "mocha",
+    "rm-tmp":"rm -rf rollup-operator/test/server/tmp-0 && rm -rf rollup-operator/test/server/tmp-1 && rm -rf rollup-operator/test/server/tmp-2",
+    "run-operator-light": "chmod +x run-operator-param.sh && ./run-operator-param.sh 9000 9001 http://127.0.0.1:10001 light",
+    "run-operator-full": "chmod +x run-operator-param.sh && ./run-operator-param.sh 9002 9003 http://127.0.0.1:10001 full",
+    "run-operator-archive": "chmod +x run-operator-param.sh && ./run-operator-param.sh 9004 9005 http://127.0.0.1:10001 archive",
+    "operator-light": "npm run rm-tmp && npm run run-operator-light",
+    "operator-full": "npm run rm-tmp && npm run run-operator-full",
+    "operator-archive": "npm run rm-tmp && npm run run-operator-archive"
   },
   "repository": {
     "type": "git",
