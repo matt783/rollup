@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Table, Button, Container, Icon } from 'semantic-ui-react';
+import { Table, Button, Container, Icon, Popup, Grid } from 'semantic-ui-react';
 
 // tokens address: "0x7dFc5b5D172db3941f669770f9993b1df250B560"
 
@@ -84,6 +84,23 @@ class InfoWallet extends Component {
     }
   }
 
+  getIdTokens = () => {
+    if(this.props.txs.data !== undefined) {
+      const txs = this.props.txs;
+      let txsArray = [];
+      const numTx = txs.data[txs.data.length-1].idx;
+      for(let i=1; i <= numTx; i++){
+        txsArray.push(txs.data.find(tx => tx.idx === i));
+      }
+      return txsArray.map((key, index) => {
+        return <Table.Row key={index}>
+                <Table.Cell colSpan='2'/>
+                <Table.Cell colSpan='2'>ID: {key.idx} TOKENS: {key.amount}</Table.Cell>
+               </Table.Row>
+      })
+    }
+  }
+
   render() {
     return (     
         <Container>
@@ -126,13 +143,14 @@ class InfoWallet extends Component {
                 {this.isLoadingTokens()} 
               </Table.Cell>
               <Table.Cell>
-                {this.isLoadingTokensR()} 
+                {this.isLoadingTokensR()}
               </Table.Cell>
               <Table.Cell textAlign='center'>
                 <input type="text" ref={this.getTokensRef}/>
                 <Button content="GET TOKENS" onClick={this.handleClickTokens}/>
               </Table.Cell>
             </Table.Row>
+             {this.getIdTokens()}
             <Table.Row>
               <Table.Cell>
                 ETH: 

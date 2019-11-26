@@ -18,6 +18,7 @@ const initialState = {
   balance: 0,
   tokens: 0,
   tokensR: 0,
+  txs: [],
   errorInfoAccount: '',
 };
 
@@ -99,6 +100,7 @@ function general(state = initialState, action) {
               balance: action.payload.balance,
               tokens: action.payload.tokens,
               tokensR: action.payload.tokensR,
+              txs: action.payload.txs,
               errorInfoAccount: ''
           };
         case CONSTANTS.INFO_ACCOUNT_ERROR:

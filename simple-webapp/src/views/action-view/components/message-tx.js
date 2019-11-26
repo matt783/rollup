@@ -18,7 +18,7 @@ class MessageTx extends Component {
                 <Message.Header>Error!</Message.Header>
               </Message.Content>
             </Message>;
-    } else if (this.props.successDeposit === true || this.props.successWithdraw === true || this.props.successSend === true || this.props.successApprove=== true || this.props.successGetTokens === true) {
+    } else if (this.props.successDeposit === true || this.props.successWithdraw === true || this.props.successApprove=== true || this.props.successGetTokens === true) {
       return <Message icon color='green'>
               <Icon name='check' />
               <Message.Content>
@@ -26,6 +26,13 @@ class MessageTx extends Component {
                 <a href={`https://etherscan.io/tx/${this.props.tx.hash}`} target="_blank" rel="noopener noreferrer">View on Etherscan</a>
               </Message.Content>
             </Message>;
+    } else if(this.props.successSend === true) {
+      return <Message icon color='green'>
+      <Icon name='check' />
+      <Message.Content>
+        <Message.Header>Transaction done!</Message.Header>
+      </Message.Content>
+    </Message>;
     } else {
       return '';
     }
