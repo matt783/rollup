@@ -17,6 +17,10 @@ const initialState = {
   isLoadingGetTokens: false,
   successGetTokens: false,
   errorGetTokens: '',
+  exitRoot: -1,
+  isLoadingGetExitRoot: false,
+  successGetExitRoot: false,
+  errorGetExitRoot: '',
 };
 
 function transactions(state = initialState, action) {
@@ -130,6 +134,28 @@ function transactions(state = initialState, action) {
               successGetTokens: false,
               errorGetTokens: action.error,
           };
+          case CONSTANTS.GET_EXIT_ROOT:
+            return {
+                ...state,
+                isLoadingGetExitRoot: true,
+                successGetExitRoot: false,
+                errorGetExitRoot: '',
+            };
+        case CONSTANTS.GET_EXIT_ROOT_SUCCESS: 
+            return {
+                ...state,
+                isLoadingGetExitRoot: false,
+                exitRoot: action.payload,
+                successGetExitRoot: true,
+                errorGetExitRoot: '',
+            };
+        case CONSTANTS.GET_EXIT_ROOT_ERROR:
+            return {
+                ...state,
+                isLoadingGetExitRoot: false,
+                successGetExitRoot: false,
+                errorGetExitRoot: action.error,
+            };
       default:
           return state;
   }

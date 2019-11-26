@@ -130,10 +130,10 @@ function infoAccount() {
   };
 }
 
-function infoAccountSuccess(balance, tokens, tokensR) {
+function infoAccountSuccess(balance, tokens, tokensR, txs) {
   return {
     type: CONSTANTS.INFO_ACCOUNT_SUCCESS,
-    payload: {balance, tokens, tokensR},
+    payload: {balance, tokens, tokensR, txs},
     error: '',
   }
 }
@@ -166,16 +166,17 @@ export function handleInfoAccount(node, walletFunder, addressTokens, abiTokens, 
           ethAddr: `0x${encWallet.ethWallet.address}`
         }
         let tokensR = 0;
+        let txs = [];
         try {
-          const res = await apiOperator.getAccounts(filters);
-          const numTx = res.data[res.data.length-1].idx;
+          txs = await apiOperator.getAccounts(filters);
+          const numTx = txs.data[txs.data.length-1].idx;
           for(let i=1; i <= numTx; i++){
-            tokensR = tokensR + parseInt(res.data.find(tx => tx.idx === i).amount);
+            tokensR = tokensR + parseInt(txs.data.find(tx => tx.idx === i).amount);
           }
         } catch(err) {
           tokensR = 0;
         }
-        dispatch(infoAccountSuccess(balance, tokens, tokensR));
+        dispatch(infoAccountSuccess(balance, tokens, tokensR, txs));
       } catch(error) {
         console.log(error)
         dispatch(infoAccountError(error))

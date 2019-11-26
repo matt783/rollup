@@ -1,5 +1,6 @@
 import * as CONSTANTS from './constants';
 import * as rollup from '../../utils/bundle-cli';
+import * as operator from '../../utils/bundle-op';
 const ethers = require('ethers');
 
 function sendDeposit() {
@@ -25,15 +26,54 @@ function sendDepositError(error) {
 
 export function handleSendDeposit(nodeEth, addressSC, amount, tokenId, wallet, password, ethAddress, abiRollup) {
   return function(dispatch) {
-    dispatch(sendDeposit());;
+    dispatch(sendDeposit());
     return new Promise(async (resolve) => {
       try {
         const res = await rollup.onchain.deposit.deposit(nodeEth, addressSC, amount, tokenId, wallet, password, ethAddress, abiRollup);
-        dispatch(sendDepositSuccess(res));
         resolve(res);
+        dispatch(sendDepositSuccess(res));
       } catch(error) {
-        dispatch(sendDepositError(error.message));
         resolve(error.message)
+        dispatch(sendDepositError(error.message));
+      }
+    })
+  }
+}
+
+
+function getNumExitRoot() {
+  return {
+    type: CONSTANTS.GET_EXIT_ROOT,
+  };
+}
+
+function getNumExitRootSuccess(res) {
+  return {
+    type: CONSTANTS.GET_EXIT_ROOT_SUCCESS,
+    payload: res,
+    error: '',
+  };
+}
+
+function getNumExitRootError(error) {
+  return {
+    type: CONSTANTS.GET_EXIT_ROOT_ERROR,
+    error,
+  }
+}
+
+export function handleGetExitRoot(urlOperator, id) {
+  return function(dispatch) {
+    dispatch(getNumExitRoot());
+    return new Promise(async (resolve) => {
+      try {
+        const apiOperator = new operator.cliExternalOperator(urlOperator);
+        const res = await apiOperator.getExits(id);
+        resolve(res.data[0]);
+        dispatch(getNumExitRootSuccess(res.data[0]));
+      } catch(err) {
+        resolve(err);
+        dispatch(getNumExitRootError(err));
       }
     })
   }
@@ -65,7 +105,7 @@ export function handleSendWithdraw(nodeEth, addressSC, wallet, password, abiRoll
     dispatch(sendWithdraw());
     return new Promise(async (resolve) => {
       try {
-        const res = await rollup.onchain.withdraw.withdraw(nodeEth, addressSC, amount, wallet, password, abiRollup, operator, idFrom, numExitRoot);
+        const res = await rollup.onchain.withdraw.withdraw(nodeEth, addressSC, wallet, password, abiRollup, operator, idFrom, numExitRoot);
         dispatch(sendWithdrawSuccess(res));
         resolve(res);
       } catch(error) {

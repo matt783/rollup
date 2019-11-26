@@ -49,9 +49,9 @@ class ActionView extends Component {
     }
   }
 
-  toggleModalDeposit =() => {this.setState(prev => ({ modalDeposit: !prev.modalDeposit }))}
-  toggleModalWithdraw =() => {this.setState(prev => ({ modalWithdraw: !prev.modalWithdraw }))}
-  toggleModalSend =() => {this.setState(prev => ({ modalSend: !prev.modalSend }))}
+  toggleModalDeposit = () => {this.setState(prev => ({ modalDeposit: !prev.modalDeposit }))}
+  toggleModalWithdraw = () => {this.setState(prev => ({ modalWithdraw: !prev.modalWithdraw }))}
+  toggleModalSend = () => {this.setState(prev => ({ modalSend: !prev.modalSend }))}
 
   handleClickGetTokens = (amountTokens) => {
     this.props.handleGetTokens(this.props.config.nodeEth, this.props.walletFunder, tokensAddress, this.props.abiTokens, this.props.wallet, this.props.password, amountTokens);
@@ -96,6 +96,7 @@ class ActionView extends Component {
           tokensR = {this.props.tokensR}
           isLoadingInfoAccount = {this.props.isLoadingInfoAccount}
           getInfoAccount = {this.getInfoAccount}
+          txs = {this.props.txs}
         />
         <ModalDeposit
           modalDeposit = {this.state.modalDeposit}
@@ -128,6 +129,7 @@ const mapStateToProps = state => ({
   balance: state.general.balance,
   tokens: state.general.tokens,
   tokensR: state.general.tokensR,
+  txs: state.general.txs,
   isLoadingInfoAccount: state.general.isLoadingInfoAccount,
 })
 
