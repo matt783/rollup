@@ -168,10 +168,14 @@ export function handleInfoAccount(node, walletFunder, addressTokens, abiTokens, 
         let tokensR = 0;
         let txs = [];
         try {
-          txs = await apiOperator.getAccounts(filters);
-          const numTx = txs.data[txs.data.length-1].idx;
-          for(let i=1; i <= numTx; i++){
-            tokensR = tokensR + parseInt(txs.data.find(tx => tx.idx === i).amount);
+          const allTxs = await apiOperator.getAccounts(filters);
+          const initTx = allTxs.data[0].idx;
+          const numTx = allTxs.data[allTxs.data.length-1].idx;
+          for(let i = initTx; i <= numTx; i++){
+            if(allTxs.data.find(tx => tx.idx === i) !== undefined){
+              txs.push(allTxs.data.find(tx => tx.idx === i));
+              tokensR = tokensR + parseInt(allTxs.data.find(tx => tx.idx === i).amount);
+            }
           }
         } catch(err) {
           tokensR = 0;
@@ -184,47 +188,3 @@ export function handleInfoAccount(node, walletFunder, addressTokens, abiTokens, 
     })
   }
 }
-/* 
-function getTokensRollup() {
-  return {
-    type: CONSTANTS.GET_TOKENS_ROLLUP,
-  };
-}
-
-function getTokensRollupSuccess(amountTokens) {
-  return {
-    type: CONSTANTS.GET_TOKENS_ROLLUP_SUCCESS,
-    payload: amountTokens,
-    error: '',
-  }
-}
-
-function getTokensRollupError(error) {
-  return {
-    type: CONSTANTS.GET_TOKENS_ROLLUP_ERROR,
-    error,
-  }
-}
-
-export function handleGetTokensRollup(operator, wallet) {
-  return function(dispatch) {
-    dispatch(getTokensRollup())
-    try {
-      const apiOperator = new operator.cliExternalOperator(operator);
-      const filters = {
-        ethAddr: `0x${wallet.ethWallet.address}`
-      }
-      const res = await apiOperator.getAccounts(filters);
-      let amountTokens = 0;
-      const numTx = res.data[res.data.length-1].idx;
-      for(let i=1; i <= numTx; i++){
-        amountTokens += res.data.find(tx => tx.idx === i).amount;
-      }
-      dispatch(getTokensRollupSuccess(amountTokens))
-    } catch(err) {
-      console.log(err);
-      dispatch(getTokensRollupError(err))
-    }
-  }
-}
-*/

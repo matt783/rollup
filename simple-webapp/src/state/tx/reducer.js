@@ -4,23 +4,24 @@ const initialState = {
   tx: '',
   isLoadingDeposit: false,
   successDeposit: false,
-  errorDeposit: '',
   isLoadingWithdraw: false,
   successWithdraw: false,
-  errorWithdraw: '',
   isLoadingSend: false,
   successSend: false,
-  errorSend: '',
   isLoadingApprove: false,
   successApprove: false,
-  errorApprove: '',
   isLoadingGetTokens: false,
   successGetTokens: false,
-  errorGetTokens: '',
   exitRoot: -1,
   isLoadingGetExitRoot: false,
   successGetExitRoot: false,
-  errorGetExitRoot: '',
+  error: '',
+  /*errorDeposit: '',
+  errorWithdraw: '',
+  errorSend: '',
+  errorGetTokens: '',
+  errorApprove: '',
+  errorGetExitRoot: '',*/
 };
 
 function transactions(state = initialState, action) {
@@ -30,7 +31,8 @@ function transactions(state = initialState, action) {
             ...state,
             isLoadingDeposit: true,
             successDeposit: false,
-            errorDeposit: '',
+            //errorDeposit: '',
+            error: '',
           };
       case CONSTANTS.SEND_DEPOSIT_SUCCESS: 
           return {
@@ -38,21 +40,24 @@ function transactions(state = initialState, action) {
             isLoadingDeposit: false,
             tx: action.payload,
             successDeposit: true,
-            errorDeposit: '',
+            //errorDeposit: '',
+            error: '',
           };
       case CONSTANTS.SEND_DEPOSIT_ERROR:
           return {
             ...state,
             isLoadingDeposit: false,
             successDeposit: false,
-            errorDeposit: action.error,
+            //errorDeposit: action.error,
+            error: action.error,
           };
       case CONSTANTS.SEND_WITHDRAW:
           return {
             ...state,
             isLoadingWithdraw: true,
             successWithdraw: false,
-            errorWithdraw: '',
+            //errorWithdraw: '',
+            error: '',
           };
       case CONSTANTS.SEND_WITHDRAW_SUCCESS: 
           return {
@@ -60,35 +65,40 @@ function transactions(state = initialState, action) {
             isLoadingWithdraw: false,
             tx: action.payload,
             successWithdraw: true,
-            errorWithdraw: '',
+            //errorWithdraw: '',
+            error: '',
           };
       case CONSTANTS.SEND_WITHDRAW_ERROR:
           return {
             ...state,
             isLoadingWithdraw: false,
             successWithdraw: false,
-            errorWithdraw: action.error,
+            //errorWithdraw: action.error,
+            error: action.error,
           };
       case CONSTANTS.SEND_SEND:
           return {
               ...state,
               isLoadingSend: true,
               successSend: false,
-              errorSend: '',
+              //errorSend: '',
+              error: '',
             };
       case CONSTANTS.SEND_SEND_SUCCESS: 
           return {
               ...state,
               isLoadingSend: false,
               successSend: true,
-              errorSend: '',
+              //errorSend: '',
+              error: '',
             };
       case CONSTANTS.SEND_SEND_ERROR:
           return {
               ...state,
               isLoadingSend: false,
               successSend: false,
-              errorSend: action.error,
+              //errorSend: action.error,
+              error: action.error,
             };
       case CONSTANTS.APPROVE:
           return {
@@ -96,28 +106,32 @@ function transactions(state = initialState, action) {
                 isLoadingApprove: true,
                 tx: action.payload,
                 successApprove: false,
-                errorApprove: '',
+                //errorApprove: '',
+                error: '',
               };
       case CONSTANTS.APPROVE_SUCCESS: 
           return {
               ...state,
               isLoadingApprove: false,
               successApprove: true,
-              errorApprove: '',
+              //errorApprove: '',
+              error: '',
             };
       case CONSTANTS.APPROVE_ERROR:
           return {
               ...state,
               isLoadingApprove: false,
               successApprove: false,
-              errorApprove: action.error,
+              //errorApprove: action.error,
+              error: action.error,
             };
       case CONSTANTS.GET_TOKENS:
           return {
               ...state,
               isLoadingGetTokens: true,
               successGetTokens: false,
-              errorGetTokens: '',
+              //errorGetTokens: '',
+              error: '',
           };
       case CONSTANTS.GET_TOKENS_SUCCESS: 
           return {
@@ -125,21 +139,24 @@ function transactions(state = initialState, action) {
               isLoadingGetTokens: false,
               tx: action.payload,
               successGetTokens: true,
-              errorGetTokens: '',
+              //errorGetTokens: '',
+              error: '',
           };
       case CONSTANTS.GET_TOKENS_ERROR:
           return {
               ...state,
               isLoadingGetTokens: false,
               successGetTokens: false,
-              errorGetTokens: action.error,
+              //errorGetTokens: action.error,
+              error: action.error,
           };
           case CONSTANTS.GET_EXIT_ROOT:
             return {
                 ...state,
                 isLoadingGetExitRoot: true,
                 successGetExitRoot: false,
-                errorGetExitRoot: '',
+                //errorGetExitRoot: '',
+                error: '',
             };
         case CONSTANTS.GET_EXIT_ROOT_SUCCESS: 
             return {
@@ -147,15 +164,35 @@ function transactions(state = initialState, action) {
                 isLoadingGetExitRoot: false,
                 exitRoot: action.payload,
                 successGetExitRoot: true,
-                errorGetExitRoot: '',
+                //errorGetExitRoot: '',
+                error: '',
             };
         case CONSTANTS.GET_EXIT_ROOT_ERROR:
             return {
                 ...state,
                 isLoadingGetExitRoot: false,
                 successGetExitRoot: false,
-                errorGetExitRoot: action.error,
+                //errorGetExitRoot: action.error,
+                error: action.error,
             };
+        case CONSTANTS.GET_INIT:
+          return {
+            ...state,
+            isLoadingDeposit: false,
+            successDeposit: false,
+            isLoadingWithdraw: false,
+            successWithdraw: false,
+            isLoadingSend: false,
+            successSend: false,
+            isLoadingApprove: false,
+            successApprove: false,
+            isLoadingGetTokens: false,
+            successGetTokens: false,
+            exitRoot: -1,
+            isLoadingGetExitRoot: false,
+            successGetExitRoot: false,
+            error: '',
+          }
       default:
           return state;
   }

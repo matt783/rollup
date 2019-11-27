@@ -19,3 +19,4 @@ export const GET_TOKENS_ERROR = 'GET_TOKENS_ERROR';
 export const GET_EXIT_ROOT = 'GET_EXIT_ROOT';
 export const GET_EXIT_ROOT_SUCCESS = 'GET_EXIT_ROOT_SUCCESS';
 export const GET_EXIT_ROOT_ERROR = 'GET_EXIT_ROOT_ERROR';
+export const GET_INIT = 'GET_INIT';

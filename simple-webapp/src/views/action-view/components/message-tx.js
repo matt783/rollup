@@ -11,19 +11,12 @@ class MessageTx extends Component {
                 <Message.Header>Waiting for the transaction...</Message.Header>
               </Message.Content>
             </Message>;
-    } else if (this.props.errorDeposit !== '' || this.props.errorWithdraw !== '' || this.props.errorSend !== '' || this.props.errorApprove !== '' || this.props.errorGetTokens !== '') {
+    //} else if (this.props.errorDeposit !== '' || this.props.errorWithdraw !== '' || this.props.errorSend !== '' || this.props.errorApprove !== '' || this.props.errorGetTokens !== '') {
+    } else if (this.props.error !== '') {  
       return <Message icon color='red'>
               <Icon name='exclamation' />
               <Message.Content>
                 <Message.Header>Error!</Message.Header>
-              </Message.Content>
-            </Message>;
-    } else if (this.props.successDeposit === true || this.props.successWithdraw === true || this.props.successApprove=== true || this.props.successGetTokens === true) {
-      return <Message icon color='green'>
-              <Icon name='check' />
-              <Message.Content>
-                <Message.Header>Transaction done!</Message.Header>
-                <a href={`https://etherscan.io/tx/${this.props.tx.hash}`} target="_blank" rel="noopener noreferrer">View on Etherscan</a>
               </Message.Content>
             </Message>;
     } else if(this.props.successSend === true) {
@@ -33,6 +26,14 @@ class MessageTx extends Component {
         <Message.Header>Transaction done!</Message.Header>
       </Message.Content>
     </Message>;
+    } else if (this.props.successDeposit === true || this.props.successWithdraw === true || this.props.successApprove === true || this.props.successGetTokens === true) {
+      return <Message icon color='green'>
+              <Icon name='check' />
+              <Message.Content>
+                <Message.Header>Transaction done!</Message.Header>
+                <a href={`https://etherscan.io/tx/${this.props.tx.hash}`} target="_blank" rel="noopener noreferrer">View on Etherscan</a>
+              </Message.Content>
+            </Message>;
     } else {
       return '';
     }
@@ -49,19 +50,20 @@ class MessageTx extends Component {
 const mapStateToProps = state => ({
   isLoadingDeposit: state.transactions.isLoadingDeposit,
   successDeposit: state.transactions.successDeposit,
-  errorDeposit: state.transactions.errorDeposit,
   isLoadingWithdraw: state.transactions.isLoadingWithdraw,
   successWithdraw: state.transactions.successWithdraw,
-  errorWithdraw: state.transactions.errorWithdraw,
   isLoadingSend: state.transactions.isLoadingSend,
   successSend: state.transactions.successSend,
-  errorSend: state.transactions.errorSend,
   isLoadingApprove: state.transactions.isLoadingApprove,
   successApprove: state.transactions.successApprove,
-  errorApprove: state.transactions.errorApprove,
   isLoadingGetTokens: state.transactions.isLoadingGetTokens,
   successGetTokens: state.transactions.successGetTokens,
-  errorGetTokens: state.transactions.errorGetTokens,
+  /*errorDeposit: state.transactions.errorDeposit,
+  errorWithdraw: state.transactions.errorWithdraw,
+  errorSend: state.transactions.errorSend,
+  errorApprove: state.transactions.errorApprove,
+  errorGetTokens: state.transactions.errorGetTokens,*/
+  error: state.transactions.error,
   tx: state.transactions.tx,
 })
 

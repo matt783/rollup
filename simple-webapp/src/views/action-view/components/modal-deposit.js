@@ -32,7 +32,7 @@ class ModalDeposit extends Component {
         return (
           <Modal open={this.props.modalDeposit}>
             <Modal.Header>Deposit</Modal.Header>
-            <Modal.Content >
+            <Modal.Content>
               <Form>
                 <Form.Field>
                   <label>Amount</label>

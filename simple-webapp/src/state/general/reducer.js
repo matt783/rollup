@@ -36,7 +36,7 @@ function general(state = initialState, action) {
             isLoadingWallet: false,
             wallet: action.payload.wallet,
             password: action.payload.password,
-            errorWallet: '',
+            errorWallet: ''
           }
     case CONSTANTS.LOAD_WALLET_ERROR:
       return {

@@ -240,3 +240,14 @@ export function handleGetTokens(node, walletFunder, addressTokens, abiTokens, en
   }
 }
 
+function getInitStateTx() {
+  return {
+    type: CONSTANTS.GET_INIT,
+  }
+}
+
+export function handleInitStateTx() {
+  return function(dispatch) {
+    dispatch(getInitStateTx())
+  }
+}

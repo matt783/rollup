@@ -1,4 +1,4 @@
-import React,{Component} from 'react';
+import React, {Component} from 'react';
 import { connect } from 'react-redux';
 import { Header, Container, Divider } from 'semantic-ui-react';
 
@@ -63,7 +63,6 @@ class ActionView extends Component {
       amountToken, this.props.config.address, this.props.password, this.props.config.nodeEth)
     console.log(res);
   }
-  
 
   render() {
     return (
