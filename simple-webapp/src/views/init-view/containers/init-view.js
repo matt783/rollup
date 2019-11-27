@@ -8,6 +8,7 @@ import ModalCreate from '../components/modal-create';
 
 import * as rollup from '../../../utils/bundle-cli';
 import { handleLoadWallet, handleLoadFiles, handleLoadOperator, resetWallet } from '../../../state/general/actions';
+import { handleInitStateTx } from '../../../state/tx/actions';
 const FileSaver = require('file-saver');
 
 const config = require('../../../test/config.json');
@@ -52,6 +53,7 @@ class InitView extends Component {
           console.log(this.passwordRef.current.value)
           throw new Error("Incorrect wallet or password");
         } else {
+          this.props.handleInitStateTx();
           this.props.handleLoadWallet(this.state.walletImport, this.passwordRef.current.value);
           this.props.handleLoadFiles(config, abiRollup, abiTokens, walletFunder);
           this.props.handleLoadOperator(config);
@@ -69,7 +71,7 @@ class InitView extends Component {
       const encWallet = await wallet.toEncryptedJson(password);
       const blob = new Blob([JSON.stringify(encWallet)], { type: 'text/plain;charset=utf-8' });
       FileSaver.saveAs(blob, walletName);
-      this.setState({ modalCreate: false })
+      this.setState({ modalCreate: false });
     }
 
     toggleModalImport = () => {this.setState(prev => ({ modalImport: !prev.modalImport }))}
@@ -133,4 +135,4 @@ const mapStateToProps = state => ({
 })
 
 
-export default connect(mapStateToProps, { handleLoadWallet, handleLoadFiles, handleLoadOperator, resetWallet })(InitView);
+export default connect(mapStateToProps, { handleLoadWallet, handleLoadFiles, handleLoadOperator, resetWallet, handleInitStateTx })(InitView);
