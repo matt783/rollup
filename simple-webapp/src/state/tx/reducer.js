@@ -1,7 +1,7 @@
 import * as CONSTANTS from './constants';
 
 const initialState = {
-  tx: '',
+  tx: {},
   isLoadingDeposit: false,
   successDeposit: false,
   isLoadingWithdraw: false,
@@ -12,7 +12,7 @@ const initialState = {
   successApprove: false,
   isLoadingGetTokens: false,
   successGetTokens: false,
-  exitRoot: -1,
+  exitRoots: [],
   isLoadingGetExitRoot: false,
   successGetExitRoot: false,
   error: '',
@@ -162,7 +162,7 @@ function transactions(state = initialState, action) {
             return {
                 ...state,
                 isLoadingGetExitRoot: false,
-                exitRoot: action.payload,
+                exitRoots: action.payload,
                 successGetExitRoot: true,
                 //errorGetExitRoot: '',
                 error: '',
@@ -188,7 +188,7 @@ function transactions(state = initialState, action) {
             successApprove: false,
             isLoadingGetTokens: false,
             successGetTokens: false,
-            exitRoot: -1,
+            exitRoots: [],
             isLoadingGetExitRoot: false,
             successGetExitRoot: false,
             error: '',

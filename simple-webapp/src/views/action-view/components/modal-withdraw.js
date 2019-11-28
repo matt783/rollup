@@ -1,116 +1,145 @@
-import React,{Component} from 'react';
+import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import { Button, Modal, Form, Icon} from 'semantic-ui-react';
+import {
+  Button, Modal, Form, Icon, Dropdown,
+} from 'semantic-ui-react';
 import { handleSendWithdraw, handleGetExitRoot } from '../../../state/tx/actions';
 
 class ModalWithdraw extends Component {
-    constructor(props) {
-      super(props);
-      this.state = {
-        num: -1,
-        idFrom: -1,
-        initModal: true,
-      }
-      this.idFromRef = React.createRef();
-      this.numExitRootRef = React.createRef();
-    }
+  static propTypes = {
+    wallet: PropTypes.object.isRequired,
+    config: PropTypes.object.isRequired,
+    abiRollup: PropTypes.array.isRequired,
+    password: PropTypes.string.isRequired,
+    modalWithdraw: PropTypes.bool.isRequired,
+    toggleModalWithdraw: PropTypes.func.isRequired,
+    handleSendWithdraw: PropTypes.func.isRequired,
+    getInfoAccount: PropTypes.func.isRequired,
+    handleGetExitRoot: PropTypes.func.isRequired,
+  };
+
+  constructor(props) {
+    super(props);
+    this.state = {
+      exitRoots: [],
+      numExitRoot: -1,
+      idFrom: -1,
+      initModal: true,
+    };
+    this.idFromRef = React.createRef();
+  }
 
     handleClick = async () => {
-      const { wallet, config, abiRollup, password } = this.props;
+      const {
+        wallet, config, abiRollup, password,
+      } = this.props;
 
-      const idFrom = parseInt(this.state.idFrom);
-      const numExitRoot = parseInt(this.state.num);
-      const nodeEth = config.nodeEth;
+      const idFrom = parseInt(this.state.idFrom, 10);
+      const numExitRoot = parseInt(this.state.numExitRoot, 10);
+      const { nodeEth } = config;
       const addressSC = config.address;
-      const operator = config.operator;
+      const { operator } = config;
       this.props.toggleModalWithdraw();
-      const res = await this.props.handleSendWithdraw(nodeEth, addressSC, wallet, password, abiRollup, operator, idFrom, numExitRoot);
+      const res = await this.props.handleSendWithdraw(nodeEth, addressSC, wallet, password,
+        abiRollup, operator, idFrom, numExitRoot);
       this.props.getInfoAccount();
+      // eslint-disable-next-line no-console
       console.log(res);
     }
 
     getExitRoot = async () => {
-      const num = await this.props.handleGetExitRoot(this.props.config.operator, this.idFromRef.current.value);
-      this.setState({num, idFrom: this.idFromRef.current.value}, () => {this.toggleModalChange()});
+      try {
+        const exitRoots = await this.props.handleGetExitRoot(this.props.config.operator, this.idFromRef.current.value);
+        this.setState({ exitRoots, idFrom: this.idFromRef.current.value }, () => { this.toggleModalChange(); });
+      } catch (err) {
+        this.setState({ exitRoots:[], idFrom:-1}, () => { this.toggleModalChange(); });
+      }  
     }
 
     exitRoot = () => {
-      console.log(this.state.num)
-      if(this.state.num === -1) {
-        return "No Num Exit Root";
+      if (this.state.exitRoots === []) {
+        return <Dropdown placeholder='Num Exit Root'/>;
       } else {
-        return this.state.num;
-      }
-    }
-    
-    modal = () => {
-      if(this.state.initModal === true) {
-        return <Modal open={this.props.modalWithdraw}>
-                <Modal.Header>Withdraw</Modal.Header>
-                <Modal.Content>
-                  <Form>
-                    <Form.Field>
-                      <label>ID From</label>
-                      <input type="text" ref={this.idFromRef}/>
-                    </Form.Field>
-                  </Form>
-                </Modal.Content>
-                <Modal.Actions>
-                  <Button color="blue" onClick={this.getExitRoot}>
-                    <Icon name="arrow right"/>Next
-                  </Button>
-                  <Button color="red" onClick={this.props.toggleModalWithdraw}>
-                    <Icon name="close"/>Close
-                  </Button>
-                </Modal.Actions>
-              </Modal>
-        } else {
-          return <Modal open={this.props.modalWithdraw}>
-                   <Modal.Header>Withdraw</Modal.Header>
-                  <Modal.Content>
-                    <Form>
-                      <Form.Field>
-                        <label>ID From</label>
-                        <label>{this.state.idFrom}</label>
-                      </Form.Field>
-                      <Form.Field>
-                        <label>Num Exit Root</label>
-                        <label>{this.exitRoot()}</label>
-                      </Form.Field>
-                    </Form>
-                  </Modal.Content>
-                  <Modal.Actions>
-                    <Button color="blue" onClick={this.toggleModalChange}>
-                      <Icon name="arrow left"/>Previous
-                    </Button>
-                    <Button color="blue" onClick={this.handleClick}>
-                      <Icon name="sign-out"/>Withdraw
-                    </Button>
-                    <Button color="red" onClick={this.props.toggleModalWithdraw}>
-                      <Icon name="close"/>Close
-                    </Button>
-                  </Modal.Actions>
-                </Modal>
+        return (<Dropdown placeholder='Num Exit Root' options={this.state.exitRoots}
+          onChange={this.handleChange}/>);
       }
     }
 
-    toggleModalChange = () => {this.setState(prev => ({ initModal: !prev.initModal }))}
+    handleChange = (e, { value }) => this.setState({ numExitRoot: value })
+
+    modal = () => {
+      if (this.state.initModal === true) {
+        return (
+          <Modal open={this.props.modalWithdraw}>
+            <Modal.Header>Withdraw</Modal.Header>
+            <Modal.Content>
+              <Form>
+                <Form.Field>
+                  <label htmlFor="form-withdraw">
+                    ID From
+                    <input type="text" ref={this.idFromRef} id="form-withdraw" />
+                  </label>
+                </Form.Field>
+              </Form>
+            </Modal.Content>
+            <Modal.Actions>
+              <Button color="blue" onClick={this.getExitRoot}>
+                <Icon name="arrow right" />
+                Next
+              </Button>
+              <Button color="red" onClick={this.props.toggleModalWithdraw}>
+                <Icon name="close" />
+                Close
+              </Button>
+            </Modal.Actions>
+          </Modal>
+        );
+      }
+      return (
+        <Modal open={this.props.modalWithdraw}>
+          <Modal.Header>Withdraw</Modal.Header>
+          <Modal.Content>
+            <p><b>ID From</b></p>
+            <p>{this.state.idFrom}</p>
+            <p><b>Num Exit Root</b></p>
+            {this.exitRoot()}
+          </Modal.Content>
+          <Modal.Actions>
+            <Button color="blue" onClick={this.toggleModalChange}>
+              <Icon name="arrow left" />
+              Previous
+            </Button>
+            <Button color="blue" onClick={this.handleClick}>
+              <Icon name="sign-out" />
+              Withdraw
+            </Button>
+            <Button color="red" onClick={this.props.toggleModalWithdraw}>
+              <Icon name="close" />
+              Close
+            </Button>
+          </Modal.Actions>
+        </Modal>
+      );
+    }
+
+    toggleModalChange = () => { this.setState((prev) => ({ initModal: !prev.initModal })); }
 
     render() {
-        return (
-          <div>
-           {this.modal()}
-          </div>
-        );
+      return (
+        <div>
+          {this.modal()}
+        </div>
+      );
     }
 }
 
-const mapStateToProps = state => ({
+const mapStateToProps = (state) => ({
   wallet: state.general.wallet,
   config: state.general.config,
   abiRollup: state.general.abiRollup,
   password: state.general.password,
   exitRoot: state.general.exitRoot,
-})
+});
 
 export default connect(mapStateToProps, { handleSendWithdraw, handleGetExitRoot })(ModalWithdraw);

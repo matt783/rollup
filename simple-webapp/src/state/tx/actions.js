@@ -69,8 +69,14 @@ export function handleGetExitRoot(urlOperator, id) {
       try {
         const apiOperator = new operator.cliExternalOperator(urlOperator);
         const res = await apiOperator.getExits(id);
-        resolve(res.data[0]);
-        dispatch(getNumExitRootSuccess(res.data[0]));
+        const infoExits = [];
+        res.data.map(async (key, index) => {
+          const info = await apiOperator.getExitInfo(id, key);
+          const amount = info.data.state.amount;
+          infoExits.push({key: index, value: key, amount, text: `Num: ${key} Amount: ${amount}`});
+        })
+        resolve(infoExits);
+        dispatch(getNumExitRootSuccess(infoExits));
       } catch(err) {
         resolve(err);
         dispatch(getNumExitRootError(err));

@@ -1,35 +1,51 @@
-import React,{Component} from 'react';
-import { Button, Modal, Form, Icon} from 'semantic-ui-react';
+import React, { Component } from 'react';
+import PropTypes from 'prop-types';
+import {
+  Button, Modal, Form, Icon,
+} from 'semantic-ui-react';
 
 class ModalCreate extends Component {
+  static propTypes = {
+    fileNameRef: PropTypes.object.isRequired,
+    passwordRef: PropTypes.object.isRequired,
+    modalCreate: PropTypes.bool.isRequired,
+    handleClickCreate: PropTypes.func.isRequired,
+    toggleModalCreate: PropTypes.func.isRequired,
+  }
 
-    render() {
-        return (
-          <Modal open={this.props.modalCreate}>
-            <Modal.Header>Rollup Wallet</Modal.Header>
-            <Modal.Content >
-            <Form>
-                <Form.Field>
-                  <label>File Name</label>
-                  <input type="text" ref={this.props.fileNameRef} />
-                </Form.Field>
-                <Form.Field>
-                  <label>Password</label>
-                  <input type="password" ref={this.props.passwordRef} />
-                </Form.Field>
-              </Form>
-            </Modal.Content>
-            <Modal.Actions>
-              <Button color="blue" onClick={this.props.handleClickCreate} >
-                <Icon name="check"/>Create
-              </Button>
-              <Button color="red" onClick={this.props.toggleModalCreate}>
-                <Icon name="close"/>Close
-              </Button>
-            </Modal.Actions>
-          </Modal>
-        );
-    }
+  render() {
+    return (
+      <Modal open={this.props.modalCreate}>
+        <Modal.Header>Rollup Wallet</Modal.Header>
+        <Modal.Content>
+          <Form>
+            <Form.Field>
+              <label htmlFor="file-name">
+                File Name
+                <input type="text" ref={this.props.fileNameRef} id="file-name" />
+              </label>
+            </Form.Field>
+            <Form.Field>
+              <label htmlFor="password">
+                Password
+                <input type="password" ref={this.props.passwordRef} id="password" />
+              </label>
+            </Form.Field>
+          </Form>
+        </Modal.Content>
+        <Modal.Actions>
+          <Button color="blue" onClick={this.props.handleClickCreate}>
+            <Icon name="check" />
+            Create
+          </Button>
+          <Button color="red" onClick={this.props.toggleModalCreate}>
+            <Icon name="close" />
+            Close
+          </Button>
+        </Modal.Actions>
+      </Modal>
+    );
+  }
 }
 
 export default ModalCreate;
