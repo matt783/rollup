@@ -3,19 +3,19 @@ import * as CONSTANTS from './constants';
 const initialState = {
   errorWallet: '',
   isLoadingWallet: false,
-  wallet: '',
+  wallet: {},
   password: '',
   isLoadingFiles: false,
   errorFiles: '',
-  config: '',
-  abiRollup: '',
-  abiTokens: '',
-  walletFunder: '',
+  config: {},
+  abiRollup: [],
+  abiTokens: [],
+  walletFunder: {},
   isLoadingOp: false,
-  apiOperator: '',
+  apiOperator: {},
   errorOp: '',
   isLoadingInfoAccount: false,
-  balance: 0,
+  balance: '0',
   tokens: 0,
   tokensR: 0,
   txs: [],
@@ -23,93 +23,93 @@ const initialState = {
 };
 
 function general(state = initialState, action) {
-  switch(action.type) {
+  switch (action.type) {
     case CONSTANTS.LOAD_WALLET:
       return {
         ...state,
         isLoadingWallet: true,
         errorWallet: '',
-      }
+      };
     case CONSTANTS.LOAD_WALLET_SUCCESS:
-          return {
-            ...state,
-            isLoadingWallet: false,
-            wallet: action.payload.wallet,
-            password: action.payload.password,
-            errorWallet: ''
-          }
+      return {
+        ...state,
+        isLoadingWallet: false,
+        wallet: action.payload.wallet,
+        password: action.payload.password,
+        errorWallet: '',
+      };
     case CONSTANTS.LOAD_WALLET_ERROR:
       return {
         ...state,
         isLoadingWallet: false,
-        wallet: '',
+        wallet: {},
         password: '',
         errorWallet: action.error,
-      }
+      };
     case CONSTANTS.LOAD_FILES:
       return {
-          ...state,
-          isLoadingFiles: true,
-          errorFiles: '',
-      }
+        ...state,
+        isLoadingFiles: true,
+        errorFiles: '',
+      };
     case CONSTANTS.LOAD_FILES_SUCCESS:
       return {
-          ...state,
-          config: action.payload.config,
-          abiRollup: action.payload.abiRollup,
-          abiTokens: action.payload.abiTokens,
-          walletFunder: action.payload.walletFunder,
-          isLoadingFiles: false,
-          errorFiles: ''
+        ...state,
+        config: action.payload.config,
+        abiRollup: action.payload.abiRollup,
+        abiTokens: action.payload.abiTokens,
+        walletFunder: action.payload.walletFunder,
+        isLoadingFiles: false,
+        errorFiles: '',
       };
     case CONSTANTS.LOAD_FILES_ERROR:
       return {
-          ...state,
-          isLoadingFiles: false,
-          errorFiles: action.error,
+        ...state,
+        isLoadingFiles: false,
+        errorFiles: action.error,
       };
-      case CONSTANTS.LOAD_OPERATOR:
-        return {
-            ...state,
-            isLoadingOp: true,
-            errorOp: '',
-        }
-      case CONSTANTS.LOAD_OPERATOR_SUCCESS:
-        return {
-            ...state,
-            isLoadingOp: false,
-            apiOperator: action.payload,
-            errorOp: ''
-        };
-      case CONSTANTS.LOAD_OPERATOR_ERROR:
-        return {
-            ...state,
-            isLoadingOp: false,
-            errorInfoOp: action.error,
-        };
-        case CONSTANTS.INFO_ACCOUNT:
-          return {
-              ...state,
-              isLoadingInfoAccount: true,
-              errorInfoAccount: '',
-          }
-        case CONSTANTS.INFO_ACCOUNT_SUCCESS:
-          return {
-              ...state,
-              isLoadingInfoAccount: false,
-              balance: action.payload.balance,
-              tokens: action.payload.tokens,
-              tokensR: action.payload.tokensR,
-              txs: action.payload.txs,
-              errorInfoAccount: ''
-          };
-        case CONSTANTS.INFO_ACCOUNT_ERROR:
-          return {
-              ...state,
-              isLoadingInfoAccount: false,
-              errorInfoAccount: action.error,
-          };
-          /*case CONSTANTS.GET_TOKENS_ROLLUP:
+    case CONSTANTS.LOAD_OPERATOR:
+      return {
+        ...state,
+        isLoadingOp: true,
+        errorOp: '',
+      };
+    case CONSTANTS.LOAD_OPERATOR_SUCCESS:
+      return {
+        ...state,
+        isLoadingOp: false,
+        apiOperator: action.payload,
+        errorOp: '',
+      };
+    case CONSTANTS.LOAD_OPERATOR_ERROR:
+      return {
+        ...state,
+        isLoadingOp: false,
+        errorInfoOp: action.error,
+      };
+    case CONSTANTS.INFO_ACCOUNT:
+      return {
+        ...state,
+        isLoadingInfoAccount: true,
+        errorInfoAccount: '',
+      };
+    case CONSTANTS.INFO_ACCOUNT_SUCCESS:
+      return {
+        ...state,
+        isLoadingInfoAccount: false,
+        balance: action.payload.balance,
+        tokens: action.payload.tokens,
+        tokensR: action.payload.tokensR,
+        txs: action.payload.txs,
+        errorInfoAccount: '',
+      };
+    case CONSTANTS.INFO_ACCOUNT_ERROR:
+      return {
+        ...state,
+        isLoadingInfoAccount: false,
+        errorInfoAccount: action.error,
+      };
+      /* case CONSTANTS.GET_TOKENS_ROLLUP:
             return {
                 ...state,
                 isLoadingGetTokensR: true,
@@ -127,7 +127,7 @@ function general(state = initialState, action) {
                 ...state,
                 isLoadingGetTokensR: false,
                 errorGetTokensR: action.error,
-            };*/
+            }; */
     default:
       return state;
   }

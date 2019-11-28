@@ -58,6 +58,7 @@ module.exports = {
     "react/jsx-closing-bracket-location": [1, 'after-props'],
     "react/forbid-prop-types": [0],
     "react/no-array-index-key": [0],
-    "react/no-access-state-in-setstate": [0]
+    "react/no-access-state-in-setstate": [0],
+    "react/static-property-placement": [0],
   }
 };
