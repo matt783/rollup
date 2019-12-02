@@ -104,7 +104,6 @@ function transactions(state = initialState, action) {
       return {
         ...state,
         isLoadingApprove: true,
-        tx: action.payload,
         successApprove: false,
         // errorApprove: '',
         error: '',
@@ -114,6 +113,7 @@ function transactions(state = initialState, action) {
         ...state,
         isLoadingApprove: false,
         successApprove: true,
+        tx: action.payload,
         // errorApprove: '',
         error: '',
       };

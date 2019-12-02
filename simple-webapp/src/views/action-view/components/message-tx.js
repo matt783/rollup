@@ -47,7 +47,7 @@ class MessageTx extends Component {
           <Icon name="check" />
           <Message.Content>
             <Message.Header>Transaction send!</Message.Header>
-            <p>Transaction is being forged... Please click Reload in few seconds :)</p>
+            <p>Transaction is being forged... Please click Reload in few seconds!</p>
           </Message.Content>
         </Message>
       );
@@ -58,7 +58,7 @@ class MessageTx extends Component {
           <Icon name="check" />
           <Message.Content>
             <Message.Header>Transaction send!</Message.Header>
-            <p>Transaction is being forged... Please click Reload in few seconds :)</p>
+            <p>Transaction is being forged... Please click Reload in few seconds!</p>
             <a
               href={`https://etherscan.io/tx/${this.props.tx.hash}`}
               target="_blank"
