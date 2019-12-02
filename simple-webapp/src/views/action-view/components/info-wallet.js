@@ -153,7 +153,7 @@ class InfoWallet extends Component {
                 <ModalInfoId txs={this.props.txs} />
                 {this.isLoadingTokensR()}
               </Table.Cell>
-              <Table.Cell textAlign="center">
+              <Table.Cell textAlign="right">
                 <input type="text" ref={this.getTokensRef} />
                 <Button content="GET TOKENS" onClick={this.handleClickTokens} />
               </Table.Cell>
@@ -162,8 +162,13 @@ class InfoWallet extends Component {
               <Table.Cell>
                 ETH:
               </Table.Cell>
-              <Table.Cell colSpan="3">
+              <Table.Cell colSpan="2">
                 {this.isLoadingEthers()}
+              </Table.Cell>
+              <Table.Cell textAlign="right">
+                <a href="https://faucet.goerli.mudit.blog/" target="_blank">
+                  <Button content="GET ETHER"/>
+                </a>
               </Table.Cell>
             </Table.Row>
             <Table.Row>
