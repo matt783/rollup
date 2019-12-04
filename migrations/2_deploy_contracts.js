@@ -7,8 +7,8 @@ const Rollup = artifacts.require("../contracts/Rollup");
 const TokenRollup = artifacts.require("../contracts/test/TokenRollup");
 const RollupPoS = artifacts.require("../contracts/RollupPoS");
 
-const maxTx = 4;
-const maxOnChainTx = 2;
+const maxTx = 10;
+const maxOnChainTx = 5;
 const initialAmount = 1000;
 let insPoseidonUnit;
 

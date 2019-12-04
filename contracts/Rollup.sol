@@ -43,7 +43,7 @@ contract Rollup is Ownable, RollupHelpers, RollupInterface {
     address[] tokens;
     mapping(uint => address) tokenList;
     uint constant MAX_TOKENS = 0xFFFFFFFF;
-    uint feeAddToken = 0.01 ether;
+    uint feeAddToken = 0.001 ether;
 
     // Set the leaf position for an account into the 'balance tree'
     // '0' is reserved for off-chain withdraws
@@ -63,7 +63,7 @@ contract Rollup is Ownable, RollupHelpers, RollupInterface {
     uint256 totalFillingOnChainFee;
 
     // Fees recollected for every on-chain transaction
-    uint constant FEE_ONCHAIN_TX = 0.1 ether;
+    uint constant FEE_ONCHAIN_TX = 0.001 ether;
 
     // maximum on-chain transactions
     uint MAX_ONCHAIN_TX;

@@ -46,8 +46,14 @@ module.exports = {
     // options below to some value.
     //
         development: {
-            host: "127.0.0.1", // Localhost (default: none)
-            port: 8545, // Standard Ethereum port (default: none)
+            provider: () => new HDWalletProvider(
+                process.env.MNEMONIC,
+                process.env.LocalHost,
+                0, //default index address
+                13, //many accounts created
+                true, //dont share the nonce casue its buged when a tx is invalid.
+                "m/44'/60'/0'/0/" //path 
+            ),
             network_id: "*", // Any network (default: none)
         },
 
