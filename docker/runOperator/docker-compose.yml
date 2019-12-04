@@ -1,0 +1,6 @@
+version: '3'
+services:
+  operator:
+    ports:
+      - "9001:9001"
+    build: .

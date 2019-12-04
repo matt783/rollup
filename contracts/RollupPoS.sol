@@ -14,7 +14,7 @@ contract RollupPoS is RollupPoSHelpers{
     uint constant SLOT_DEADLINE = 80;
     uint32 constant SLOTS_PER_ERA = 20;
     // Minimum stake to enter the raffle
-    uint constant MIN_STAKE = 1 ether;
+    uint constant MIN_STAKE = 0.001 ether;
 
     // First block where the first era begins
     uint public genesisBlock;

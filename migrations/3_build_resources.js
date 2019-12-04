@@ -2,27 +2,28 @@
 /* global web3 */
 
 const Rollup = artifacts.require("../contracts/Rollup");
-const TokenRollup = artifacts.require("../contracts/test/TokenRollup");
 const RollupPoS = artifacts.require("../contracts/RollupPoS");
 
 const path = require("path");
 const fs = require("fs");
-const configSynchPath = path.join(__dirname, "../rollup-operator/test/config/synch-config-test.json");
-const configPoolPath = path.join(__dirname, "../rollup-operator/test/config/pool-config-test.json");
-const configTestPath = path.join(__dirname, "../rollup-operator/test/config/test.json");
-
-
+const configSynchPath = path.join(__dirname, "../rollup-operator/src/config/synch-config.json");
+const configPoolPath = path.join(__dirname, "../rollup-operator/src/config/pool-config.json");
 
 module.exports = async function (deployer, network, accounts) {
 
     // add token to Rollup
     const insRollup = await Rollup.deployed();
-    await insRollup.addToken(TokenRollup.address,
-        { value: web3.utils.toWei("0.02", "ether") });
-        
-    const pathRollupSynch = path.join(__dirname, "../rollup-operator/test/server/tmp-0");
-    const pathRollupTree = path.join(__dirname, "../rollup-operator/test/server/tmp-1");
-    const pathRollupPoSSynch = path.join(__dirname, "../rollup-operator/test/server/tmp-2");
+    
+    let urlNode = "http://localhost:8545";
+    if (network == "goerli"){
+        await insRollup.addToken("0xaFF4481D10270F50f203E0763e2597776068CBc5",
+            { value: web3.utils.toWei("0.02", "ether") });
+        urlNode = "https://goerli.infura.io/v3/135e56bb9eaa42c59e73481fcb0f9b4a";
+    }
+   
+    const pathRollupSynch = path.join(__dirname, "../rollup-operator/src/server/tmp-0");
+    const pathRollupTree = path.join(__dirname, "../rollup-operator/src/server/tmp-1");
+    const pathRollupPoSSynch = path.join(__dirname, "../rollup-operator/src/server/tmp-2");
     
     const configSynch = {
         rollup: {
@@ -38,7 +39,7 @@ module.exports = async function (deployer, network, accounts) {
             abi: RollupPoS.abi,
             creationHash: RollupPoS.transactionHash,
         },
-        ethNodeUrl:"http://localhost:8545",
+        ethNodeUrl:urlNode,
         ethAddressCaller: accounts[0], 
     };
     fs.writeFileSync(configSynchPath, JSON.stringify(configSynch));
@@ -50,12 +51,4 @@ module.exports = async function (deployer, network, accounts) {
         timeout: 1000            
     };
     fs.writeFileSync(configPoolPath, JSON.stringify(configPool));
-
-    const testConfig = {
-        rollupAddress: Rollup.address,
-        tokenAddress: TokenRollup.address,
-        posAddress: RollupPoS.address,
-    };
-    fs.writeFileSync(configTestPath, JSON.stringify(testConfig));
-
 };
