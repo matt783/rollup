@@ -13,7 +13,7 @@ const configTestPath = path.join(__dirname, "../rollup-operator/test/config/test
 
 
 
-module.exports = async function (deployer) {
+module.exports = async function (deployer, network, accounts) {
 
     // add token to Rollup
     const insRollup = await Rollup.deployed();
@@ -39,7 +39,7 @@ module.exports = async function (deployer) {
             creationHash: RollupPoS.transactionHash,
         },
         ethNodeUrl:"http://localhost:8545",
-        ethAddressCaller: "0xB3b03f5Cae3e59D7A9FFB95C0fbF08087641A9B1", //cambiar
+        ethAddressCaller: accounts[0], 
     };
     fs.writeFileSync(configSynchPath, JSON.stringify(configSynch));
 

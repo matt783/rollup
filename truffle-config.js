@@ -49,8 +49,8 @@ module.exports = {
             provider: () => new HDWalletProvider(
                 process.env.MNEMONIC,
                 process.env.LocalHost,
-                0, //default index address
-                13, //many accounts created
+                10, //default index address  mirar ocmofunciona esto cuenta 11
+                2, //many accounts created
                 true, //dont share the nonce casue its buged when a tx is invalid.
                 "m/44'/60'/0'/0/" //path 
             ),
@@ -81,6 +81,10 @@ module.exports = {
             provider: () => new HDWalletProvider(
                 process.env.MNEMONIC,
                 process.env.GOERLI_URL,
+                10, //default index address  mirar ocmofunciona esto cuenta 11
+                2, //many accounts created
+                true, //dont share the nonce casue its buged when a tx is invalid.
+                "m/44'/60'/0'/0/" //path 
             ),
             network_id: 5, // Goerli's id
             gas: 8000000, // Ropsten has a lower block limit than mainnet
