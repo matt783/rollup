@@ -7,7 +7,10 @@
     "doc": "doc"
   },
   "scripts": {
-    "test": "mocha"
+    "test": "mocha",
+    "rm-tmp":"rm -rf rollup-operator/test/server/tmp-0 && rm -rf rollup-operator/test/server/tmp-1 && rm -rf rollup-operator/test/server/tmp-2",
+    "run-operator": "./run-operator.sh",
+    "operator": "npm run rm-tmp && npm run run-operator"
   },
   "repository": {
     "type": "git",
