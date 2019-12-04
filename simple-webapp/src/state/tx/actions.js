@@ -78,8 +78,8 @@ export function handleGetExitRoot(urlOperator, id) {
         resolve(infoExits);
         dispatch(getNumExitRootSuccess(infoExits));
       } catch(err) {
-        resolve(err);
-        dispatch(getNumExitRootError(err));
+        resolve([]);
+        dispatch(getNumExitRootError(err.message));
       }
     })
   }

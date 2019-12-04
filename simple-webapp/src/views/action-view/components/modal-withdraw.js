@@ -31,30 +31,30 @@ class ModalWithdraw extends Component {
   }
 
     handleClick = async () => {
-      const {
-        wallet, config, abiRollup, password,
-      } = this.props;
+      try {
+        const {
+          wallet, config, abiRollup, password,
+        } = this.props;
 
-      const idFrom = parseInt(this.state.idFrom, 10);
-      const numExitRoot = parseInt(this.state.numExitRoot, 10);
-      const { nodeEth } = config;
-      const addressSC = config.address;
-      const { operator } = config;
-      this.props.toggleModalWithdraw();
-      const res = await this.props.handleSendWithdraw(nodeEth, addressSC, wallet, password,
-        abiRollup, operator, idFrom, numExitRoot);
-      this.props.getInfoAccount();
-      // eslint-disable-next-line no-console
-      console.log(res);
+        const idFrom = parseInt(this.state.idFrom, 10);
+        const numExitRoot = parseInt(this.state.numExitRoot, 10);
+        const { nodeEth } = config;
+        const addressSC = config.address;
+        const { operator } = config;
+        this.props.toggleModalWithdraw();
+        const res = await this.props.handleSendWithdraw(nodeEth, addressSC, wallet, password,
+          abiRollup, operator, idFrom, numExitRoot);
+        this.props.getInfoAccount();
+        // eslint-disable-next-line no-console
+        console.log(res);
+      } catch(err) {
+        console.log(err);
+      }
     }
 
     getExitRoot = async () => {
-      try {
         const exitRoots = await this.props.handleGetExitRoot(this.props.config.operator, this.idFromRef.current.value);
         this.setState({ exitRoots, idFrom: this.idFromRef.current.value }, () => { this.toggleModalChange(); });
-      } catch (err) {
-        this.setState({ exitRoots:[], idFrom:-1}, () => { this.toggleModalChange(); });
-      }  
     }
 
     exitRoot = () => {
@@ -114,7 +114,7 @@ class ModalWithdraw extends Component {
               <Icon name="sign-out" />
               Withdraw
             </Button>
-            <Button color="red" onClick={this.props.toggleModalWithdraw}>
+            <Button color="red" onClick={this.toogleCloseModal}>
               <Icon name="close" />
               Close
             </Button>
@@ -124,6 +124,7 @@ class ModalWithdraw extends Component {
     }
 
     toggleModalChange = () => { this.setState((prev) => ({ initModal: !prev.initModal })); }
+    toogleCloseModal = () => { this.toggleModalChange(); this.props.toggleModalWithdraw()}
 
     render() {
       return (

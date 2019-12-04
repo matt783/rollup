@@ -166,7 +166,7 @@ class InfoWallet extends Component {
                 {this.isLoadingEthers()}
               </Table.Cell>
               <Table.Cell textAlign="right">
-                <a href="https://faucet.goerli.mudit.blog/" target="_blank">
+                <a href="https://faucet.goerli.mudit.blog/" target="_blank" rel="noopener noreferrer">
                   <Button content="GET ETHER"/>
                 </a>
               </Table.Cell>
@@ -191,6 +191,7 @@ class InfoWallet extends Component {
               <Table.Cell colSpan="3">
                 <input
                   type="text"
+                  disabled
                   placeholder="0x0000000000000000000000000000000000000000"
                   ref={this.addressTokensRef}
                   defaultValue="0x7dFc5b5D172db3941f669770f9993b1df250B560"
