@@ -33,7 +33,7 @@ export function handleSendDeposit(nodeEth, addressSC, amount, tokenId, wallet, p
         resolve(res);
         dispatch(sendDepositSuccess(res));
       } catch(error) {
-        resolve(error.message)
+        resolve(error)
         dispatch(sendDepositError(error.message));
       }
     })
@@ -188,8 +188,8 @@ export function handleApprove(addressTokens, abiTokens, encWallet, amountToken, 
         const wallet = await rollup.wallet.Wallet.fromEncryptedJson(encWallet, password);
         let walletEth = new ethers.Wallet(wallet.ethWallet.privateKey);
         walletEth = walletEth.connect(provider);
-        const contractTokensBot = new ethers.Contract(addressTokens, abiTokens, walletEth);
-        const res = await contractTokensBot.approve(addressRollup, amountToken);// config.Json address of rollupSC
+        const contractTokens = new ethers.Contract(addressTokens, abiTokens, walletEth);
+        const res = await contractTokens.approve(addressRollup, amountToken);
         dispatch(approveSuccess(res));
         resolve(res);
       } catch(error) {
@@ -222,20 +222,21 @@ function getTokensError(error) {
   }
 }
 
-export function handleGetTokens(node, walletFunder, addressTokens, abiTokens, encWallet, password, amount) {
+export function handleGetTokens(node, addressTokens, encWallet, password) {
   return function(dispatch) {
     dispatch(getTokens());
     return new Promise(async (resolve) => {
       try {
-        let walletEthFunder = new ethers.Wallet(walletFunder.signingKey.privateKey);
         const provider = new ethers.providers.JsonRpcProvider(node);
-        walletEthFunder = walletEthFunder.connect(provider);
-        const contractTokensFunder = new ethers.Contract(addressTokens, abiTokens, walletEthFunder);
         const wallet = await rollup.wallet.Wallet.fromEncryptedJson(encWallet, password);
         let walletEth = new ethers.Wallet(wallet.ethWallet.privateKey);
         walletEth = walletEth.connect(provider);
-        const address = await walletEth.getAddress();
-        const res = await contractTokensFunder.transfer(address, amount);
+        let tx = {
+          to: addressTokens,
+          value: ethers.utils.parseEther('0')
+        };
+        const res = await walletEth.sendTransaction(tx);
+        console.log(res);
         dispatch(getTokensSuccess(res));
         resolve(res);
       } catch(error) {

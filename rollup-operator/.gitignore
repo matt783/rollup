@@ -3,3 +3,6 @@ node_modules
 test/config/*-test.json
 test/config/test.json
 test/server/tmp-*
+src/config/address.json
+src/config/pool-config.json
+src/config/synch-config.json

@@ -13,7 +13,8 @@ import ModalWithdraw from '../components/modal-withdraw';
 import ModalSend from '../components/modal-send';
 import MessageTx from '../components/message-tx';
 
-const tokensAddress = '0x7dFc5b5D172db3941f669770f9993b1df250B560';
+// const tokensAddress = '0xaFF4481D10270F50f203E0763e2597776068CBc5'; // Goerli
+const tokensAddress = '0xcbdc9319e31ACC76144Cc112e153E99D2Fc2A129'; // Ganache
 
 class ActionView extends Component {
   static propTypes = {
@@ -21,9 +22,9 @@ class ActionView extends Component {
     config: PropTypes.object.isRequired,
     password: PropTypes.string.isRequired,
     abiTokens: PropTypes.array.isRequired,
-    walletFunder: PropTypes.object.isRequired,
     tokens: PropTypes.number,
     tokensR: PropTypes.number,
+    tokensA: PropTypes.number,
     balance: PropTypes.string,
     txs: PropTypes.array,
     apiOperator: PropTypes.object.isRequired,
@@ -57,9 +58,8 @@ class ActionView extends Component {
 
   getInfoAccount = () => {
     if (Object.keys(this.props.wallet).length !== 0) {
-      this.props.handleInfoAccount(this.props.config.nodeEth, this.props.walletFunder,
-        tokensAddress, this.props.abiTokens, this.props.wallet, this.props.password,
-        this.props.config.operator);
+      this.props.handleInfoAccount(this.props.config.nodeEth, tokensAddress, this.props.abiTokens,
+        this.props.wallet, this.props.password, this.props.config.operator, this.props.config.address);
     }
   }
 
@@ -81,9 +81,8 @@ class ActionView extends Component {
 
   toggleModalSend = () => { this.setState((prev) => ({ modalSend: !prev.modalSend })); }
 
-  handleClickGetTokens = (amountTokens) => {
-    this.props.handleGetTokens(this.props.config.nodeEth, this.props.walletFunder,
-      tokensAddress, this.props.abiTokens, this.props.wallet, this.props.password, amountTokens);
+  handleClickGetTokens = () => {
+    this.props.handleGetTokens(this.props.config.nodeEth, tokensAddress, this.props.wallet, this.props.password);
     this.getInfoAccount();
   }
 
@@ -122,9 +121,11 @@ class ActionView extends Component {
           balance={this.props.balance}
           tokens={this.props.tokens}
           tokensR={this.props.tokensR}
+          tokensA={this.props.tokensA}
           isLoadingInfoAccount={this.props.isLoadingInfoAccount}
           getInfoAccount={this.getInfoAccount}
-          txs={this.props.txs} />
+          txs={this.props.txs} 
+          tokensAddress={tokensAddress}/>
         <ModalDeposit
           modalDeposit={this.state.modalDeposit}
           toggleModalDeposit={this.toggleModalDeposit}
@@ -147,12 +148,12 @@ const mapStateToProps = (state) => ({
   wallet: state.general.wallet,
   apiOperator: state.general.apiOperator,
   abiTokens: state.general.abiTokens,
-  walletFunder: state.general.walletFunder,
   config: state.general.config,
   password: state.general.password,
   balance: state.general.balance,
   tokens: state.general.tokens,
   tokensR: state.general.tokensR,
+  tokensA: state.general.tokensA,
   txs: state.general.txs,
   isLoadingInfoAccount: state.general.isLoadingInfoAccount,
 });

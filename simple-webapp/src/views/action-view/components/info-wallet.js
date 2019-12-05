@@ -5,7 +5,8 @@ import {
 } from 'semantic-ui-react';
 import ModalInfoId from './modal-info-id';
 
-// tokens address: "0x7dFc5b5D172db3941f669770f9993b1df250B560"
+// const tokensAddress = '0xaFF4481D10270F50f203E0763e2597776068CBc5'; // Goerli
+// const tokensAddress = '0xcbdc9319e31ACC76144Cc112e153E99D2Fc2A129'; // Ganache
 
 class InfoWallet extends Component {
   static propTypes = {
@@ -36,7 +37,6 @@ class InfoWallet extends Component {
     };
     this.addressTokensRef = React.createRef();
     this.amountTokensRef = React.createRef();
-    this.getTokensRef = React.createRef();
   }
 
   async componentDidMount() {
@@ -64,7 +64,7 @@ class InfoWallet extends Component {
   }
 
   handleClickTokens = () => {
-    this.props.handleClickGetTokens(this.getTokensRef.current.value);
+    this.props.handleClickGetTokens();
   }
 
   importedWallet = () => {
@@ -94,6 +94,13 @@ class InfoWallet extends Component {
   isLoadingTokensR = () => {
     if (this.state.loading === false) {
       return this.props.tokensR;
+    }
+    return <Icon name="circle notched" loading />;
+  }
+
+  isLoadingTokensA = () => {
+    if (this.state.loading === false) {
+      return this.props.tokensA;
     }
     return <Icon name="circle notched" loading />;
   }
@@ -154,7 +161,6 @@ class InfoWallet extends Component {
                 {this.isLoadingTokensR()}
               </Table.Cell>
               <Table.Cell textAlign="right">
-                <input type="text" ref={this.getTokensRef} />
                 <Button content="GET TOKENS" onClick={this.handleClickTokens} />
               </Table.Cell>
             </Table.Row>
@@ -178,6 +184,14 @@ class InfoWallet extends Component {
             </Table.Row>
             <Table.Row>
               <Table.Cell>
+                Approved tokens
+              </Table.Cell>
+              <Table.Cell colSpan="3">
+                {this.isLoadingTokensA()}
+              </Table.Cell>
+            </Table.Row>
+            <Table.Row>
+              <Table.Cell>
                 Amount Tokens:
               </Table.Cell>
               <Table.Cell colSpan="3">
@@ -194,13 +208,14 @@ class InfoWallet extends Component {
                   disabled
                   placeholder="0x0000000000000000000000000000000000000000"
                   ref={this.addressTokensRef}
-                  defaultValue="0x7dFc5b5D172db3941f669770f9993b1df250B560"
+                  defaultValue={this.props.tokensAddress}
                   size="40" />
                 <Button content="APPROVE" onClick={this.handleClick} />
               </Table.Cell>
             </Table.Row>
           </Table.Body>
         </Table>
+        <br/>
       </Container>
     );
   }

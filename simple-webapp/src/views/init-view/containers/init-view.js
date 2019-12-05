@@ -16,10 +16,8 @@ import {
 import { handleInitStateTx } from '../../../state/tx/actions';
 
 const FileSaver = require('file-saver');
-const config = require('../../../test/config.json');
-const abiRollup = require('../../../test/rollupabi.json');
-const abiTokens = require('../../../test/tokensabi.json');
-const walletFunder = require('../../../test/walletFunder.json');
+
+const config = require('../../../utils/config.json');
 
 class InitView extends Component {
   static propTypes = {
@@ -68,7 +66,7 @@ class InitView extends Component {
         } else {
           this.props.handleInitStateTx();
           this.props.handleLoadWallet(this.state.walletImport, this.passwordRef.current.value);
-          this.props.handleLoadFiles(config, abiRollup, abiTokens, walletFunder);
+          this.props.handleLoadFiles(config);
           this.props.handleLoadOperator(config);
         }
       } catch (err) {
