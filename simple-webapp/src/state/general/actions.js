@@ -59,12 +59,10 @@ function loadFiles() {
   };
 }
 
-function loadFilesSuccess(config, abiRollup, abiTokens, walletFunder) {
+function loadFilesSuccess(config, abiRollup, abiTokens) {
   return {
     type: CONSTANTS.LOAD_FILES_SUCCESS,
-    payload: {
- config, abiRollup, abiTokens, walletFunder 
-},
+    payload: { config, abiRollup, abiTokens },
     error: '',
   };
 }
@@ -76,13 +74,13 @@ function loadFilesError(error) {
   };
 }
 
-export function handleLoadFiles(config, abiRollup, abiTokens, walletFunder) {
+export function handleLoadFiles(config) {
   return function (dispatch) {
     dispatch(loadFiles());
     return new Promise(async (resolve) => {
       try {
-        dispatch(loadFilesSuccess(config, abiRollup, abiTokens, walletFunder));
-        resolve({ config, abiRollup, abiTokens });
+        console.log(config)
+        dispatch(loadFilesSuccess(config, config.abiRollup, config.abiTokens ));
       } catch (error) {
         dispatch(loadFilesError(error));
       }
@@ -133,11 +131,11 @@ function infoAccount() {
   };
 }
 
-function infoAccountSuccess(balance, tokens, tokensR, txs) {
+function infoAccountSuccess(balance, tokens, tokensR, tokensA, txs) {
   return {
     type: CONSTANTS.INFO_ACCOUNT_SUCCESS,
     payload: {
- balance, tokens, tokensR, txs 
+ balance, tokens, tokensR, tokensA, txs 
 },
     error: '',
   };
@@ -150,7 +148,7 @@ function infoAccountError(error) {
   };
 }
 
-export function handleInfoAccount(node, walletFunder, addressTokens, abiTokens, encWallet, password, operatorUrl) {
+export function handleInfoAccount(node, addressTokens, abiTokens, encWallet, password, operatorUrl, addressRollup) {
   return function (dispatch) {
     dispatch(infoAccount());
     return new Promise(async (resolve) => {
@@ -161,11 +159,18 @@ export function handleInfoAccount(node, walletFunder, addressTokens, abiTokens, 
         walletEth = walletEth.connect(provider);
         const balanceHex = await walletEth.getBalance();
         const balance = ethers.utils.formatEther(balanceHex);
-        let walletEthFunder = new ethers.Wallet(walletFunder.signingKey.privateKey);
-        walletEthFunder = walletEthFunder.connect(provider);
-        const contractTokensFunder = new ethers.Contract(addressTokens, abiTokens, walletEthFunder);
-        const tokensHex = await contractTokensFunder.balanceOf(encWallet.ethWallet.address);
-        const tokens = parseInt(tokensHex._hex, 16);
+        const contractTokens = new ethers.Contract(addressTokens, abiTokens, provider);
+        let tokens;
+        let tokensA;
+        try { 
+          const tokensHex = await contractTokens.balanceOf(encWallet.ethWallet.address);
+          const tokensAHex = await contractTokens.allowance(encWallet.ethWallet.address, addressRollup);
+          tokens = parseInt(tokensHex._hex, 16);
+          tokensA = parseInt(tokensAHex._hex, 16);
+        } catch (err) {
+          tokens = 0;
+          tokensA = 0;
+        }
         const apiOperator = new operator.cliExternalOperator(operatorUrl);
         const filters = {
           ethAddr: `0x${encWallet.ethWallet.address}`,
@@ -185,7 +190,7 @@ export function handleInfoAccount(node, walletFunder, addressTokens, abiTokens, 
         } catch (err) {
           tokensR = 0;
         }
-        dispatch(infoAccountSuccess(balance, tokens, tokensR, txs));
+        dispatch(infoAccountSuccess(balance, tokens, tokensR, tokensA, txs));
       } catch (error) {
         console.log(error);
         dispatch(infoAccountError(error));

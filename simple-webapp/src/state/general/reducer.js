@@ -10,7 +10,6 @@ const initialState = {
   config: {},
   abiRollup: [],
   abiTokens: [],
-  walletFunder: {},
   isLoadingOp: false,
   apiOperator: {},
   errorOp: '',
@@ -18,6 +17,7 @@ const initialState = {
   balance: '0',
   tokens: 0,
   tokensR: 0,
+  tokensA: 0,
   txs: [],
   errorInfoAccount: '',
 };
@@ -58,7 +58,6 @@ function general(state = initialState, action) {
         config: action.payload.config,
         abiRollup: action.payload.abiRollup,
         abiTokens: action.payload.abiTokens,
-        walletFunder: action.payload.walletFunder,
         isLoadingFiles: false,
         errorFiles: '',
       };
@@ -100,6 +99,7 @@ function general(state = initialState, action) {
         balance: action.payload.balance,
         tokens: action.payload.tokens,
         tokensR: action.payload.tokensR,
+        tokensA: action.payload.tokensA,
         txs: action.payload.txs,
         errorInfoAccount: '',
       };
@@ -109,25 +109,6 @@ function general(state = initialState, action) {
         isLoadingInfoAccount: false,
         errorInfoAccount: action.error,
       };
-      /* case CONSTANTS.GET_TOKENS_ROLLUP:
-            return {
-                ...state,
-                isLoadingGetTokensR: true,
-                errorGetTokensR: '',
-            }
-          case CONSTANTS.GET_TOKENS_ROLLUP_SUCCESS:
-            return {
-                ...state,
-                isLoadingGetTokensR: false,
-                tokensR: action.payload,
-                errorGetTokensR: ''
-            };
-          case CONSTANTS.GET_TOKENS_ROLLUP_ERROR:
-            return {
-                ...state,
-                isLoadingGetTokensR: false,
-                errorGetTokensR: action.error,
-            }; */
     default:
       return state;
   }
