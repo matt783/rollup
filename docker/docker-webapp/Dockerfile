@@ -5,7 +5,7 @@ WORKDIR "./rollup"
 RUN git checkout feature/first-integration
 RUN npm install
 RUN npm run build
-COPY config/synch-config.json docker/docker-webapp/config
+COPY config/synch-config.json docker/docker-webapp/config/synch-config.json
 WORKDIR "./simple-webapp"
 RUN npm install
 
