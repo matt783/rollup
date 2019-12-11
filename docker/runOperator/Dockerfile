@@ -12,6 +12,7 @@ RUN rm buildSynchConfig.js
 RUN mv pool-config.json ./rollup-operator/src/config/
 RUN mv synch-config.json ./rollup-operator/src/config/
 
+EXPOSE 9000
 EXPOSE 9001
 
 CMD ["sh","-c","npm run run-operator-archive"]

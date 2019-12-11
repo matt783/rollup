@@ -10,9 +10,9 @@ contract RollupPoS is RollupPoSHelpers{
     // maximum rollup transacction: either off-chain or on-chain transactions
     uint MAX_TX;
 
-    uint32 constant BLOCKS_PER_SLOT = 100;
-    uint constant SLOT_DEADLINE = 80;
-    uint32 constant SLOTS_PER_ERA = 20;
+    uint32 constant BLOCKS_PER_SLOT = 4;
+    uint constant SLOT_DEADLINE = 3;
+    uint32 constant SLOTS_PER_ERA = 2;
     // Minimum stake to enter the raffle
     uint constant MIN_STAKE = 0.001 ether;
 
