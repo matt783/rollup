@@ -4,4 +4,8 @@ services:
     build: .
     network_mode: "host"
     volumes:
-      - ../config:/config 
+      - ../config:/config
+    environment:
+      - MNEMONIC='hard crop gallery regular neglect weekend fatal stamp eight flock inch doll'
+      - GOERLI_URL=http://localhost:8545
+      - NETWORK=development
