@@ -6,8 +6,6 @@ RUN git checkout feature/first-integration
 #RUN apt-get install tmux
 RUN npm install 
 COPY config-operator/* ./
-RUN ./create-config-op.sh
-RUN mv config.env ./rollup-operator/src/server/config.env
 RUN node buildSynchConfig.js
 RUN rm buildSynchConfig.js
 RUN mv pool-config.json ./rollup-operator/src/config/
@@ -16,4 +14,4 @@ RUN mv synch-config.json ./rollup-operator/src/config/
 EXPOSE 9000
 EXPOSE 9001
 
-CMD ["sh","-c","npm run operator-${OPERATOR_MODE}"]
+CMD ["sh","-c"," ./create-config-op.sh && npm run operator-${OPERATOR_MODE}"]
