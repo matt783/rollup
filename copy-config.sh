@@ -1,6 +1,6 @@
 #!/bin/bash
 
-mkdir -p docker/docker-webapp/config
-mkdir -p docker/runOperator/config
-cp -R docker/config/* docker/docker-webapp/config
-cp -R docker/config/* docker/runOperator/config
+mkdir -p docker/docker-webapp/config-webapp
+mkdir -p docker/runOperator/config-operator
+cp -R docker/config/* docker/docker-webapp/config-webapp
+cp -R docker/config/* docker/runOperator/config-operator
