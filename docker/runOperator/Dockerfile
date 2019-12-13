@@ -5,8 +5,8 @@ WORKDIR "./rollup"
 RUN git checkout feature/first-integration
 #RUN apt-get install tmux
 RUN npm install 
-COPY config/*.js* ./
-RUN ./config-op.sh
+COPY config-operator/* ./
+RUN ./create-config-op.sh
 RUN mv config.env ./rollup-operator/src/server/config.env
 RUN node buildSynchConfig.js
 RUN rm buildSynchConfig.js
