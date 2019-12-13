@@ -13,8 +13,8 @@ import ModalWithdraw from '../components/modal-withdraw';
 import ModalSend from '../components/modal-send';
 import MessageTx from '../components/message-tx';
 
-// const tokensAddress = '0xaFF4481D10270F50f203E0763e2597776068CBc5'; // Goerli
-const tokensAddress = '0xcbdc9319e31ACC76144Cc112e153E99D2Fc2A129'; // Ganache
+const tokensAddress = '0xaFF4481D10270F50f203E0763e2597776068CBc5'; // Goerli
+// const tokensAddress = '0xcbdc9319e31ACC76144Cc112e153E99D2Fc2A129'; // Ganache
 
 class ActionView extends Component {
   static propTypes = {

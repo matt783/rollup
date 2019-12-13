@@ -3,3 +3,14 @@ services:
   clioperator:
     network_mode: "host"
     build: .
+    environment:
+      - OPERATOR_PORT_ADMIN=9000
+      - OPERATOR_PORT_EXTERNAL=9001
+      - URL_SERVER_PROOF=http://127.0.0.1:10001
+      - LOG_LEVEL=info
+      - OPERATOR_MODE=archive
+      - URL_OPERATOR=localhost 
+      - STAKE=0.002
+      - SEED=rollup
+      - PRIVATE_KEY=9cda99025a6803a5e2d88c1f1620c28f7a7586d3c69612bdf2281d0bd9a46aa3
+      - PASSWORD=foo
