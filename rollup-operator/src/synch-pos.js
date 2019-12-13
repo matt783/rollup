@@ -4,8 +4,8 @@ const { timeout } = require("../src/utils");
 const { stringifyBigInts, unstringifyBigInts, bigInt } = require("snarkjs");
 
 // global vars
-const blocksPerSlot = 100;
-const slotsPerEra = 20;
+const blocksPerSlot = 4;
+const slotsPerEra = 2;
 const blocksNextInfo = blocksPerSlot*slotsPerEra; 
 const TIMEOUT_ERROR = 2000;
 const TIMEOUT_NEXT_LOOP = 5000;

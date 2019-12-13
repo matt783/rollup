@@ -90,7 +90,7 @@ contract RollupPoS is RollupPoSHelpers{
     constructor(address _rollup, uint256 _maxTx) public {
         require(_rollup != address(0),'Address 0 inserted');
         rollupInterface = RollupInterface(_rollup);
-        genesisBlock = getBlockNumber() + 1000;
+        genesisBlock = getBlockNumber() + 10;
         MAX_TX = _maxTx;
         // Initialize first raffle
         raffles[0] = Raffle(
