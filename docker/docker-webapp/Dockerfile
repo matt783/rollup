@@ -5,7 +5,7 @@ WORKDIR "./rollup"
 RUN git checkout feature/first-integration
 RUN npm install
 RUN npm run build
-COPY config/* ./
+COPY config-webapp/* ./
 RUN node build-config.js
 RUN mv config.json ./simple-webapp/src/utils
 WORKDIR "./simple-webapp"

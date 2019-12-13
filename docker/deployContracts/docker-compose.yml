@@ -4,7 +4,7 @@ services:
     build: .
     network_mode: "host"
     volumes:
-      - ../config-deploy:/config-deploy
+      - ./config-deploy:/config-deploy
     environment:
       - MNEMONIC="hard crop gallery regular neglect weekend fatal stamp eight flock inch doll"
       - GOERLI_URL=https://goerli.infura.io/v3/135e56bb9eaa42c59e73481fcb0f9b4a
