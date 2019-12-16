@@ -9,13 +9,10 @@ import { Redirect } from 'react-router-dom';
 import ModalImport from '../components/modal-import';
 import ModalCreate from '../components/modal-create';
 
-import * as rollup from '../../../utils/bundle-cli';
 import {
-  handleLoadWallet, handleLoadFiles, handleLoadOperator, resetWallet,
+  handleLoadWallet, handleLoadFiles, handleLoadOperator, resetWallet, handleCreateWallet
 } from '../../../state/general/actions';
 import { handleInitStateTx } from '../../../state/tx/actions';
-
-const FileSaver = require('file-saver');
 
 const config = require('../../../utils/config.json');
 
@@ -24,11 +21,14 @@ class InitView extends Component {
     wallet: PropTypes.object.isRequired,
     isLoadingWallet: PropTypes.bool.isRequired,
     errorWallet: PropTypes.string.isRequired,
+    isCreatingWallet: PropTypes.bool.isRequired,
+    errorCreateWallet: PropTypes.string.isRequired,
     handleInitStateTx: PropTypes.func.isRequired,
     handleLoadWallet: PropTypes.func.isRequired,
     handleLoadFiles: PropTypes.func.isRequired,
     handleLoadOperator: PropTypes.func.isRequired,
     resetWallet: PropTypes.func.isRequired,
+    created: PropTypes.bool.isRequired,
   }
 
   constructor(props) {
@@ -50,6 +50,9 @@ class InitView extends Component {
     componentDidUpdate = () => {
       if (this.props.isLoadingWallet === false && Object.keys(this.props.wallet).length !== 0) {
         this.setState({ isLoaded: true, modalImport: false });
+      }
+      if (this.props.created === true && this.state.modalCreate === true) {
+        this.setState({ modalCreate: false });
       }
     }
 
@@ -75,7 +78,7 @@ class InitView extends Component {
       }
     }
 
-    handleClickCreate = async () => {
+    /* handleClickCreate = async () => {
       const walletName = this.fileNameRef.current.value;
       const password = this.passwordRef.current.value;
       const wallet = await rollup.wallet.Wallet.createRandom();
@@ -83,6 +86,10 @@ class InitView extends Component {
       const blob = new Blob([JSON.stringify(encWallet)], { type: 'text/plain;charset=utf-8' });
       FileSaver.saveAs(blob, `${walletName}.json`);
       this.setState({ modalCreate: false });
+    } */
+
+    handleClickCreate = async () => {
+      await this.props.handleCreateWallet(this.fileNameRef.current.value, this.passwordRef.current.value);
     }
 
     toggleModalImport = () => { this.setState((prev) => ({ modalImport: !prev.modalImport })); }
@@ -130,7 +137,9 @@ class InitView extends Component {
             handleChangeWallet={this.handleChangeWallet}
             handleClickCreate={this.handleClickCreate}
             fileNameRef={this.fileNameRef}
-            passwordRef={this.passwordRef} />
+            passwordRef={this.passwordRef} 
+            isCreatingWallet={this.props.isCreatingWallet}
+            errorCreateWallet={this.props.errorCreateWallet} />
           <ModalImport
             modalImport={this.state.modalImport}
             toggleModalImport={this.toggleModalImport}
@@ -147,11 +156,14 @@ class InitView extends Component {
 
 const mapStateToProps = (state) => ({
   isLoadingWallet: state.general.isLoadingWallet,
+  isCreatingWallet: state.general.isCreatingWallet,
+  errorCreateWallet: state.general.errorCreateWallet,
   wallet: state.general.wallet,
+  created: state.general.created,
   errorWallet: state.general.errorWallet,
 });
 
 
 export default connect(mapStateToProps, {
-  handleLoadWallet, handleLoadFiles, handleLoadOperator, resetWallet, handleInitStateTx,
+  handleLoadWallet, handleLoadFiles, handleLoadOperator, resetWallet, handleInitStateTx, handleCreateWallet
 })(InitView);

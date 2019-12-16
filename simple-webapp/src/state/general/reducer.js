@@ -5,6 +5,9 @@ const initialState = {
   isLoadingWallet: false,
   wallet: {},
   password: '',
+  errorCreateWallet: '',
+  isCreatingWallet: false,
+  created: false,
   isLoadingFiles: false,
   errorFiles: '',
   config: {},
@@ -45,6 +48,26 @@ function general(state = initialState, action) {
         wallet: {},
         password: '',
         errorWallet: action.error,
+      };
+    case CONSTANTS.CREATE_WALLET:
+      return {
+        ...state,
+        isCreatingWallet: true,
+        errorCreateWallet: '',
+      };
+    case CONSTANTS.CREATE_WALLET_SUCCESS:
+      return {
+        ...state,
+        isCreatingWallet: false,
+        created: true,
+        errorCreateWallet: '',
+      };
+    case CONSTANTS.CREATE_WALLET_ERROR:
+      return {
+        ...state,
+        isCreatingWallet: false,
+        created: false,
+        errorCreateWallet: action.error,
       };
     case CONSTANTS.LOAD_FILES:
       return {

@@ -5,9 +5,6 @@ import {
 } from 'semantic-ui-react';
 import ModalInfoId from './modal-info-id';
 
-// const tokensAddress = '0xaFF4481D10270F50f203E0763e2597776068CBc5'; // Goerli
-// const tokensAddress = '0xcbdc9319e31ACC76144Cc112e153E99D2Fc2A129'; // Ganache
-
 class InfoWallet extends Component {
   static propTypes = {
     wallet: PropTypes.object.isRequired,
@@ -172,7 +169,7 @@ class InfoWallet extends Component {
                 {this.isLoadingEthers()}
               </Table.Cell>
               <Table.Cell textAlign="right">
-                <a href="https://faucet.goerli.mudit.blog/" target="_blank" rel="noopener noreferrer">
+                <a href="https://goerli-faucet.slock.it/" target="_blank" rel="noopener noreferrer">
                   <Button content="GET ETHER"/>
                 </a>
               </Table.Cell>

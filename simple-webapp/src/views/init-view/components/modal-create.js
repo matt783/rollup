@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import {
-  Button, Modal, Form, Icon,
+  Button, Modal, Form, Icon, Message
 } from 'semantic-ui-react';
 
 class ModalCreate extends Component {
@@ -11,6 +11,26 @@ class ModalCreate extends Component {
     modalCreate: PropTypes.bool.isRequired,
     handleClickCreate: PropTypes.func.isRequired,
     toggleModalCreate: PropTypes.func.isRequired,
+    errorCreateWallet: PropTypes.string,
+    isCreatingWallet: PropTypes.bool.isRequired,
+  }
+
+  isLoading = () => {
+    if (this.props.isCreatingWallet === true) {
+      return (
+        <Message warning>
+          <Icon name="circle notched" loading />
+          We are creating your wallet...
+        </Message>
+      );
+    } if (this.props.errorCreateWallet !== '') {
+      return (
+        <Message error>
+          <Icon name="close" />
+          Error
+        </Message>
+      );
+    }
   }
 
   render() {
@@ -32,6 +52,7 @@ class ModalCreate extends Component {
               </label>
             </Form.Field>
           </Form>
+          {this.isLoading()}
         </Modal.Content>
         <Modal.Actions>
           <Button color="blue" onClick={this.props.handleClickCreate}>
