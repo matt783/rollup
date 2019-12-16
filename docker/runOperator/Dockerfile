@@ -14,4 +14,4 @@ RUN mv synch-config.json ./rollup-operator/src/config/
 EXPOSE 9000
 EXPOSE 9001
 
-CMD ["sh","-c"," ./create-config-op.sh && npm run operator-${OPERATOR_MODE}"]
+CMD ["sh","-c","./create-config-op.sh && npm run operator-${OPERATOR_MODE}"]
