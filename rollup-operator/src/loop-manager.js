@@ -5,7 +5,7 @@ const { timeout, buildInputSm } = require("../src/utils");
 const { stringifyBigInts } = require("snarkjs"); 
 
 // global vars
-const SLOT_DEADLINE = 80;
+const SLOT_DEADLINE = 3;
 
 const stateServer = {
     IDLE: 0,
