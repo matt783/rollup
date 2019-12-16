@@ -7,8 +7,8 @@ const { stringifyBigInts, unstringifyBigInts, bigInt } = require("snarkjs");
 const blocksPerSlot = 4;
 const slotsPerEra = 2;
 const blocksNextInfo = blocksPerSlot*slotsPerEra; 
-const TIMEOUT_ERROR = 2000;
-const TIMEOUT_NEXT_LOOP = 5000;
+const TIMEOUT_ERROR = 1000;
+const TIMEOUT_NEXT_LOOP = 500;
 
 // db keys
 const lastEraKey = "last-era-synch";

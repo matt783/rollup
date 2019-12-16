@@ -23,8 +23,8 @@ const state = {
     GET_PROOF: 5,
 };
 
-const TIMEOUT_ERROR = 2000;
-let TIMEOUT_NEXT_STATE = 5000;
+const TIMEOUT_ERROR = 1000;
+let TIMEOUT_NEXT_STATE = 500;
 
 class LoopManager{
     constructor(rollupSynch, posSynch, poolTx, opManager, cliServerProof, logLevel) {
