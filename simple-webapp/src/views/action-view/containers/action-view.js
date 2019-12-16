@@ -14,7 +14,7 @@ import ModalSend from '../components/modal-send';
 import MessageTx from '../components/message-tx';
 
 const tokensAddress = '0xaFF4481D10270F50f203E0763e2597776068CBc5'; // Goerli
-// const tokensAddress = '0xcbdc9319e31ACC76144Cc112e153E99D2Fc2A129'; // Ganache
+// const tokensAddress = '0x7dFc5b5D172db3941f669770f9993b1df250B560'; // Ganache
 
 class ActionView extends Component {
   static propTypes = {
@@ -97,7 +97,6 @@ class ActionView extends Component {
     return (
       <Container textAlign="center">
         <MenuBack />
-        <MessageTx />
         <Header
           as="h1"
           style={{
@@ -111,6 +110,7 @@ class ActionView extends Component {
         <Divider />
         <MenuActions
           handleItemClick={this.handleItemClick} />
+        <MessageTx />
         <InfoWallet
           wallet={this.props.wallet}
           apiOperator={this.props.apiOperator}
