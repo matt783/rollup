@@ -60,7 +60,7 @@ class InfoWallet extends Component {
   }
 
   handleClick = () => {
-    this.props.handleClickApprove(this.addressTokensRef.current.value, this.amountTokensRef.current.value);
+    this.props.handleClickApprove(this.addressTokensRef.current.value, (this.amountTokensRef.current.value*1000000000000000));
   }
 
   handleClickTokens = () => {
@@ -86,7 +86,7 @@ class InfoWallet extends Component {
 
   isLoadingTokens = () => {
     if (this.state.loading === false) {
-      return this.props.tokens;
+      return (this.props.tokens/1000000000000000);
     }
     return <Icon name="circle notched" loading />;
   }
@@ -100,7 +100,7 @@ class InfoWallet extends Component {
 
   isLoadingTokensA = () => {
     if (this.state.loading === false) {
-      return this.props.tokensA;
+      return (this.props.tokensA/1000000000000000);
     }
     return <Icon name="circle notched" loading />;
   }
