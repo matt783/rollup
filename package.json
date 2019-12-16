@@ -8,8 +8,8 @@
   },
   "scripts": {
     "test": "mocha",
-    "build": "browserify rollup-cli/index.js -s rollup > simple-webapp/src/utils/bundle-cli.js && browserify rollup-operator/index.js -s operator > simple-webapp/src/utils/bundle-op.js && ./disable-eslint.sh",
-    "rm-tmp":"rm -rf rollup-operator/test/server/tmp-0 && rm -rf rollup-operator/test/server/tmp-1 && rm -rf rollup-operator/test/server/tmp-2",
+    "build": "browserify rollup-cli/index.js -s rollup > simple-webapp/src/utils/bundle-cli.js && browserify rollup-operator/index.js -s operator > simple-webapp/src/utils/bundle-op.js && docker/disable-eslint.sh",
+    "rm-tmp":"rm -rf rollup-operator/src/server/tmp-0 && rm -rf rollup-operator/src/server/tmp-1 && rm -rf rollup-operator/src/server/tmp-2",
     "run-operator-light": "chmod +x run-operator.sh && ./run-operator.sh 9000 9001 http://127.0.0.1:10001 light",
     "run-operator-full": "chmod +x run-operator.sh && ./run-operator.sh 9000 9001 http://127.0.0.1:10001 full",
     "run-operator-archive": "chmod +x run-operator.sh && ./run-operator.sh 9000 9001 http://127.0.0.1:10001 archive",
