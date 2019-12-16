@@ -17,7 +17,7 @@ const initialState = {
   apiOperator: {},
   errorOp: '',
   isLoadingInfoAccount: false,
-  balance: '0',
+  balance: '0.0',
   tokens: 0,
   tokensR: 0,
   tokensA: 0,

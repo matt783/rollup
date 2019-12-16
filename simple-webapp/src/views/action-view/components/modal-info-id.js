@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { Table, Icon, Modal } from 'semantic-ui-react';
+import { Table, Icon, Modal, Button } from 'semantic-ui-react';
 
 class ModalInfoId extends Component {
   static propTypes = {
@@ -34,7 +34,7 @@ class ModalInfoId extends Component {
 
   render() {
     return (
-      <Modal trigger={<Icon name="info" circular />} closeIcon>
+      <Modal trigger={<Button icon="info" circular size="mini" />} closeIcon>
         <Modal.Header><Icon name="info" /></Modal.Header>
         <Modal.Content>
           <Table>

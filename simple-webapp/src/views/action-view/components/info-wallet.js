@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import {
-  Table, Button, Container, Icon,
+  Table, Button, Container, Icon, Popup,
 } from 'semantic-ui-react';
 import ModalInfoId from './modal-info-id';
 
@@ -161,7 +161,11 @@ class InfoWallet extends Component {
                 {this.isLoadingTokensR()}
               </Table.Cell>
               <Table.Cell textAlign="right">
-                <Button content="GET TOKENS" onClick={this.handleClickTokens} />
+                <Button content="GET TOKENS" onClick={this.handleClickTokens} 
+                disabled={this.state.loading || this.props.balance === "0.0"} />
+                <Popup content="You need ether to get tokens" trigger=
+                  {<Icon name="info" circular/>}
+                />
               </Table.Cell>
             </Table.Row>
             <Table.Row>
