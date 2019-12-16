@@ -172,7 +172,7 @@ class InfoWallet extends Component {
                 {this.isLoadingEthers()}
               </Table.Cell>
               <Table.Cell textAlign="right">
-                <a href="https://faucet.goerli.mudit.blog/" target="_blank" rel="noopener noreferrer">
+                <a href="https://goerli-faucet.slock.it/" target="_blank" rel="noopener noreferrer">
                   <Button content="GET ETHER"/>
                 </a>
               </Table.Cell>

@@ -4,6 +4,7 @@ import * as operator from '../../utils/bundle-op';
 
 const ethers = require('ethers');
 const { readFile } = require('../../utils/utils');
+const FileSaver = require('file-saver');
 
 function loadWallet() {
   return {
@@ -36,6 +37,44 @@ export function handleLoadWallet(walletFile, password) {
         dispatch(loadWalletSuccess(wallet, password));
       } catch (error) {
         dispatch(loadWalletError(error));
+      }
+    });
+  };
+}
+
+function createWallet() {
+  return {
+    type: CONSTANTS.CREATE_WALLET,
+  };
+}
+
+function createWalletSuccess() {
+  return {
+    type: CONSTANTS.CREATE_WALLET_SUCCESS,
+    error: '',
+  };
+}
+
+function createWalletError(error) {
+  return {
+    type: CONSTANTS.CREATE_WALLET_ERROR,
+    error,
+  };
+}
+
+export function handleCreateWallet(walletName, password) {
+  return function (dispatch) {
+    dispatch(createWallet());
+    return new Promise(async () => {
+      try {
+        const wallet = await rollup.wallet.Wallet.createRandom();
+        const encWallet = await wallet.toEncryptedJson(password);
+        dispatch(createWalletSuccess());
+        const blob = new Blob([JSON.stringify(encWallet)], { type: 'text/plain;charset=utf-8' });
+        FileSaver.saveAs(blob, `${walletName}.json`);
+      } catch (error) {
+        console.log(error);
+        dispatch(createWalletError(error));
       }
     });
   };
