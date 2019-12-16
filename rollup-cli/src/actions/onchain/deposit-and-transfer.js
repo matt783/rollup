@@ -24,7 +24,7 @@ async function depositAndTransfer(urlNode, addressSC, loadAmount, amount, tokenI
     const contractWithSigner = new ethers.Contract(addressSC, abi, walletEth);
     const overrides = {
         gasLimit: 800000,
-        value: ethers.utils.parseEther('0.11'), // 0.1 minimum fee for on-chain Tx
+        value: ethers.utils.parseEther('0.0011'), // 0.1 minimum fee for on-chain Tx
     };
 
     try {
