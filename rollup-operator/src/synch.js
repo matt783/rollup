@@ -8,12 +8,12 @@ const { timeout } = require("../src/utils");
 const Constants = require("./constants");
 
 // global vars
-const TIMEOUT_ERROR = 2000;
-const TIMEOUT_NEXT_LOOP = 5000;
+const TIMEOUT_ERROR = 1000;
+const TIMEOUT_NEXT_LOOP = 500;
 const maxTx = 10;
 const nLevels = 24;
 const bytesOffChainTx = 3*2 + 2;
-const blocksPerSlot = 100;
+const blocksPerSlot = 4;
 
 // db keys
 const lastBlockKey = "last-block-synch";
