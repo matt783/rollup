@@ -12,5 +12,5 @@ services:
       - URL_OPERATOR=localhost 
       - STAKE=0.002
       - SEED=rollup
-      - PRIVATE_KEY=9cda99025a6803a5e2d88c1f1620c28f7a7586d3c69612bdf2281d0bd9a46aa3
+      - PRIVATE_KEY=YOUR_PRIVATE_KEY
       - PASSWORD=foo
