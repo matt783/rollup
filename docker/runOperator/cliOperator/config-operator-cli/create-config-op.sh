@@ -15,3 +15,5 @@ STAKE = $STAKE
 SEED = $SEED
 PRIVATE_KEY = $PRIVATE_KEY
 PASSWORD = $PASSWORD" > config.env
+
+mv config.env ./rollup-operator/src/server/config.env

@@ -11,6 +11,6 @@ services:
       - OPERATOR_MODE=archive
       - URL_OPERATOR=localhost 
       - STAKE=0.002
-      - SEED=rollup
+      - SEED=YOUR_SEED
       - PRIVATE_KEY=YOUR_PRIVATE_KEY
-      - PASSWORD=foo
+      - PASSWORD=YOUR_PASSWORD

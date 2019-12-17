@@ -13,7 +13,3 @@ services:
       - LOG_LEVEL=info
       - OPERATOR_MODE=archive
       - URL_OPERATOR=localhost 
-      - STAKE=0.002
-      - SEED=rollup
-      - PRIVATE_KEY=YOUR_PRIVATE_KEY
-      - PASSWORD=foo
