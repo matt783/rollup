@@ -6,6 +6,8 @@ import {
 } from 'semantic-ui-react';
 import { handleSendSend } from '../../../state/tx/actions';
 
+const web3 = require("web3");
+
 class ModalSend extends Component {
     static propTypes = {
       activeItem: PropTypes.string.isRequired,
@@ -51,12 +53,12 @@ class ModalSend extends Component {
     handleClick = async () => {
       const { wallet, config, password } = this.props;
 
-      const idTo = parseInt(this.idToRef.current.value, 10);
-      const amount = parseInt(this.amountRef.current.value, 10);
-      const tokenId = parseInt(this.tokenIdRef.current.value, 10);
-      const fee = parseInt(this.feeRef.current.value, 10);
+      const idTo = this.idToRef.current.value;
+      const amount = web3.utils.toWei(this.amountRef.current.value, 'ether');
+      const tokenId = this.tokenIdRef.current.value;
+      const fee = this.feeRef.current.value;
       const { operator } = config;
-      const idFrom = parseInt(this.idFromRef.current.value, 10);
+      const idFrom = this.idFromRef.current.value;
       this.props.toggleModalSend();
       const res = await this.props.handleSendSend(operator, idTo, amount, wallet, password, tokenId, fee, idFrom);
       this.props.getInfoAccount();

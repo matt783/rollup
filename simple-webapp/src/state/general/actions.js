@@ -204,17 +204,18 @@ export function handleInfoAccount(node, addressTokens, abiTokens, encWallet, pas
         try { 
           const tokensHex = await contractTokens.balanceOf(encWallet.ethWallet.address);
           const tokensAHex = await contractTokens.allowance(encWallet.ethWallet.address, addressRollup);
-          tokens = parseInt(tokensHex._hex, 16);
-          tokensA = parseInt(tokensAHex._hex, 16);
+          tokens = tokensHex.toString();
+          tokensA = tokensAHex.toString();
         } catch (err) {
-          tokens = 0;
-          tokensA = 0;
+          console.log(err);
+          tokens = '0';
+          tokensA = '0';
         }
         const apiOperator = new operator.cliExternalOperator(operatorUrl);
         const filters = {
           ethAddr: `0x${encWallet.ethWallet.address}`,
         };
-        let tokensR = 0;
+        let tokensRNum = 0;
         const txs = [];
         try {
           const allTxs = await apiOperator.getAccounts(filters);
@@ -223,12 +224,13 @@ export function handleInfoAccount(node, addressTokens, abiTokens, encWallet, pas
           for (let i = initTx; i <= numTx; i++) {
             if (allTxs.data.find((tx) => tx.idx === i) !== undefined) {
               txs.push(allTxs.data.find((tx) => tx.idx === i));
-              tokensR += parseInt(allTxs.data.find(tx => tx.idx === i).amount);
+              tokensRNum += parseInt(allTxs.data.find(tx => tx.idx === i).amount);
             }
           }
         } catch (err) {
-          tokensR = 0;
+          tokensRNum = 0;
         }
+        const tokensR = tokensRNum.toString();
         dispatch(infoAccountSuccess(balance, tokens, tokensR, tokensA, txs));
       } catch (error) {
         console.log(error);

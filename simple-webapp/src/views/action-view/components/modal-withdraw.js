@@ -36,8 +36,8 @@ class ModalWithdraw extends Component {
           wallet, config, abiRollup, password,
         } = this.props;
 
-        const idFrom = parseInt(this.state.idFrom, 10);
-        const numExitRoot = parseInt(this.state.numExitRoot, 10);
+        const idFrom = this.state.idFrom;
+        const numExitRoot = this.state.numExitRoot;
         const { nodeEth } = config;
         const addressSC = config.address;
         const { operator } = config;

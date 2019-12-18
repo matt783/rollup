@@ -5,15 +5,14 @@ import {
 } from 'semantic-ui-react';
 import ModalInfoId from './modal-info-id';
 
-// const tokensAddress = '0xaFF4481D10270F50f203E0763e2597776068CBc5'; // Goerli
-// const tokensAddress = '0xcbdc9319e31ACC76144Cc112e153E99D2Fc2A129'; // Ganache
+const web3 = require("web3");
 
 class InfoWallet extends Component {
   static propTypes = {
     wallet: PropTypes.object.isRequired,
     isLoadingInfoAccount: PropTypes.bool.isRequired,
-    tokens: PropTypes.number,
-    tokensR: PropTypes.number,
+    tokens: PropTypes.string,
+    tokensR: PropTypes.string,
     balance: PropTypes.string,
     txs: PropTypes.array,
     handleClickApprove: PropTypes.func.isRequired,
@@ -22,8 +21,8 @@ class InfoWallet extends Component {
   }
 
   static defaultProps = {
-    tokens: 0,
-    tokensR: 0,
+    tokens: '0',
+    tokensR: '0',
     balance: '0',
     txs: [],
   }
@@ -60,7 +59,8 @@ class InfoWallet extends Component {
   }
 
   handleClick = () => {
-    this.props.handleClickApprove(this.addressTokensRef.current.value, (this.amountTokensRef.current.value*1000000000000000));
+    this.props.handleClickApprove(this.addressTokensRef.current.value, web3.utils.toWei(this.amountTokensRef.current.value, 'ether'));
+    // this.props.handleClickApprove(this.addressTokensRef.current.value, this.amountTokensRef.current.value);
   }
 
   handleClickTokens = () => {
@@ -86,21 +86,24 @@ class InfoWallet extends Component {
 
   isLoadingTokens = () => {
     if (this.state.loading === false) {
-      return (this.props.tokens/1000000000000000);
+      return web3.utils.fromWei(this.props.tokens, 'ether');
+      // return this.props.tokens;
     }
     return <Icon name="circle notched" loading />;
   }
 
   isLoadingTokensR = () => {
     if (this.state.loading === false) {
-      return this.props.tokensR;
+      // return this.props.tokensR;
+      return web3.utils.fromWei(this.props.tokensR, 'ether');
     }
     return <Icon name="circle notched" loading />;
   }
 
   isLoadingTokensA = () => {
     if (this.state.loading === false) {
-      return (this.props.tokensA/1000000000000000);
+      return web3.utils.fromWei(this.props.tokensA, 'ether');
+      // return this.props.tokensA;
     }
     return <Icon name="circle notched" loading />;
   }
@@ -200,6 +203,7 @@ class InfoWallet extends Component {
               </Table.Cell>
               <Table.Cell colSpan="3">
                 <input type="text" ref={this.amountTokensRef} />
+                <Button content="APPROVE" onClick={this.handleClick} />
               </Table.Cell>
             </Table.Row>
             <Table.Row>
@@ -214,7 +218,6 @@ class InfoWallet extends Component {
                   ref={this.addressTokensRef}
                   defaultValue={this.props.tokensAddress}
                   size="40" />
-                <Button content="APPROVE" onClick={this.handleClick} />
               </Table.Cell>
             </Table.Row>
           </Table.Body>

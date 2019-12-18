@@ -2,6 +2,8 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { Table, Icon, Modal, Button } from 'semantic-ui-react';
 
+const web3 = require("web3");
+
 class ModalInfoId extends Component {
   static propTypes = {
     txs: PropTypes.array,
@@ -18,7 +20,7 @@ class ModalInfoId extends Component {
         return (
           <Table.Row key={index}>
             <Table.Cell>{key.idx}</Table.Cell>
-            <Table.Cell>{key.amount}</Table.Cell>
+            <Table.Cell>{web3.utils.fromWei(key.amount, 'ether')}</Table.Cell>
           </Table.Row>
         );
       });

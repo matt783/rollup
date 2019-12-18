@@ -7,6 +7,8 @@ import {
 
 import { handleSendDeposit } from '../../../state/tx/actions';
 
+const web3 = require("web3");
+
 class ModalDeposit extends Component {
     static propTypes = {
       wallet: PropTypes.object.isRequired,
@@ -29,8 +31,15 @@ class ModalDeposit extends Component {
       const {
         wallet, config, abiRollup, password,
       } = this.props;
-      const amount = parseInt(this.amountRef.current.value, 10);
-      const tokenId = parseInt(this.tokenIdRef.current.value, 10);
+      let amount;
+      try {
+        //amount = web3.utils.toWei(this.amountRef.current.value, 'ether');
+        amount = web3.utils.toWei(this.amountRef.current.value, 'ether');
+      } catch (err) {
+        console.log(err);
+        amount = 0;
+      }
+      const tokenId = this.tokenIdRef.current.value;
       const { nodeEth } = config;
       const addressSC = config.address;
       this.props.toggleModalDeposit();
