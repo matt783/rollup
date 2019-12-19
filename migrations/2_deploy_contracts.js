@@ -14,7 +14,7 @@ module.exports = async function (deployer, network, accounts) {
     
     const C = new web3.eth.Contract(poseidonUnit.abi);
     insPoseidonUnit = await C.deploy({ data: poseidonUnit.createCode() })
-        .send({ gas: 2500000, from: accounts[0] });
+        .send({from: accounts[0] });
     // console.log("Poseidon address:" + insPoseidonUnit._address);
     // console.log("Token rollup address:" + TokenRollup.address);
     await deployer.deploy(Verifier);

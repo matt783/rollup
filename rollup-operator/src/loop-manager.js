@@ -251,7 +251,7 @@ class LoopManager{
                 const resForge = await this.opManager.forge(proof.proofA, proof.proofB,
                     proof.proofC, publicInputs);
                 if(resForge.status) {
-                    TIMEOUT_NEXT_STATE = 15000;
+                    TIMEOUT_NEXT_STATE = 30000;//si he forjado bien cuanto me espero 30 seugnods mejor
                     this.commited = false;
                     this.state = state.SYNCHRONIZING;
                     this.batchBuilded = false;
