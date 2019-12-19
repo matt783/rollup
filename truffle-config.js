@@ -76,7 +76,7 @@ module.exports = {
                 process.env.MNEMONIC,
                 process.env.GOERLI_URL,
                 process.env.INDEX_ACCOUNT, //default index address  mirar ocmofunciona esto cuenta 11
-                2, //many accounts created
+                1, //many accounts created
                 true, //dont share the nonce casue its buged when a tx is invalid.
                 "m/44'/60'/0'/0/" //path 
             ),
