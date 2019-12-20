@@ -33,7 +33,6 @@ class ModalDeposit extends Component {
       } = this.props;
       let amount;
       try {
-        //amount = web3.utils.toWei(this.amountRef.current.value, 'ether');
         amount = web3.utils.toWei(this.amountRef.current.value, 'ether');
       } catch (err) {
         console.log(err);

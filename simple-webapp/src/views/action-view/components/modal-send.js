@@ -54,11 +54,11 @@ class ModalSend extends Component {
       const { wallet, config, password } = this.props;
 
       const idTo = this.idToRef.current.value;
-      const amount = web3.utils.toWei(this.amountRef.current.value, 'ether');
       const tokenId = this.tokenIdRef.current.value;
-      const fee = this.feeRef.current.value;
-      const { operator } = config;
       const idFrom = this.idFromRef.current.value;
+      const amount = web3.utils.toWei(this.amountRef.current.value, 'ether');
+      const fee = web3.utils.toWei(this.feeRef.current.value, 'ether');
+      const { operator } = config;
       this.props.toggleModalSend();
       const res = await this.props.handleSendSend(operator, idTo, amount, wallet, password, tokenId, fee, idFrom);
       this.props.getInfoAccount();
