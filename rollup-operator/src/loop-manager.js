@@ -214,9 +214,11 @@ class LoopManager{
 
         if(!this.batchBuilded) {
             const bb = await this.rollupSynch.getBatchBuilder();
+            console.log("1", {bb});
             await this.poolTx.fillBatch(bb);
             this.batch = bb;
             this.batchBuilded = true;
+            console.log("2", {bb});
         }
         // Check server proof is available
         const resServer = await this.cliServerProof.getStatus();
@@ -244,11 +246,14 @@ class LoopManager{
             if (this.commited) resCommit = true;
             else {
                 const res = await this.opManager.commit(this.hashChain[this.pHashChain], commitData);
+                console.log(this.hashChain[this.pHashChain], commitData);
                 resCommit = res.status;
             }
             if (resCommit) { // try again if no data is commited
                 this.commited = true;
                 const resForge = await this.opManager.forge(proof.proofA, proof.proofB,
+                    proof.proofC, publicInputs);
+                console.log(proof.proofA, proof.proofB,
                     proof.proofC, publicInputs);
                 if(resForge.status) {
                     TIMEOUT_NEXT_STATE = 30000;//si he forjado bien cuanto me espero 30 seugnods mejor
