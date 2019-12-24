@@ -3,9 +3,10 @@ const winston = require("winston");
 
 const { timeout, buildInputSm } = require("../src/utils"); 
 const { stringifyBigInts } = require("snarkjs"); 
-
+const util = require("util");
 // global vars
-const SLOT_DEADLINE = 3;
+const SLOT_DEADLINE = 4;
+const ESTIMATE_PROOF_TIME = 2;
 
 const stateServer = {
     IDLE: 0,
@@ -235,6 +236,19 @@ class LoopManager{
     }
 
     async _stateProof() {
+        // Check if operator has still time to forgeblockToStartForge
+        // Calculate block range valid
+        const limitBlock = this.blockToStartForge + SLOT_DEADLINE - ESTIMATE_PROOF_TIME;
+        const currentBlock = await this.posSynch.getCurrentBlock();
+
+        if (currentBlock > limitBlock) {
+            TIMEOUT_NEXT_STATE = 1500;
+            this.commited = false;
+            this.state = state.SYNCHRONIZING;
+            this.batchBuilded = false;
+            return;
+        }
+
         const res = await this.cliServerProof.getStatus();
         const statusServer = res.data.state;
         if (statusServer == stateServer.FINISHED) {
@@ -242,27 +256,20 @@ class LoopManager{
             const proof = res.data.proof;
             const commitData = `0x${this.batch.getDataAvailable().toString("hex")}`;
             const publicInputs = buildInputSm(this.batch);
-            let resCommit;
-            if (this.commited) resCommit = true;
-            else {
-                const res = await this.opManager.commit(this.hashChain[this.pHashChain], commitData);
-                console.log(this.hashChain[this.pHashChain], commitData);
-                resCommit = res.status;
+            
+            const resCommitForge = await this.opManager.commitAndForge(this.hashChain[this.pHashChain],
+                commitData, proof.proofA, proof.proofB, proof.proofC, publicInputs);
+            console.log("\n \n \n*******RESPONSE COMMIT FORGE:");
+            console.log(util.inspect(resCommitForge, false, null, true));  
+            
+            if (resCommitForge.status) {
+                TIMEOUT_NEXT_STATE = 5000;
+                this.commited = false;
+                this.state = state.SYNCHRONIZING;
+                this.batchBuilded = false;
+                this.pHashChain--;
             }
-            if (resCommit) { // try again if no data is commited
-                this.commited = true;
-                const resForge = await this.opManager.forge(proof.proofA, proof.proofB,
-                    proof.proofC, publicInputs);
-                console.log(proof.proofA, proof.proofB,
-                    proof.proofC, publicInputs);
-                if(resForge.status) {
-                    TIMEOUT_NEXT_STATE = 30000;//si he forjado bien cuanto me espero 30 seugnods mejor
-                    this.commited = false;
-                    this.state = state.SYNCHRONIZING;
-                    this.batchBuilded = false;
-                    this.pHashChain--;
-                }
-            }
+            
         } else if (statusServer == stateServer.ERROR) {
             TIMEOUT_NEXT_STATE = 2000;
             // reset server-proof and re-send input
