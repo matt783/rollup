@@ -175,6 +175,7 @@ class LoopManager{
     }
 
     async _checkWinner() {
+        console.log("\n \n \n hiiii2");
         const winners = await this.posSynch.getRaffleWinners();
         const slots = await this.posSynch.getSlotWinners();
         let foundSlotWinner = false;
@@ -185,6 +186,7 @@ class LoopManager{
                 const block = await this.posSynch.getBlockBySlot(slots[index] - 1);
                 this.blockToStartForge = block + SLOT_DEADLINE;
                 foundSlotWinner = true;
+                console.log( this.blockToStartForge, {block});
             }
             if (foundSlotWinner) break;
         }
@@ -223,6 +225,7 @@ class LoopManager{
         }
         // Check server proof is available
         const resServer = await this.cliServerProof.getStatus();
+        console.log("hiiiiiiiiiiiiiiiiiiiiii", resServer.data.state);
         if (resServer.data.state != stateServer.IDLE){
             // time to reset server proof
             await this.cliServerProof.cancel();
@@ -238,19 +241,21 @@ class LoopManager{
     async _stateProof() {
         // Check if operator has still time to forgeblockToStartForge
         // Calculate block range valid
-        const limitBlock = this.blockToStartForge + SLOT_DEADLINE - ESTIMATE_PROOF_TIME;
+        const limitBlock = this.blockToStartForge + SLOT_DEADLINE;// - ESTIMATE_PROOF_TIME;
         const currentBlock = await this.posSynch.getCurrentBlock();
+        console.log({currentBlock}, {limitBlock});
 
-        if (currentBlock > limitBlock) {
-            TIMEOUT_NEXT_STATE = 1500;
-            this.commited = false;
-            this.state = state.SYNCHRONIZING;
-            this.batchBuilded = false;
-            return;
-        }
+        // if (currentBlock > limitBlock) {
+        //     TIMEOUT_NEXT_STATE = 1500;
+        //     this.commited = false;
+        //     this.state = state.SYNCHRONIZING;
+        //     this.batchBuilded = false;
+        //     return;
+        // }
 
         const res = await this.cliServerProof.getStatus();
         const statusServer = res.data.state;
+        console.log( {statusServer});
         if (statusServer == stateServer.FINISHED) {
             // get proof, commit data and forge block
             const proof = res.data.proof;
