@@ -27,12 +27,18 @@ function loadWalletError(error) {
   };
 }
 
-export function handleLoadWallet(walletFile, password) {
+export function handleLoadWallet(walletFile, password, file) {
   return function (dispatch) {
     dispatch(loadWallet());
     return new Promise(async () => {
       try {
-        const wallet = await readFile(walletFile);
+        let wallet;
+        if (file) {
+          wallet = await readFile(walletFile);
+        } else {
+          wallet = walletFile;
+        }
+        console.log(wallet);
         await rollup.wallet.Wallet.fromEncryptedJson(wallet, password);
         dispatch(loadWalletSuccess(wallet, password));
       } catch (error) {
@@ -65,13 +71,14 @@ function createWalletError(error) {
 export function handleCreateWallet(walletName, password) {
   return function (dispatch) {
     dispatch(createWallet());
-    return new Promise(async () => {
+    return new Promise(async (resolve) => {
       try {
         const wallet = await rollup.wallet.Wallet.createRandom();
         const encWallet = await wallet.toEncryptedJson(password);
         dispatch(createWalletSuccess());
         const blob = new Blob([JSON.stringify(encWallet)], { type: 'text/plain;charset=utf-8' });
         FileSaver.saveAs(blob, `${walletName}.json`);
+        resolve(encWallet);
       } catch (error) {
         console.log(error);
         dispatch(createWalletError(error));

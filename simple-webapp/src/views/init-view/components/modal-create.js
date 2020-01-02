@@ -13,14 +13,15 @@ class ModalCreate extends Component {
     toggleModalCreate: PropTypes.func.isRequired,
     errorCreateWallet: PropTypes.string,
     isCreatingWallet: PropTypes.bool.isRequired,
+    isLoadingWallet: PropTypes.bool.isRequired,
   }
 
   isLoading = () => {
-    if (this.props.isCreatingWallet === true) {
+    if (this.props.isCreatingWallet === true || this.props.isLoadingWallet === true) {
       return (
         <Message warning>
           <Icon name="circle notched" loading />
-          We are creating your wallet...
+          We are creating and importing your wallet..
         </Message>
       );
     } if (this.props.errorCreateWallet !== '') {

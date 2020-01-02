@@ -51,7 +51,7 @@ class InitView extends Component {
       if (this.props.isLoadingWallet === false && Object.keys(this.props.wallet).length !== 0) {
         this.setState({ isLoaded: true, modalImport: false });
       }
-      if (this.props.created === true && this.state.modalCreate === true) {
+      if (this.props.created === true && this.state.isLoaded === true && this.state.modalCreate === true) {
         this.setState({ modalCreate: false });
       }
     }
@@ -68,7 +68,7 @@ class InitView extends Component {
           throw new Error('Incorrect wallet or password');
         } else {
           this.props.handleInitStateTx();
-          this.props.handleLoadWallet(this.state.walletImport, this.passwordRef.current.value);
+          this.props.handleLoadWallet(this.state.walletImport, this.passwordRef.current.value, true);
           this.props.handleLoadFiles(config);
           this.props.handleLoadOperator(config);
         }
@@ -79,7 +79,22 @@ class InitView extends Component {
     }
 
     handleClickCreate = async () => {
-      await this.props.handleCreateWallet(this.fileNameRef.current.value, this.passwordRef.current.value);
+      try {
+        const fileName = this.fileNameRef.current.value;
+        const password = this.passwordRef.current.value;
+        if (fileName === '' || password === '') {
+          throw new Error('Incorrect wallet or password');
+        } else {
+          const encWallet = await this.props.handleCreateWallet(fileName, password);
+          this.props.handleInitStateTx();
+          this.props.handleLoadWallet(encWallet, password, false);
+          this.props.handleLoadFiles(config);
+          this.props.handleLoadOperator(config);
+        }
+      } catch (err) {
+        // eslint-disable-next-line no-console
+        console.log(err.message);
+      }
     }
 
     toggleModalImport = () => { this.setState((prev) => ({ modalImport: !prev.modalImport })); }
@@ -128,6 +143,7 @@ class InitView extends Component {
             handleClickCreate={this.handleClickCreate}
             fileNameRef={this.fileNameRef}
             passwordRef={this.passwordRef}
+            isLoadingWallet={this.props.isLoadingWallet}
             isCreatingWallet={this.props.isCreatingWallet}
             errorCreateWallet={this.props.errorCreateWallet} />
           <ModalImport
