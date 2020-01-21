@@ -205,6 +205,7 @@ let pool;
 
     // Initilaize classes if wallet is loaded
     if (wallet !== undefined) {
+
         //////////////////////
         ///// OPERATOR MANAGER
         //////////////////////
@@ -240,8 +241,14 @@ let pool;
         ////////////////////
         ///// LOOP MANAGER
         ///////////////////
-        loopManager = new LoopManager(rollupSynch, posSynch, pool, 
-            opManager, cliServerProof, loggerLevel);
+        loopManager = new LoopManager(rollupSynch,
+            posSynch,
+            pool, 
+            opManager,
+            cliServerProof,
+            loggerLevel,
+            synchConfig.ethNodeUrl,
+            synchConfig.timeouts);
         
         const seed = utils.getSeedFromPrivKey(wallet.privateKey);
         await loopManager.loadSeedHashChain(seed);

@@ -32,7 +32,7 @@ const CliServerProof = require("../src/cli-proof-server");
 const LoopManager = require("../src/loop-manager");
 
 // timeouts test
-const timeoutSynch = 10000;
+const timeoutSynch = 20000;
 const timeoutFinal = 40000;
 
 contract("Loop Manager", async (accounts) => { 
@@ -178,7 +178,8 @@ contract("Loop Manager", async (accounts) => {
             opManager,
             cliServerProof,
             configSynchPoS.logLevel,
-            configSynchPoS.ethNodeUrl);
+            configSynchPoS.ethNodeUrl,
+        );
                
         // Init loops    
         loopManager.startLoop();
