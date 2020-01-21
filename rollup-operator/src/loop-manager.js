@@ -198,11 +198,6 @@ class LoopManager{
     async loadSeedHashChain(seed){
         this.hashChain = loadHashChain(seed);
     }
-
-    async register(stake, url) {
-        const res = await this.opManager.register(this.hashChain[this.hashChain.length - 1], stake, url);
-        return res.status;
-    }
     
     async _getIndexHashChain(opId){
         const lastHash = await this.posSynch.getLastCommitedHash(opId);

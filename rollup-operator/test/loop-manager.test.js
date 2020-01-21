@@ -130,12 +130,21 @@ contract("Loop Manager", async (accounts) => {
             rollupPoSAddress: insRollupPoS.address,
             rollupPoSABI: RollupPoS.abi,
             logLevel: "debug",
+            timeouts: { ERROR: 1000, NEXT_LOOP: 2500, LOGGER: 5000},
         };
         
-        rollupSynch = new RollupSynch(configRollupSynch.synchDb, configRollupSynch.treeDb,
-            configRollupSynch.ethNodeUrl, configRollupSynch.contractAddress, configRollupSynch.abi,
-            configRollupSynch.rollupPoSAddress, configRollupSynch.rollupPoSABI, 
-            configRollupSynch.creationHash, configRollupSynch.ethAddress, configRollupSynch.logLevel);
+        rollupSynch = new RollupSynch(configRollupSynch.synchDb,
+            configRollupSynch.treeDb,
+            configRollupSynch.ethNodeUrl,
+            configRollupSynch.contractAddress,
+            configRollupSynch.abi,
+            configRollupSynch.rollupPoSAddress,
+            configRollupSynch.rollupPoSABI, 
+            configRollupSynch.creationHash,
+            configRollupSynch.ethAddress,
+            configRollupSynch.logLevel,
+            configRollupSynch.timeouts,
+        );
         
         // Init PoS Synch
         synchPoSDb = new MemDb();
@@ -148,10 +157,18 @@ contract("Loop Manager", async (accounts) => {
             ethAddress: posSynchAddress,
             abi: RollupPoS.abi,
             logLevel: "debug",
+            timeouts: { ERROR: 1000, NEXT_LOOP: 2500, LOGGER: 5000},
         };
         
-        posSynch = new PoSSynch(configSynchPoS.synchDb, configSynchPoS.ethNodeUrl, configSynchPoS.contractAddress,
-            configSynchPoS.abi, configSynchPoS.creationHash, configSynchPoS.ethAddress, configSynchPoS.logLevel);
+        posSynch = new PoSSynch(
+            configSynchPoS.synchDb,
+            configSynchPoS.ethNodeUrl,
+            configSynchPoS.contractAddress,
+            configSynchPoS.abi,
+            configSynchPoS.creationHash,
+            configSynchPoS.ethAddress,
+            configSynchPoS.logLevel,
+            configSynchPoS.timeouts);
         
         // Init operator manager
         opManager = new OperatorManager(
@@ -172,13 +189,15 @@ contract("Loop Manager", async (accounts) => {
         await cliServerProof.cancel(); // Reset server proof
         
         // Init loop Manager
-        loopManager = new LoopManager(rollupSynch,
+        loopManager = new LoopManager(
+            rollupSynch,
             posSynch,
             poolTx, 
             opManager,
             cliServerProof,
             configSynchPoS.logLevel,
             configSynchPoS.ethNodeUrl,
+            configSynchPoS.timeouts,
         );
                
         // Init loops    

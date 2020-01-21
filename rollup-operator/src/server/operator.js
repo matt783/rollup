@@ -141,7 +141,9 @@ let pool;
         synchConfig.creationHash,
         synchConfig.ethAddress,
         loggerLevel,
-        operatorMode);
+        operatorMode,
+        synchConfig.rollup.timeouts,
+    );
 
     ////////////////
     ///// POS SYNCH
@@ -169,7 +171,9 @@ let pool;
         synchConfig.rollupPoS.abi,
         synchConfig.rollupPoS.creationHash,
         synchConfig.ethAddressCaller,
-        loggerLevel);
+        loggerLevel,
+        synchConfig.rollupPoS.timeouts,
+    );
 
     /////////////////
     ///// LOAD WALLET
@@ -236,19 +240,21 @@ let pool;
             pool,
             poolConfig.pathConversionTable,
             loggerLevel,
+            poolConfig.timeouts,
         );
 
         ////////////////////
         ///// LOOP MANAGER
         ///////////////////
-        loopManager = new LoopManager(rollupSynch,
+        loopManager = new LoopManager(
+            rollupSynch,
             posSynch,
             pool, 
             opManager,
             cliServerProof,
             loggerLevel,
             synchConfig.ethNodeUrl,
-            synchConfig.timeouts);
+            synchConfig.rollup.timeouts);
         
         const seed = utils.getSeedFromPrivKey(wallet.privateKey);
         await loopManager.loadSeedHashChain(seed);

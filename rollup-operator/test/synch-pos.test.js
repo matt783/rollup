@@ -57,7 +57,7 @@ contract("Synchronizer PoS", async (accounts) => {
         ethAddress: synchAddress,
         abi: RollupPoS.abi,
         logLevel: "debug",
-        timeouts: { ERROR: 1000 ,NEXT_LOOP: 1000, LOGGER: 5000 },
+        timeouts: { ERROR: 1000, NEXT_LOOP: 1000, LOGGER: 5000 },
     };
 
     before(async () => {

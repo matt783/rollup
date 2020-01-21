@@ -22,7 +22,7 @@ class SynchPool {
         const nextLoopDefault = 10000;
 
         let timeoutError = errorDefault;
-        let timeoutNextLoop = nextLoopDefault;;
+        let timeoutNextLoop = nextLoopDefault;
 
         if (timeouts !== undefined) {
             timeoutError = timeouts.ERROR || errorDefault;
