@@ -220,6 +220,7 @@ class LoopManager{
 
     async _checkRegister() {
         const listOpRegistered = await this.posSynch.getOperators();
+        // console.log("++++++++++++++listOpRegistered: ", listOpRegistered);
         await this._purgeRegisterOperators(listOpRegistered);
 
         if (this.opManager.wallet != undefined) {

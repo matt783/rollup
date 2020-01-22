@@ -112,6 +112,18 @@ class SynchPoS {
             else this.slots.push(i - this.slotsPerEra);
         }
 
+        // Update from persistent database 
+        const lastSynchEra = await this.getLastSynchEra();
+        if (lastSynchEra){
+            // update operators list from database
+            for (let i = 0; i < lastSynchEra; i++)
+                await this._updateListOperators(i);
+            // update last two eras for winners and slots
+            if (lastSynchEra > 1)
+                await this._updateWinners(lastSynchEra - 2);
+            await this._updateWinners(lastSynchEra - 1);
+        }
+
         // Start logger
         this.logInterval = setInterval(() => {
             this.logger.info(this.info);
@@ -142,6 +154,7 @@ class SynchPoS {
                         fromBlock: lastSynchEra ? (blockNextUpdate - this.blocksNextInfo) : this.creationBlock,
                         toBlock: blockNextUpdate - 1,
                     });
+
                     // update total synch
                     lastSynchEra += 1;
                     totalSynch = (((lastSynchEra) / (currentEra + 1)) * 100);
@@ -255,6 +268,8 @@ class SynchPoS {
                 this.slots.push(slot);
             }
         }
+        // console.log(this.winners);
+        // console.log(this.slots);
     }
 
     async getLastSynchEra() {

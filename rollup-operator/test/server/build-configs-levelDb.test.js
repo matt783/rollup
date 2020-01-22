@@ -125,7 +125,7 @@ contract("Operator Server", (accounts) => {
     });
 
     it("Should create service synch pool file", async () => {
-        const pathServicePoolSynch = `${__dirname}/tmp-4`;
+        const pathServicePoolSynch = `${__dirname}/tmp-3`;
 
         let config = {
             pathDb: pathServicePoolSynch,
