@@ -77,10 +77,11 @@ class OperatorManager {
         return await this.web3.eth.accounts.signTransaction(tx, this.wallet.privateKey);
     }
 
-    async getTxCommitAndForge(prevHash, compressedTx, proofA, proofB, proofC, input) {
+    async getTxCommitAndForge(prevHash, compressedTx, proofA, proofB, proofC, input, nonce = undefined) {
         const tx = {
             from:  this.wallet.address,
             to: this.posAddress,
+            nonce: nonce,
             gasLimit: this.gasLimit,
             gasPrice: await this._getGasPrice(),
             data: this.rollupPoS.methods.commitAndForge(prevHash, compressedTx, 

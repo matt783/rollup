@@ -1,3 +1,4 @@
+/*global BigInt*/
 const { performance } = require("perf_hooks");
 const Web3 = require("web3");
 const winston = require("winston");
@@ -136,9 +137,9 @@ class LoopManager{
 
             case state.MINING:
                 info += " | info ==> Transaction hash: ";
-                info += chalk.white.bold(this.txHash);
+                info += chalk.white.bold(this.currentTx.txHash);
                 timeTx = performance.now();
-                info += ` | transaction pending: ${((timeTx - this.startTx)/1000).toFixed(2)} s`;
+                info += ` | transaction pending: ${((timeTx - this.currentTx.startTime)/1000).toFixed(2)} s`;
                 break;
             }
 
@@ -181,6 +182,7 @@ class LoopManager{
 
                 // wait to mining transaction
                 case state.MINING:
+                    await this._monitorTx();
                     this.timeouts.NEXT_STATE = 5000;
                     break;
                 }
@@ -343,27 +345,39 @@ class LoopManager{
 
             this.state = state.MINING;
             this.timeouts.NEXT_STATE = 1000;
-            
-            this.startTx = performance.now();
-            this.txHash = "Pending...";
+
+            this._setInfoTx({
+                txHash: "Pending...",
+                startTime: performance.now(),
+                nonce: 0,
+                prevHash: this.hashChain[indexHash - 1],
+                compressedTx: commitData,
+                proof,
+                input: publicInputs,
+                originalGas: this.opManager.gasMul,
+            });
 
             const self = this;
             this.web3.eth.sendSignedTransaction(txSign.rawTransaction)
                 .once("transactionHash", txHash => {
-                    self.txHash = txHash;
+                    self.currentTx.txHash = txHash;
                 })
                 .then( receipt => {
                     if (receipt.status == true){
-                        self._logTxOK();
-                        self.startTx = 0;
                         this.timeouts.NEXT_STATE = 5000;
                         self.state = state.SYNCHRONIZING;
+                        self._logTxOK();
+                        self._resetInfoTx();
                         self._resetInfoBatch();
-                    } else self._errorTx(self);
+                    } else if (!self.currentTx.nonce) self._errorTx(self);
+                    // If transaction gets overwritten, do not change the state
                 })
                 .catch( () => {
-                    self.startTx = 0;
-                    self._errorTx(self);
+                    // If the transaction has been overwitten, do not change state
+                    if (!self.currentTx.nonce){
+                        self._resetInfoTx();
+                        self._errorTx(self);
+                    }
                 });
         } else if (statusServer == stateServer.ERROR) {
             this.timeouts.NEXT_STATE = 5000;
@@ -380,6 +394,80 @@ class LoopManager{
         } else this.timeouts.NEXT_STATE = 5000; // Server in pending state
     }
 
+    async _monitorTx(){
+        const timeTx = performance.now();
+        const delayTx = (timeTx - this.currentTx.startTime) / 1000;
+        // Check if transaction hash been delayed for more than 60 seconds
+        const maxDelay = 60;
+        if (delayTx > maxDelay) {
+            // Check if transaction has been overwritten more than 3 times
+            if (this.currentTx.attempts > 3) {
+                this._resetInfoTx();
+                this._resetInfoBatch();
+                this._logTxAbort();
+                this.timeouts.NEXT_STATE = 0;
+                this.state = this.state.SYNCHRONIZING;
+            }
+
+            try {
+                const dataTx = this.web3.eth.getTransaction(this.currentTx.txHash);
+
+                // set double gas price multiplier
+                const gasNew = this.opManager.gasMul * BigInt(2);
+                this.opManager.gasMul = gasNew;
+
+                // reset timer transaction pending
+                this.currentTx.nonce = dataTx.nonce;
+                this.currentTx.startTime = performance.now();
+
+                const txSign = await this.opManager.getTxCommitAndForge(
+                    this.currentTx.prevHash,
+                    this.currentTx.compressedTx,
+                    this.currentTx.proof.proofA,
+                    this.currentTx.proof.proofB,
+                    this.currentTx.proof.proofC,
+                    this.currentTx.publicInputs,
+                    this.currentTx.nonce,
+                );
+
+                this.state = state.MINING;
+                this.timeouts.NEXT_STATE = 1000;
+                
+                this.currentTx.attempts += 1;
+                this._logResendTx();
+                const self = this;
+                this.web3.eth.sendSignedTransaction(txSign.rawTransaction)
+                    .once("transactionHash", txHash => {
+                        self.currentTx.txHash = txHash;
+                    })
+                    .then( receipt => {
+                        if (receipt.status == true){
+                            self.opManager.gasMul = self.currentTx.originalGas;
+                            this.timeouts.NEXT_STATE = 5000;
+                            self.state = state.SYNCHRONIZING;
+                            self._logTxOK();
+                            self._resetInfoTx();
+                            self._resetInfoBatch();
+                        } else if (!self.currentTx.nonce) self._errorTx(self);
+                        // If transaction gets overwritten, do not change the state
+                    })
+                    .catch( () => {
+                        // If the transaction has been overwitten, do not change state
+                        if (!self.currentTx.nonce){
+                            self._resetInfoTx();
+                            self._errorTx(self);
+                        }
+                    });
+            } catch (error){
+                this.timeouts.NEXT_STATE = 5000;
+                this.state = state.SYNCHRONIZING;
+                this._logTxKO();
+                this._resetInfoTx();
+                this._resetInfoBatch();
+            }
+        }
+    }
+
     _setInfoBatch(fromBlock, toBlock, opId){
         this.infoCurrentBatch.fromBlock = fromBlock;
         this.infoCurrentBatch.toBlock = toBlock;
@@ -389,6 +477,23 @@ class LoopManager{
         this.infoCurrentBatch.waiting = false;
         if (this.infoCurrentBatch.retryTimes !== undefined) this.infoCurrentBatch.retryTimes += 1;
         else this.infoCurrentBatch.retryTimes = 0;
+    }
+
+    _setInfoTx(info){
+        this.currentTx.originalGas = info.originalGas;
+        this.currentTx.attempts = 0;
+        this.currentTx.txHash = info.txHash;
+        this.currentTx.startTime = info.startTime;
+        this.currentTx.nonce = undefined;
+        this.currentTx.prevHash = info.prevHash;
+        this.currentTx.compressedTx = info.compressedTx;
+        this.currentTx.proof = info.proof;
+        this.currentTx.input = info.input;
+    }
+
+    _resetInfoTx(){
+        this.opManager.gasMul = this.currentTx.originalGas;
+        this.currentTx = {};
     }
 
     _resetInfoBatch(){
@@ -402,10 +507,24 @@ class LoopManager{
         this.logger.info(info);
     }
 
+    _logTxAbort(){
+        let info = `${chalk.yellowBright("OPERATOR STATE: ")}${chalk.white(strState[this.state])}`;
+        info += " | info ==> ";
+        info += `${chalk.white.bold("Error at transaction, it has been overwritten more than 3 times")}`;
+        this.logger.info(info);
+    }
+
     _logTxKO(){
         let info = `${chalk.yellowBright("OPERATOR STATE: ")}${chalk.white(strState[this.state])}`;
         info += " | info ==> ";
-        info += `${chalk.white.bold("Error at transaction, try to forge batch again")}`;
+        info += `${chalk.white.bold("Error at transaction, trying to forge batch again")}`;
+        this.logger.info(info);
+    }
+
+    _logResendTx(){
+        let info = `${chalk.yellowBright("OPERATOR STATE: ")}${chalk.white(strState[this.state])}`;
+        info += " | info ==> ";
+        info += `${chalk.white.bold("Overwrite previous transaction doubling the gas price")}`;
         this.logger.info(info);
     }
 
