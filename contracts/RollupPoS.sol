@@ -11,10 +11,10 @@ contract RollupPoS is RollupPoSHelpers{
     uint public MAX_TX;
 
     // Defines slot/era block duration
-    uint constant public DELAY_GENESIS = 10; // 2.5 min
-    uint32 constant public BLOCKS_PER_SLOT = 8; // 2 min
-    uint32 constant public SLOTS_PER_ERA = 2; // 4 min
-    uint constant public SLOT_DEADLINE = 0;
+    uint constant public DELAY_GENESIS = 0;
+    uint32 constant public BLOCKS_PER_SLOT = 20; // 5 min
+    uint32 constant public SLOTS_PER_ERA = 5; // 25 min
+    uint constant public SLOT_DEADLINE = 4; // 1 min
 
     // Minimum stake to enter the raffle
     uint constant public MIN_STAKE = 0.01 ether;
