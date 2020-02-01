@@ -42,7 +42,6 @@ class TXPool {
         } else {
             this.slotsMap = Array( Math.floor((this.maxSlots-1)/256) +1).fill(bigInt(0));
         }
-
         const slotKeys = [];
         for (let i = 0; i<this.slotsMap.length; i++) {
             if (this.slotsMap[i].isZero()) continue;
@@ -55,12 +54,9 @@ class TXPool {
             }
         }
         const encodedTxs = await this.rollupDB.db.multiGet(slotKeys);
-
-        const tmpState = new TmpState(this.rollupDB);
         for (const encodeTx of encodedTxs){
             const tx = this._array2Tx(encodeTx);
-            const canProcessRes = await tmpState.canProcess(tx);
-            if (canProcessRes !== "NO") this.txs.push(tx);
+            this.txs.push(tx);
         }
 
         await this.purge();
@@ -250,11 +246,12 @@ class TXPool {
                 tx.removed = true;
                 continue;
             }
-            const st = await tmpState.getState(tx.fromIdx);
-            if (tx.nonce < st.nonce) {
+            const canBeProcessed = await tmpState.canProcess(tx);
+            if (canBeProcessed === "NO"){
                 tx.removed = true;
                 continue;
             }
+
             tx.adjustedFee = tx.normalizedFee;
             byIdx[tx.fromIdx] = byIdx[tx.fromIdx] || {};
             byIdx[tx.fromIdx][tx.nonce] = byIdx[tx.fromIdx][tx.nonce] || [];
@@ -431,7 +428,6 @@ class TXPool {
             const tx = availableTxs.pop();
             const res = await tmpState.canProcess(tx);
             if (res == "YES") {
-
                 await tmpState.process(tx);
 
                 if (!txsByCoin[tx.coin]) txsByCoin[tx.coin] = [];
@@ -472,8 +468,7 @@ class TXPool {
 
             for (let i=0; i<txsByCoin[coin].length; i++) {
                 const tx = txsByCoin[coin][i];
-
-                nTx ++;
+                nTx++;
                 if ( tx.normalizedFee > 0 ) nNonZero++;
                 if (( tx.normalizedFee < normalizedFee )&&
                     ( tx.normalizedFee > 0 ))
@@ -506,7 +501,6 @@ class TXPool {
                 }
             }
         }
-
         let forgedTxs = [];
         const PTable = {};
 
