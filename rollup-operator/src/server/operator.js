@@ -7,6 +7,7 @@ const express = require("express");
 const cors = require("cors");
 const bodyParser = require("body-parser");
 const rmRf = require("rimraf");
+const ip = require("ip");
 
 const SMTMemDB = require("circomlib/src/smt_memdb");
 const { SMTLevelDb } = require("../../../rollup-utils/smt-leveldb");
@@ -101,6 +102,7 @@ let pool;
     const envOpMode = (process.env.OPERATOR_MODE) ? process.env.OPERATOR_MODE : "archive";
     const envGasMul = (process.env.GAS_MULTIPLIER) ? process.env.GAS_MULTIPLIER : 1;
     const envGasLimit = (process.env.GAS_LIMIT) ? process.env.GAS_LIMIT : "default";
+    const flagLAN = (process.env.LAN === "true") ? true : false;
 
     // config winston
     var options = {
@@ -316,7 +318,7 @@ let pool;
 
     startRollup();
     startRollupPoS();
-    loadServer(flagForge, envExpose);
+    loadServer(flagForge, envExpose, flagLAN);
     
     if (flagForge) {
         startLoopManager();
@@ -378,7 +380,7 @@ function startPool(){
     poolSynch.synchLoop();
 }
 
-function loadServer(flagForge, expose){
+function loadServer(flagForge, expose, flagLAN){
     // Get server environment variables
     const portExternal = process.env.OPERATOR_PORT_EXTERNAL;
     /////////////////
@@ -524,11 +526,20 @@ function loadServer(flagForge, expose){
                 }
             });
         }
-        const serverExternal = appExternal.listen(portExternal, "127.0.0.1", () => {
-            const address = serverExternal.address().address;
+        const serverLocalHost = appExternal.listen(portExternal, "127.0.0.1", () => {
+            const address = serverLocalHost.address().address;
             let infoHttp = infoInit;
-            infoHttp += `Server external running on http://${address}:${portExternal}`;
+            infoHttp += `Server running on http://${address}:${portExternal}`;
             logger.http(infoHttp);
         });
+
+        if (flagLAN){
+            const serverLAN = appExternal.listen(portExternal, ip.address(), () => {
+                const address = serverLAN.address().address;
+                let infoHttp = infoInit;
+                infoHttp += `Server running on http://${address}:${portExternal}`;
+                logger.http(infoHttp);
+            });
+        }
     }
 }
