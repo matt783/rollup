@@ -62,7 +62,7 @@ const { walletsSend } = require('./helpers/walletsSend');
         }
         if (argv._[0].toUpperCase() === 'SEND') {
             try {
-                await walletsSend(numTransOffchain, amountToken, passString, urlOperator, userfee, tokenId, pathNewWallets);
+                await walletsSend(numTransOffchain, amountToken, passString, urlOperator, userfee, tokenId, pathNewWallets, false);
             } catch (e) {
                 console.log(e);
             }

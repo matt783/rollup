@@ -2,8 +2,8 @@
 /* eslint-disable no-await-in-loop */
 const fs = require('fs');
 const { Wallet } = require('../../src/wallet');
-const { send } = require('./sendBot');
-
+const { sendBot } = require('./sendBot');
+const { send } = require('../../src/actions/offchain/send');
 
 function createCodeError() {
     let code;
@@ -53,7 +53,7 @@ function createCodeError() {
 }
 
 
-async function walletsSend(numTransOffchain, amountToken, passString, urlOperator, userfee, tokenId, path) {
+async function walletsSend(numTransOffchain, amountToken, passString, urlOperator, userfee, tokenId, path, error) {
     let files;
     try {
         files = fs.readdirSync(path);
@@ -63,6 +63,9 @@ async function walletsSend(numTransOffchain, amountToken, passString, urlOperato
 
     if (files.length === 0) {
         throw new Error('No files in this directory');
+    }
+    if (files.length === 1) {
+        throw new Error('Only 1 file in wallet directory');
     }
     const collator = new Intl.Collator(undefined, { numeric: true, sensitivity: 'base' });
     files.sort(collator.compare);// sort by numerical (if not the order would be for example: 1 10 2 3 4...)
@@ -76,16 +79,18 @@ async function walletsSend(numTransOffchain, amountToken, passString, urlOperato
     let codeError;
     for (let i = 1; i <= files.length; i++) {
         for (let j = 0; j < numTransOffchain; j++) {
-            toId = i; // i 1 --> id 1
-            if (files.length === 1) { // protection if files.length is 1
-                toId = 2;
-            } else {
-                while (toId === i) { // can't be itself
-                    toId = Math.ceil(Math.random() * (files.length)); // random index from 1 to numWallets
-                }
+            do {
+                toId = Math.ceil(Math.random() * (files.length)); // random index from 1 to numWallets
             }
-            codeError = createCodeError();
-            send(urlOperator, toId, amountToken, await wallets[i].toEncryptedJson(passString), passString, tokenId, userfee, codeError);
+            while (toId === i); // can't be itself
+            if (error) {
+                codeError = createCodeError();
+                sendBot(urlOperator, toId, amountToken, await wallets[i].toEncryptedJson(passString),
+                    passString, tokenId, userfee, codeError);
+            } else {
+                send(urlOperator, toId, amountToken, await wallets[i].toEncryptedJson(passString),
+                    passString, tokenId, userfee, codeError);
+            }
         }
     }
 }

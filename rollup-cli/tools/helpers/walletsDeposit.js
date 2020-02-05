@@ -27,7 +27,7 @@ async function walletsDeposit(numTransOnchain, amountToken, passString, addressR
     for (let i = 1; i <= files.length; i++) {
         for (let j = 0; j < numTransOnchain; j++) {
             await deposit(node, addressRollup, Math.floor(amountToken / numTransOnchain), tokenId,
-                await wallets[i].toEncryptedJson(passString), passString, JSON.parse(fs.readFileSync(abiRollupPath, 'utf8')));
+                await wallets[i].toEncryptedJson(passString), passString, 0, JSON.parse(fs.readFileSync(abiRollupPath, 'utf8')));
         }
     }
 }
