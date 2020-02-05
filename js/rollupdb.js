@@ -42,6 +42,16 @@ class RollupDB {
         this.stateRoot = bb.stateTree.root;
     }
 
+    async rollbackToBatch(numBatch){
+        await this.db.multiIns([
+            [Constants.DB_Master, numBatch]
+        ]);
+        const roots = await this.db.get(Constants.DB_Batch.add(bigInt(numBatch)));
+        this.lastBatch = numBatch;
+        this.stateRoot = roots[0];
+        // TODO: redo mapping for getting directly states for Idx, Ax/Ay and EthAddress
+    }
+
     async getStateByIdx(idx) {
         const key = Constants.DB_Idx.add(bigInt(idx));
         const valueState = await this.db.get(key);
@@ -103,6 +113,10 @@ class RollupDB {
     getLastBatchId(){
         return this.lastBatch;
     }
+
+    getRoot(){
+        return this.stateRoot;
+    }
 }
 
 module.exports = async function(db) {
@@ -110,9 +124,9 @@ module.exports = async function(db) {
     if (!master) {
         return new RollupDB(db, 0, bigInt(0));
     }
-    const batch = await db.get(Constants.DB_Batch.add(bigInt(master)));
-    if (!batch) {
+    const roots = await db.get(Constants.DB_Batch.add(bigInt(master)));
+    if (!roots) {
         throw new Error("Database corrupted");
     }
-    return new RollupDB(db, master, batch[0]);
+    return new RollupDB(db, master, roots[0]);
 };

@@ -14,6 +14,8 @@ const Constants = require("./constants");
 const bytesOffChainTx = 3*2 + 2;
 
 // db keys
+const rootBlockKey = "root-block";
+
 const lastBlockKey = "last-block-synch";
 const lastBatchKey = "last-state-batch";
 const exitInfoKey = "exit";
@@ -148,12 +150,29 @@ class Synchronizer {
                     lastSynchBlock = this.creationBlock;
                 }
 
+                // check last state saved matches the contract state
+                const stateDepth = await this.rollupContract.methods.getStateDepth()
+                    .call({from: this.ethAddress}, lastSynchBlock);
+                
+                const stateRoot = bigInt(await this.rollupContract.methods.getStateRoot(stateDepth)
+                    .call({ from: this.ethAddress }, lastSynchBlock));
+                
+                const stateRootHex = `0x${bigInt(stateRoot).toString(16)}`;
+                const stateRootSaved = await this.getStateFromBlock(lastSynchBlock);
+                
+                if (stateRootSaved && (stateRootHex != stateRootSaved.root)) {
+                    await this._rollback(lastSynchBlock);
+                    continue;
+                }
+
                 const currentBatchDepth = await this.rollupContract.methods.getStateDepth()
                     .call({from: this.ethAddress}, currentBlock);
                 let lastBatchSaved = await this.getLastBatch();
 
                 if (currentBatchDepth - 1 > lastBatchSaved) {
                     const targetBlockNumber = await this._getTargetBlock(lastBatchSaved, lastSynchBlock);
+                    // If no event is found, no tree is updated
+                    if (targetBlockNumber === undefined) continue;
                     // get all logs from last batch
                     const logs = await this.rollupContract.getPastEvents("allEvents", {
                         fromBlock: lastSynchBlock + 1,
@@ -212,6 +231,23 @@ class Synchronizer {
         return this.forgeEventsCache.get(lastBatchSaved + 1);
     }
 
+    // TODO: maybe it could be done from `numBatch` directly instead of rolling back blockNumber
+    async _rollback(blockNumber) {
+        // eslint-disable-next-line no-constant-condition
+        while (true) {
+            const state = this.getStateFromBlock(blockNumber--);
+            if (state) {
+                await this.treeDb.rollbackToBatch(state.numBatch);
+                await this.db.insert(lastBlockKey, this._toString(blockNumber));
+                break;
+            }
+        }
+    }
+
+    async getStateFromBlock(blockNumber) {
+        const key = `${rootBlockKey}${separator}${blockNumber}`;
+        return this._fromString(await this.db.getOrDefault(key, this._toString(false)));
+    }
 
     async getLastSynchBlock() {
         return this._fromString(await this.db.getOrDefault(lastBlockKey, this.creationBlock.toString()));
@@ -249,6 +285,11 @@ class Synchronizer {
         if (this.mode !== Constants.mode.archive)
             await this._purgeEvents(nextBatchSynched);
 
+        const root = `0x${this.treeDb.getRoot().toString(16)}`;
+        console.log("KEY ADDED: ", `${rootBlockKey}${separator}${blockNumber}`);
+        console.log("VALUE ROOT: ", root);
+        console.log("VALUE NUM BATCH: ", nextBatchSynched);
+        await this.db.insert(`${rootBlockKey}${separator}${blockNumber}`, this._toString({root, numBatch: nextBatchSynched}));
         await this.db.insert(lastBlockKey, this._toString(blockNumber));
         await this.db.insert(lastBatchKey, this._toString(nextBatchSynched));
     }
