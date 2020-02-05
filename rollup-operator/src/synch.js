@@ -161,6 +161,7 @@ class Synchronizer {
                 const stateRootSaved = await this.getStateFromBlock(lastSynchBlock);
                 
                 if (stateRootSaved && (stateRootHex != stateRootSaved.root)) {
+                    console.log("+++++++++++ROLL BACK");
                     await this._rollback(lastSynchBlock);
                     continue;
                 }
@@ -170,9 +171,13 @@ class Synchronizer {
                 let lastBatchSaved = await this.getLastBatch();
 
                 if (currentBatchDepth - 1 > lastBatchSaved) {
+                    console.log("Last batch saved 1: ", lastBatchSaved);
                     const targetBlockNumber = await this._getTargetBlock(lastBatchSaved, lastSynchBlock);
                     // If no event is found, no tree is updated
-                    if (targetBlockNumber === undefined) continue;
+                    if (targetBlockNumber === undefined) {
+                        console.log("Undefined targetBlockNumber");
+                        continue;
+                    }
                     // get all logs from last batch
                     const logs = await this.rollupContract.getPastEvents("allEvents", {
                         fromBlock: lastSynchBlock + 1,
@@ -181,6 +186,7 @@ class Synchronizer {
                     // update events
                     await this._updateEvents(logs, lastBatchSaved + 1, targetBlockNumber);
                     lastBatchSaved = await this.getLastBatch();
+                    console.log("Last batch saved 2: ", lastBatchSaved);
                 }
 
                 totalSynch = (currentBatchDepth == 0) ? 100 : (((lastBatchSaved + 1) / currentBatchDepth) * 100);
@@ -428,6 +434,8 @@ class Synchronizer {
 
         const fromBlock = txForge.blockNumber - this.blocksPerSlot;
         const toBlock = txForge.blockNumber;
+        console.log("update tree from: ", fromBlock);
+        console.log("update tree to: ", toBlock);
         const logs = await this.rollupPoSContract.getPastEvents("dataCommitted", {
             fromBlock: fromBlock, // previous slot
             toBlock: toBlock, // current slot
@@ -439,6 +447,7 @@ class Synchronizer {
                 break;
             }
         }
+        console.log("getting data committed...");
         const txDataCommitted = await this.web3.eth.getTransaction(txHash);
         const decodedData2 = abiDecoder.decodeMethod(txDataCommitted.input);
         let compressedTx;
@@ -447,7 +456,7 @@ class Synchronizer {
                 compressedTx = elem.value;
             }
         });
-
+        console.log("finish getting data commited");
         const headerBytes = Math.ceil(this.maxTx/8);
         const txs = [];
         const buffCompressedTxs = Buffer.from(compressedTx.slice(2), "hex");
