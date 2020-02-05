@@ -8,8 +8,8 @@ const { transfer } = require('./actions/onchain/transfer.js');
 const { depositAndTransfer } = require('./actions/onchain/deposit-and-transfer.js');
 const CliExternalOperator = require('../../rollup-operator/src/cli-external-operator');
 
-async function sendTx(urlOperator, to, amount, wallet, passphrase, tokenId, userFee, idFrom, nonce) {
-    return send(urlOperator, to, amount, wallet, passphrase, tokenId, userFee, idFrom, nonce);
+async function sendTx(urlOperator, to, amount, wallet, passphrase, tokenId, userFee, idFrom, nonce, nonceObject) {
+    return send(urlOperator, to, amount, wallet, passphrase, tokenId, userFee, idFrom, nonce, nonceObject);
 }
 
 async function depositTx(nodeEth, addressSC, loadAmount, tokenid, wallet, passphrase, ethAddress, abi, gasLimit, gasMultiplier) {
@@ -48,6 +48,22 @@ async function showExitsBatch(urlOperator, id) {
     return apiOperator.getExits(id);
 }
 
+function addNonce(nonceObject, currentBatch, nonce) {
+    const newNonce = nonce + 1;
+    if (nonceObject !== undefined) {
+        if (nonceObject.length > 0) {
+            const batch = nonceObject.filter((x) => x.batch === currentBatch);
+            if (batch.length === 0) {
+                nonceObject.splice(0, nonceObject.length);
+            }
+        }
+    } else {
+        nonceObject = [];
+    }
+    nonceObject.push({ batch: currentBatch, nonce: newNonce });
+    return nonceObject;
+}
+
 module.exports = {
     sendTx,
     depositTx,
@@ -58,4 +74,5 @@ module.exports = {
     transferTx,
     depositAndTransferTx,
     showExitsBatch,
+    addNonce,
 };
