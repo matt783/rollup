@@ -48,6 +48,33 @@ async function showExitsBatch(urlOperator, id) {
     return apiOperator.getExits(id);
 }
 
+async function checkNonce(urlOperator, currentBatch, nonceObject, idFrom) {
+    const batch = nonceObject.filter((x) => x.batch === currentBatch);
+    let nonce;
+    if (batch.length > 0) {
+        const nonceList = batch.map((x) => x.nonce);
+        nonce = Math.max(...nonceList);
+    } else {
+        const apiOperator = new CliExternalOperator(urlOperator);
+        const responseLeaf = await apiOperator.getAccountByIdx(idFrom);
+        nonce = responseLeaf.data.nonce;
+    }
+    const infoTx = { currentBatch, nonce };
+    return infoTx;
+}
+
+async function addNonce(nonceObject, currentBatch, nonce) {
+    const batch = nonceObject.filter((x) => x.batch === currentBatch);
+    const newNonce = nonce + 1;
+    if (batch.length > 0) {
+        batch.push({ batch: currentBatch, nonce: newNonce });
+    } else {
+        batch.splice(0, batch.length);
+        batch.push({ batch: currentBatch, nonce: newNonce });
+    }
+    return nonceObject;
+}
+
 module.exports = {
     sendTx,
     depositTx,
@@ -58,4 +85,6 @@ module.exports = {
     transferTx,
     depositAndTransferTx,
     showExitsBatch,
+    checkNonce,
+    addNonce,
 };

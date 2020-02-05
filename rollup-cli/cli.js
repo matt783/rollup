@@ -8,6 +8,7 @@ const { Wallet } = require('./src/wallet');
 const {
     depositTx, sendTx, depositOnTopTx, withdrawTx, forceWithdrawTx,
     showAccounts, transferTx, depositAndTransferTx, showExitsBatch,
+    addNonce,
 } = require('./src/cli-utils');
 const { error } = require('./src/list-errors');
 
@@ -389,13 +390,29 @@ const gasMultiplier = (argv.gasmultiplier) ? argv.gasmultiplier : 1;
                 }
                 checkparamsOffchain(type, actualConfig);
                 const wallet = JSON.parse(fs.readFileSync(actualConfig.wallet, 'utf-8'));
-                const { urlOperator } = actualConfig;
+                const { urlOperator, noncePath } = actualConfig;
+                let actualNonce;
+                if (fs.existsSync(noncePath)) {
+                    actualNonce = JSON.parse(fs.readFileSync(noncePath, 'utf8'));
+                }
                 if (type.toUpperCase() === 'SEND') {
-                    const res = await sendTx(urlOperator, recipient, amount, wallet, passphrase, tokenId, userFee, sender, nonce);
+                    const res = await sendTx(urlOperator, recipient, amount, wallet, passphrase, tokenId,
+                        userFee, sender, nonce, actualNonce);
                     console.log(`Status: ${res.status}, Nonce: ${res.nonce}`);
+                    if (res.status.toString() === '200' && nonce === undefined) {
+                        console.log('add nonce');
+                        const newNonce = addNonce(actualNonce, res.currentBatch, res.nonce);
+                        fs.writeFileSync(newNonce, JSON.stringify(actualNonce, null, 1), 'utf-8');
+                    }
                 } else if (type.toUpperCase() === 'BEFOREWITHDRAW') {
-                    const res = await sendTx(urlOperator, 0, amount, wallet, passphrase, tokenId, userFee, sender, nonce);
+                    const res = await sendTx(urlOperator, 0, amount, wallet, passphrase, tokenId, userFee,
+                        sender, nonce, actualNonce);
                     console.log(`Status: ${res.status}, Nonce: ${res.nonce}`);
+                    if (res.status.toString() === '200' && nonce === undefined) {
+                        console.log('add nonce');
+                        const newNonce = addNonce(actualNonce, res.currentBatch, res.nonce);
+                        fs.writeFileSync(newNonce, JSON.stringify(actualNonce, null, 1), 'utf-8');
+                    }
                 } else {
                     throw new Error(error.INVALID_TYPE);
                 }
