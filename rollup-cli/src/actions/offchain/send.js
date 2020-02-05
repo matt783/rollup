@@ -18,10 +18,9 @@ const CliExternalOperator = require('../../../../rollup-operator/src/cli-externa
 async function send(urlOperator, idTo, amount, walletJson, password, tokenId, userFee, idFrom, nonce, nonceObject) {
     const apiOperator = new CliExternalOperator(urlOperator);
     const walletRollup = await Wallet.fromEncryptedJson(walletJson, password);
-
     const responseLeaf = await apiOperator.getAccountByIdx(idFrom);
-    const generalInfo = await apiOperator.getGeneralInfo();
-    const currentBatch = generalInfo.rollupSynch.lastBatchSynched;
+    const generalInfo = await apiOperator.getState();
+    const currentBatch = generalInfo.data.rollupSynch.lastBatchSynched;
     let nonceToSend;
     if (nonce !== undefined) nonceToSend = nonce;
     else if (nonceObject !== undefined) nonceToSend = checkNonce(urlOperator, currentBatch, nonceObject, idFrom);
@@ -38,7 +37,7 @@ async function send(urlOperator, idTo, amount, walletJson, password, tokenId, us
         onChain: 0,
         newAccount: 0,
     };
-
+    console.log(tx);
     walletRollup.signRollupTx(tx); // sign included in transaction
     const parseTx = stringifyBigInts(tx);// convert bigint to Strings
 
