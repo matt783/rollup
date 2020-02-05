@@ -151,19 +151,22 @@ class Synchronizer {
                 }
 
                 // check last state saved matches the contract state
-                const stateDepth = await this.rollupContract.methods.getStateDepth()
-                    .call({from: this.ethAddress}, lastSynchBlock);
+                console.log("lastSynchBlock: ", lastSynchBlock);
+                if (lastSynchBlock > this.creationBlock) {
+                    const stateDepth = await this.rollupContract.methods.getStateDepth()
+                        .call({from: this.ethAddress}, lastSynchBlock);
                 
-                const stateRoot = bigInt(await this.rollupContract.methods.getStateRoot(stateDepth)
-                    .call({ from: this.ethAddress }, lastSynchBlock));
+                    const stateRoot = bigInt(await this.rollupContract.methods.getStateRoot(stateDepth)
+                        .call({ from: this.ethAddress }, lastSynchBlock));
                 
-                const stateRootHex = `0x${bigInt(stateRoot).toString(16)}`;
-                const stateRootSaved = await this.getStateFromBlock(lastSynchBlock);
+                    const stateRootHex = `0x${bigInt(stateRoot).toString(16)}`;
+                    const stateRootSaved = await this.getStateFromBlock(lastSynchBlock);
                 
-                if (stateRootSaved && (stateRootHex != stateRootSaved.root)) {
-                    console.log("+++++++++++ROLL BACK");
-                    await this._rollback(lastSynchBlock);
-                    continue;
+                    if (stateRootSaved && (stateRootHex != stateRootSaved.root)) {
+                        console.log("+++++++++++ROLL BACK");
+                        await this._rollback(lastSynchBlock);
+                        continue;
+                    }
                 }
 
                 const currentBatchDepth = await this.rollupContract.methods.getStateDepth()
