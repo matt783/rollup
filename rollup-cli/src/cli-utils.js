@@ -8,8 +8,8 @@ const { transfer } = require('./actions/onchain/transfer.js');
 const { depositAndTransfer } = require('./actions/onchain/deposit-and-transfer.js');
 const CliExternalOperator = require('../../rollup-operator/src/cli-external-operator');
 
-async function sendTx(urlOperator, to, amount, wallet, passphrase, tokenId, userFee, idFrom, nonce) {
-    return send(urlOperator, to, amount, wallet, passphrase, tokenId, userFee, idFrom, nonce);
+async function sendTx(urlOperator, to, amount, wallet, passphrase, tokenId, userFee, idFrom, nonce, nonceObject) {
+    return send(urlOperator, to, amount, wallet, passphrase, tokenId, userFee, idFrom, nonce, nonceObject);
 }
 
 async function depositTx(nodeEth, addressSC, loadAmount, tokenid, wallet, passphrase, ethAddress, abi, gasLimit, gasMultiplier) {
@@ -48,30 +48,19 @@ async function showExitsBatch(urlOperator, id) {
     return apiOperator.getExits(id);
 }
 
-async function checkNonce(urlOperator, currentBatch, nonceObject, idFrom) {
-    const batch = nonceObject.filter((x) => x.batch === currentBatch);
-    let nonce;
-    if (batch.length > 0) {
-        const nonceList = batch.map((x) => x.nonce);
-        nonce = Math.max(...nonceList);
-    } else {
-        const apiOperator = new CliExternalOperator(urlOperator);
-        const responseLeaf = await apiOperator.getAccountByIdx(idFrom);
-        nonce = responseLeaf.data.nonce;
-    }
-    const infoTx = { currentBatch, nonce };
-    return infoTx;
-}
-
-async function addNonce(nonceObject, currentBatch, nonce) {
-    const batch = nonceObject.filter((x) => x.batch === currentBatch);
+function addNonce(nonceObject, currentBatch, nonce) {
     const newNonce = nonce + 1;
-    if (batch.length > 0) {
-        batch.push({ batch: currentBatch, nonce: newNonce });
+    if (nonceObject !== undefined) {
+        if (nonceObject.length > 0) {
+            const batch = nonceObject.filter((x) => x.batch === currentBatch);
+            if (batch.length === 0) {
+                nonceObject.splice(0, nonceObject.length);
+            }
+        }
     } else {
-        batch.splice(0, batch.length);
-        batch.push({ batch: currentBatch, nonce: newNonce });
+        nonceObject = [];
     }
+    nonceObject.push({ batch: currentBatch, nonce: newNonce });
     return nonceObject;
 }
 
@@ -85,6 +74,5 @@ module.exports = {
     transferTx,
     depositAndTransferTx,
     showExitsBatch,
-    checkNonce,
     addNonce,
 };

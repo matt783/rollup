@@ -396,13 +396,14 @@ const gasMultiplier = (argv.gasmultiplier) ? argv.gasmultiplier : 1;
                     actualNonce = JSON.parse(fs.readFileSync(noncePath, 'utf8'));
                 }
                 if (type.toUpperCase() === 'SEND') {
+                    console.log("SEND");
+                    console.log(actualNonce);
                     const res = await sendTx(urlOperator, recipient, amount, wallet, passphrase, tokenId,
                         userFee, sender, nonce, actualNonce);
                     console.log(`Status: ${res.status}, Nonce: ${res.nonce}`);
                     if (res.status.toString() === '200' && nonce === undefined) {
-                        console.log('add nonce');
                         const newNonce = addNonce(actualNonce, res.currentBatch, res.nonce);
-                        fs.writeFileSync(newNonce, JSON.stringify(actualNonce, null, 1), 'utf-8');
+                        fs.writeFileSync(noncePath, JSON.stringify(newNonce, null, 1), 'utf-8');
                     }
                 } else if (type.toUpperCase() === 'BEFOREWITHDRAW') {
                     const res = await sendTx(urlOperator, 0, amount, wallet, passphrase, tokenId, userFee,
@@ -411,7 +412,7 @@ const gasMultiplier = (argv.gasmultiplier) ? argv.gasmultiplier : 1;
                     if (res.status.toString() === '200' && nonce === undefined) {
                         console.log('add nonce');
                         const newNonce = addNonce(actualNonce, res.currentBatch, res.nonce);
-                        fs.writeFileSync(newNonce, JSON.stringify(actualNonce, null, 1), 'utf-8');
+                        fs.writeFileSync(newNonce, JSON.stringify(newNonce, null, 1), 'utf-8');
                     }
                 } else {
                     throw new Error(error.INVALID_TYPE);

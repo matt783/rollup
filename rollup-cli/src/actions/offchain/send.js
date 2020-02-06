@@ -1,8 +1,22 @@
 /* eslint-disable no-restricted-syntax */
 const { stringifyBigInts } = require('snarkjs');
 const { Wallet } = require('../../wallet.js');
-const { checkNonce } = require('../../cli-utils');
 const CliExternalOperator = require('../../../../rollup-operator/src/cli-external-operator');
+
+async function _checkNonce(urlOperator, currentBatch, nonceObject, idFrom) {
+    const batch = nonceObject.filter((x) => x.batch === currentBatch);
+    let nonce;
+    if (batch.length > 0) {
+        const nonceList = batch.map((x) => x.nonce);
+        nonce = Math.max(...nonceList);
+    } else {
+        const apiOperator = new CliExternalOperator(urlOperator);
+        const responseLeaf = await apiOperator.getAccountByIdx(idFrom);
+        nonce = responseLeaf.data.nonce;
+    }
+    const infoTx = { currentBatch, nonce };
+    return infoTx;
+}
 
 /**
  * @dev sends off-chain transaction
@@ -16,16 +30,17 @@ const CliExternalOperator = require('../../../../rollup-operator/src/cli-externa
  * @param idFrom Self balance tree identifier
 */
 async function send(urlOperator, idTo, amount, walletJson, password, tokenId, userFee, idFrom, nonce, nonceObject) {
+    console.log("SEND");
     const apiOperator = new CliExternalOperator(urlOperator);
     const walletRollup = await Wallet.fromEncryptedJson(walletJson, password);
     const responseLeaf = await apiOperator.getAccountByIdx(idFrom);
     const generalInfo = await apiOperator.getState();
     const currentBatch = generalInfo.data.rollupSynch.lastBatchSynched;
+    console.log("currentBatch: ", currentBatch);
     let nonceToSend;
     if (nonce !== undefined) nonceToSend = nonce;
-    else if (nonceObject !== undefined) nonceToSend = checkNonce(urlOperator, currentBatch, nonceObject, idFrom);
+    else if (nonceObject !== undefined) nonceToSend = await _checkNonce(urlOperator, currentBatch, nonceObject, idFrom);
     else nonceToSend = responseLeaf.data.nonce;
-
     const tx = {
         fromIdx: responseLeaf.data.idx,
         toIdx: idTo,
@@ -37,7 +52,6 @@ async function send(urlOperator, idTo, amount, walletJson, password, tokenId, us
         onChain: 0,
         newAccount: 0,
     };
-    console.log(tx);
     walletRollup.signRollupTx(tx); // sign included in transaction
     const parseTx = stringifyBigInts(tx);// convert bigint to Strings
 
