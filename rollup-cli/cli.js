@@ -16,6 +16,7 @@ const walletPathDefault = './wallet.json';
 const walletEthPathDefault = './ethWallet.json';
 const walletBabyjubPathDefault = './babyjubWallet.json';
 const configPathDefault = './config.json';
+const noncePathDefault = './nonceJson.json';
 
 const { version } = require('./package');
 const { argv } = require('yargs') // eslint-disable-line
@@ -390,14 +391,16 @@ const gasMultiplier = (argv.gasmultiplier) ? argv.gasmultiplier : 1;
                 }
                 checkparamsOffchain(type, actualConfig);
                 const wallet = JSON.parse(fs.readFileSync(actualConfig.wallet, 'utf-8'));
-                const { urlOperator, noncePath } = actualConfig;
+                const { urlOperator } = actualConfig;
+                let { noncePath } = actualConfig;
+                if (noncePath === undefined) {
+                    noncePath = noncePathDefault;
+                }
                 let actualNonce;
                 if (fs.existsSync(noncePath)) {
                     actualNonce = JSON.parse(fs.readFileSync(noncePath, 'utf8'));
                 }
                 if (type.toUpperCase() === 'SEND') {
-                    console.log("SEND");
-                    console.log(actualNonce);
                     const res = await sendTx(urlOperator, recipient, amount, wallet, passphrase, tokenId,
                         userFee, sender, nonce, actualNonce);
                     console.log(`Status: ${res.status}, Nonce: ${res.nonce}`);
@@ -410,9 +413,8 @@ const gasMultiplier = (argv.gasmultiplier) ? argv.gasmultiplier : 1;
                         sender, nonce, actualNonce);
                     console.log(`Status: ${res.status}, Nonce: ${res.nonce}`);
                     if (res.status.toString() === '200' && nonce === undefined) {
-                        console.log('add nonce');
                         const newNonce = addNonce(actualNonce, res.currentBatch, res.nonce);
-                        fs.writeFileSync(newNonce, JSON.stringify(newNonce, null, 1), 'utf-8');
+                        fs.writeFileSync(noncePath, JSON.stringify(newNonce, null, 1), 'utf-8');
                     }
                 } else {
                     throw new Error(error.INVALID_TYPE);

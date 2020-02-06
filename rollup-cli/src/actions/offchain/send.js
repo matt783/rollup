@@ -30,17 +30,17 @@ async function _checkNonce(urlOperator, currentBatch, nonceObject, idFrom) {
  * @param idFrom Self balance tree identifier
 */
 async function send(urlOperator, idTo, amount, walletJson, password, tokenId, userFee, idFrom, nonce, nonceObject) {
-    console.log("SEND");
     const apiOperator = new CliExternalOperator(urlOperator);
     const walletRollup = await Wallet.fromEncryptedJson(walletJson, password);
     const responseLeaf = await apiOperator.getAccountByIdx(idFrom);
     const generalInfo = await apiOperator.getState();
     const currentBatch = generalInfo.data.rollupSynch.lastBatchSynched;
-    console.log("currentBatch: ", currentBatch);
     let nonceToSend;
     if (nonce !== undefined) nonceToSend = nonce;
-    else if (nonceObject !== undefined) nonceToSend = await _checkNonce(urlOperator, currentBatch, nonceObject, idFrom);
-    else nonceToSend = responseLeaf.data.nonce;
+    else if (nonceObject !== undefined) {
+        const res = await _checkNonce(urlOperator, currentBatch, nonceObject, idFrom);
+        nonceToSend = res.nonce;
+    } else nonceToSend = responseLeaf.data.nonce;
     const tx = {
         fromIdx: responseLeaf.data.idx,
         toIdx: idTo,
