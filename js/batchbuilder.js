@@ -26,6 +26,7 @@ module.exports = class BatchBuilder {
         this.feePlan = Array(16).fill([0, bigInt(0)]);
         this.counters = Array(16).fill(0);
         this.nCoins = 0;
+        this.newBatchNumberDb = bigInt(batchNumber);
     }
     
     _addNopTx() {
@@ -94,7 +95,7 @@ module.exports = class BatchBuilder {
         return bigInt(0);
     }
 
-    async _addTx(tx) {
+    async _addTx(tx, numTx) {
         const i = this.input.txData.length;
 
         const amountF = utils.fix2float(tx.amount || 0);
@@ -223,29 +224,104 @@ module.exports = class BatchBuilder {
             this.input.oldKey1[i]= res.isOld0 ? 0 : res.oldKey;
             this.input.oldValue1[i]= res.isOld0 ? 0 : res.oldValue;
 
+            // Database AxAy
             const keyAxAy = Constants.DB_AxAy.add(this.input.ax[i]).add(this.input.ay[i]);
-            const keyEthAddr = Constants.DB_EthAddr.add(this.input.ethAddr[i]);
-            const lastVals = await this.dbState.multiGet([
-                keyAxAy,
-                keyEthAddr
+            const lastAxAyStates = await this.dbState.get(keyAxAy);
+                
+            // get last state and add last batch number
+            let valStatesAxAy;
+            let lastAxAyState;
+            if (!lastAxAyStates) {
+                lastAxAyState = null;
+                valStatesAxAy = [];
+                valStatesAxAy.push(this.newBatchNumberDb);
+            }
+            else {
+                valStatesAxAy = [...lastAxAyStates];
+                await this._purgeStates(valStatesAxAy);
+                lastAxAyState = valStatesAxAy.slice(-1)[0];
+                valStatesAxAy.push(this.newBatchNumberDb);
+            }
+            if (numTx) lastAxAyState = valStatesAxAy.slice(-1)[0];
+
+            // get last state
+            let valOldAxAy = null;
+            if (lastAxAyState){
+                const keyOldAxAyBatch = poseidonHash([keyAxAy, lastAxAyState]);
+                valOldAxAy = await this.dbState.get(keyOldAxAyBatch);
+            }
+
+            let newValAxAy;
+            if (!valOldAxAy) newValAxAy = [];
+            else newValAxAy = [...valOldAxAy];
+            newValAxAy.push(bigInt(tx.fromIdx));
+            // new key newValAxAy
+            const newKeyAxAyBatch = poseidonHash([keyAxAy, this.newBatchNumberDb]);
+            await this.dbState.multiIns([
+                [keyAxAy, valStatesAxAy],
+                [newKeyAxAyBatch, newValAxAy],
             ]);
 
-            let valAxAy;
-            if (!lastVals[0]) valAxAy = [];
-            else valAxAy = [...lastVals[0]];
-            valAxAy.push(bigInt(tx.fromIdx));
+            // Database Ether address
+            const keyEth = Constants.DB_EthAddr.add(this.input.ethAddr[i]);
+            const lastEthStates = await this.dbState.get(keyEth);
 
-            let valEthAddr;
-            if (!lastVals[1]) valEthAddr = [];
-            else valEthAddr = [...lastVals[1]];
-            valEthAddr.push(bigInt(tx.fromIdx));
+            // get last state and add last batch number
+            let valStatesEth;
+            let lastEthState;
+            if (!lastEthStates) {
+                lastEthState = null;
+                valStatesEth = [];
+                valStatesEth.push(this.newBatchNumberDb);
+            }
+            else {
+                valStatesEth = [...lastEthStates];
+                this._purgeStates(valStatesEth);
+                lastEthState = valStatesEth.slice(-1)[0];
+                valStatesEth.push(this.newBatchNumberDb);
+            } 
+            if (numTx) lastEthState = valStatesEth.slice(-1)[0];
 
+            // get last state
+            let valOldEth = null;
+            if (lastEthState){
+                const keyOldEthBatch = poseidonHash([keyEth, lastEthState]);
+                valOldEth = await this.dbState.get(keyOldEthBatch);
+            }
+
+            let newValEth;
+            if (!valOldEth) newValEth = [];
+            else newValEth = [...valOldEth];
+            newValEth.push(bigInt(tx.fromIdx));
+
+            // new key newValEth
+            const newKeyEthBatch = poseidonHash([keyEth, this.newBatchNumberDb]);
+
+            await this.dbState.multiIns([
+                [keyEth, valStatesEth],
+                [newKeyEthBatch, newValEth],
+            ]);
+
+            // Database Idx
+            // get array of states saved by batch
+            const lastIdStates = await this.dbState.get(Constants.DB_Idx.add(bigInt(tx.fromIdx)));
+            // add last batch number
+            let valStatesId;
+            if (!lastIdStates) valStatesId = [];
+            else valStatesId = [...lastIdStates];
+            this._purgeStates(valStatesId);
+            valStatesId.push(this.newBatchNumberDb);
+
+            // new state for idx
             const newValueId = poseidonHash([newValue, tx.fromIdx]);
+
+            // new entry according idx and batchNumber
+            const keyIdBatch = poseidonHash([tx.fromIdx, this.newBatchNumberDb]);
+            
             await this.dbState.multiIns([
                 [newValueId, utils.state2array(newState1)],
-                [Constants.DB_Idx.add(bigInt(tx.fromIdx)), newValueId],
-                [keyAxAy, valAxAy],
-                [keyEthAddr, valEthAddr]
+                [keyIdBatch, newValueId],
+                [Constants.DB_Idx.add(bigInt(tx.fromIdx)), valStatesId],
             ]);
 
         } else if (op1 == "UPDATE") {
@@ -269,12 +345,25 @@ module.exports = class BatchBuilder {
             this.input.oldKey1[i]= 0x1234;      // It should not matter
             this.input.oldValue1[i]= 0x1234;    // It should not matter
 
+            // get array of states saved by batch
+            const lastIdStates = await this.dbState.get(Constants.DB_Idx.add(bigInt(tx.fromIdx)));
+            // add last batch number
+            let valStatesId;
+            if (!lastIdStates) valStatesId = [];
+            else valStatesId = [...lastIdStates];
+            this._purgeStates(valStatesId);
+            valStatesId.push(this.newBatchNumberDb);
+
+            // new state for idx
             const newValueId = poseidonHash([newValue, tx.fromIdx]);
-            const oldValueId = poseidonHash([resFind1.foundValue, tx.fromIdx]);
-            await this.dbState.multiDel([oldValueId]);
+            
+            // new entry according idx and batchNumber
+            const keyIdBatch = poseidonHash([tx.fromIdx, this.newBatchNumberDb]);
+            
             await this.dbState.multiIns([
                 [newValueId, utils.state2array(newState1)],
-                [Constants.DB_Idx.add(bigInt(tx.fromIdx)), newValueId]
+                [keyIdBatch, newValueId],
+                [Constants.DB_Idx.add(bigInt(tx.fromIdx)), valStatesId]
             ]);
         }
 
@@ -349,12 +438,25 @@ module.exports = class BatchBuilder {
                 this.input.oldKey2[i]= 0x1234;      // It should not matter
                 this.input.oldValue2[i]= 0x1234;    // It should not matter
 
+                // get array of states saved by batch
+                const lastIdStates = await this.dbState.get(Constants.DB_Idx.add(bigInt(tx.toIdx)));
+                // add last batch number
+                let valStatesId;
+                if (!lastIdStates) valStatesId = [];
+                else valStatesId = [...lastIdStates];
+                this._purgeStates(valStatesId);
+                valStatesId.push(this.newBatchNumberDb);
+
+                // new state for idx
                 const newValueId = poseidonHash([newValue, tx.toIdx]);
-                const oldValueId = poseidonHash([resFind2.foundValue, tx.toIdx]);
-                await this.dbState.multiDel([oldValueId]);
+                
+                // new entry according idx and batchNumber
+                const keyIdBatch = poseidonHash([tx.toIdx, this.newBatchNumberDb]);
+               
                 await this.dbState.multiIns([
                     [newValueId, utils.state2array(newState2)],
-                    [Constants.DB_Idx.add(bigInt(tx.toIdx)), newValueId]
+                    [keyIdBatch, newValueId],
+                    [Constants.DB_Idx.add(bigInt(tx.toIdx)), valStatesId]
                 ]);
             }
         } else if (op2=="NOP") {
@@ -371,6 +473,23 @@ module.exports = class BatchBuilder {
             this.input.isOld0_2[i]= 0;
             this.input.oldKey2[i]= 0;
             this.input.oldValue2[i]= 0;
+        }
+    }
+
+    async _purgeStates(states){
+        if (states.length === 0) return;
+        if (states.slice(-1)[0].lesser(this.newBatchNumberDb)) return;
+        let indexFound = null;
+        for (let i = states.length - 1; i >= 0; i--){
+            if (states[i].lesserOrEquals(this.newBatchNumberDb)){
+                indexFound = i+1;
+                if (states[i].equals(this.newBatchNumberDb))
+                    indexFound = i;
+                break;
+            } 
+        }
+        if (indexFound !== null){
+            states.splice(indexFound);
         }
     }
 
@@ -463,13 +582,13 @@ module.exports = class BatchBuilder {
 
         if (this.builded) throw new Error("Batch already builded");
         for (let i=0; i<this.offChainTxs.length; i++) {
-            await this._addTx(this.offChainTxs[i]);
+            await this._addTx(this.offChainTxs[i], i);
         }
         for (let i=0; i<this.maxNTx - this.offChainTxs.length - this.onChainTxs.length; i++) {
             this._addNopTx();
         }
         for (let i=0; i<this.onChainTxs.length; i++) {
-            await this._addTx(this.onChainTxs[i]);
+            await this._addTx(this.onChainTxs[i], i);
         }
         this.builded=true;
     }
