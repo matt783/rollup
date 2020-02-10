@@ -45,6 +45,12 @@ class RollupDB {
     async rollbackToBatch(numBatch){
         if (numBatch > this.lastBatch)
             throw new Error("Cannot rollback to future state");
+        
+        // update Idx database
+        await this._updateIdx(numBatch);
+        // update AxAy database
+        await this._updateAxAy(numBatch);
+        // update num batch and root
         await this.db.multiIns([
             [Constants.DB_Master, numBatch]
         ]);
@@ -53,7 +59,7 @@ class RollupDB {
         if (numBatch === 0) 
             this.stateRoot = bigInt(0);
         else 
-            this.stateRoot = roots[0]; 
+            this.stateRoot = roots[0];
     }
 
     async getStateByIdx(idx) {
@@ -148,6 +154,84 @@ class RollupDB {
 
     getRoot(){
         return this.stateRoot;
+    }
+
+    async _updateIdx(numBatch) {
+        // update idx states
+        const alreadyUpdated = [];
+        for (let i = this.lastBatch; i > numBatch; i--){
+            const keyNumBatchIdx = Constants.DB_NumBatch_Idx.add(bigInt(i));
+            const idxToUpdate = await this.db.get(keyNumBatchIdx);
+            if (!idxToUpdate) continue;
+            for (const idx of idxToUpdate) {
+                if (!alreadyUpdated.includes(idx)){
+                    const keyIdx = Constants.DB_Idx.add(bigInt(idx));
+                    const states = await this.db.get(keyIdx);
+                    this._purgeStates(states, numBatch);
+                    await this.db.multiIns([
+                        [keyIdx, states],
+                    ]);
+                    alreadyUpdated.push(idx);   
+                }
+            }
+        }
+
+        // reset num batch - idx for future states
+        const keysToDel = [];
+        for (let i = this.lastBatch; i > numBatch; i--){
+            const keyNumBatchIdx = Constants.DB_NumBatch_Idx.add(bigInt(i));
+            keysToDel.push(keyNumBatchIdx);
+        }
+        await this.db.multiDel(keysToDel);
+    }
+
+    async _updateAxAy(numBatch) {
+        // update idx states
+        const alreadyUpdated = [];
+        for (let i = this.lastBatch; i > numBatch; i--){
+            const keyNumBatchAxAy = Constants.DB_NumBatch_AxAy.add(bigInt(i));
+            const axAyToUpdate = await this.db.get(keyNumBatchAxAy);
+            if (!axAyToUpdate) continue;
+            for (const encodedAxAy of axAyToUpdate) {
+                if (!alreadyUpdated.includes(encodedAxAy)){
+                    const ax = encodedAxAy.shr(256);
+                    const ay = encodedAxAy.and(bigInt(1).shl(256).sub(bigInt(1)));  
+                    const keyAxAy = Constants.DB_AxAy.add(ax).add(ay);
+                    const states = await this.db.get(keyAxAy);
+                    this._purgeStates(states, numBatch);
+                    await this.db.multiIns([
+                        [keyAxAy, states],
+                    ]);
+                    alreadyUpdated.push(encodedAxAy);
+                }
+            }
+        }
+
+        // reset num batch - AxAy for future states
+        const keysToDel = [];
+        for (let i = this.lastBatch; i > numBatch; i--){
+            const keyNumBatchAxAy = Constants.DB_NumBatch_AxAy.add(bigInt(i));
+            keysToDel.push(keyNumBatchAxAy);
+        }
+        await this.db.multiDel(keysToDel);
+    }
+
+    async _purgeStates(states, numBatch){
+        let indexFound = null;
+        for (let i = states.length - 1; i >= 0; i--){
+            if (states[i].lesserOrEquals(numBatch)){
+                indexFound = i+1;
+                break;
+            } 
+        }
+        if (indexFound !== null){
+            states.splice(indexFound);
+        }
+    }
+
+    async test(numBatch) {
+        const keyNumBatchAxAy = Constants.DB_NumBatch_AxAy.add(bigInt(numBatch));
+        return await this.db.get(keyNumBatchAxAy);
     }
 }
 

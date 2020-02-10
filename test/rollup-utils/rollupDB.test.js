@@ -209,7 +209,6 @@ describe("RollupDb - rollback functionality", async function () {
 
         const stateEthAdd3 = await rollupDb.getStateByEthAddr(account3.ethAddress.toString());
         expect(stateEthAdd3.length).to.be.equal(1);
-
         // rollback database
         await rollupDb.rollbackToBatch(oldNumBatch);
 
@@ -334,5 +333,88 @@ describe("RollupDb - rollback functionality", async function () {
         expect(newStateEthAdd1).to.be.equal(null);
         expect(newStateEthAdd2).to.be.equal(null);
         expect(newStateEthAdd3).to.be.equal(null);
+    });
+
+    it("should start new rollupdb state", async () => {
+        const db = new SMTMemDB();
+        rollupDb = await RollupDB(db);
+    });
+
+    it("should add three deposit", async () => {
+        const bb = await rollupDb.buildBatch(4, 8);
+
+        bb.addTx({ fromIdx: 1, loadAmount: 10, coin: 0, ax: account1.ax, ay: account1.ay,
+            ethAddress: account2.ethAddress, onChain: true }); 
+        bb.addTx({ fromIdx: 2, loadAmount: 10, coin: 0, ax: account1.ax, ay: account1.ay,
+            ethAddress: account2.ethAddress, onChain: true }); 
+        bb.addTx({ fromIdx: 3, loadAmount: 10, coin: 0, ax: account1.ax, ay: account1.ay,
+            ethAddress: account2.ethAddress, onChain: true }); 
+
+        await bb.build();
+        await rollupDb.consolidate(bb);
+    });
+
+    it("should add three deposit", async () => {
+        const lastBatch = 6;
+        const numBatchToForge = 4;
+        // move forward 'numBatchToForge' batch
+        for (let i = 0; i<numBatchToForge ;i++ ){
+            const bb = await rollupDb.buildBatch(4, 8);
+            await bb.build();
+            await rollupDb.consolidate(bb);
+        }
+
+        // add off-chain transaction
+        const tx = {
+            fromIdx: 3,
+            toIdx: 0,
+            coin: 0,
+            amount: 5,
+        };
+        const bb2 = await rollupDb.buildBatch(4, 8);
+        bb2.addTx(tx);
+        await bb2.build();
+        await rollupDb.consolidate(bb2);
+
+        expect(rollupDb.lastBatch).to.be.equal(lastBatch);
+    });
+
+    it("rollback and check accounts", async () => {
+        const initialAmount =10;
+        const oldStateId1 = await rollupDb.getStateByIdx(1);
+        const oldStateId2 = await rollupDb.getStateByIdx(2);
+        const oldStateId3 = await rollupDb.getStateByIdx(3);
+
+        // rollback database
+        await rollupDb.rollbackToBatch(5);
+
+        const newStateId1 = await rollupDb.getStateByIdx(1);
+        const newStateId2 = await rollupDb.getStateByIdx(2);
+        const newStateId3 = await rollupDb.getStateByIdx(3);
+        
+        expect(newStateId1.amount.toString()).to.be.equal(initialAmount.toString());
+        expect(newStateId2.amount.toString()).to.be.equal(initialAmount.toString());
+        expect(newStateId3.amount.toString()).to.be.equal(initialAmount.toString());
+
+        // add off-chain transaction
+        const amountToWithdraw = 1;
+        const tx = {
+            fromIdx: 1,
+            toIdx: 0,
+            coin: 0,
+            amount: amountToWithdraw,
+        };
+        const bb = await rollupDb.buildBatch(4, 8);
+        bb.addTx(tx);
+        await bb.build();
+        await rollupDb.consolidate(bb);
+
+        const finalStateId1 = await rollupDb.getStateByIdx(1);
+        const finalStateId2 = await rollupDb.getStateByIdx(2);
+        const finalStateId3 = await rollupDb.getStateByIdx(3);
+        
+        // expect(finalStateId1.amount.toString()).to.be.equal((initialAmount - amountToWithdraw).toString());
+        // expect(finalStateId2.amount.toString()).to.be.equal(initialAmount.toString());
+        // expect(finalStateId3.amount.toString()).to.be.equal(initialAmount.toString());
     });
 });

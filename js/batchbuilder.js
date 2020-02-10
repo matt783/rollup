@@ -203,7 +203,6 @@ module.exports = class BatchBuilder {
         }
         const newState2 = Object.assign({}, oldState2);
         newState2.amount = oldState2.amount.add(effectiveAmount);
-
         if (op1=="INSERT") {
 
             const newValue = utils.hashState(newState1);
@@ -309,8 +308,7 @@ module.exports = class BatchBuilder {
             let valStatesId;
             if (!lastIdStates) valStatesId = [];
             else valStatesId = [...lastIdStates];
-            this._purgeStates(valStatesId);
-            valStatesId.push(this.newBatchNumberDb);
+            if (!valStatesId.includes(this.newBatchNumberDb)) valStatesId.push(this.newBatchNumberDb);
 
             // new state for idx
             const newValueId = poseidonHash([newValue, tx.fromIdx]);
@@ -323,7 +321,6 @@ module.exports = class BatchBuilder {
                 [keyIdBatch, newValueId],
                 [Constants.DB_Idx.add(bigInt(tx.fromIdx)), valStatesId],
             ]);
-
         } else if (op1 == "UPDATE") {
             const newValue = utils.hashState(newState1);
 
@@ -351,8 +348,7 @@ module.exports = class BatchBuilder {
             let valStatesId;
             if (!lastIdStates) valStatesId = [];
             else valStatesId = [...lastIdStates];
-            this._purgeStates(valStatesId);
-            valStatesId.push(this.newBatchNumberDb);
+            if (!valStatesId.includes(this.newBatchNumberDb)) valStatesId.push(this.newBatchNumberDb);
 
             // new state for idx
             const newValueId = poseidonHash([newValue, tx.fromIdx]);
@@ -444,8 +440,7 @@ module.exports = class BatchBuilder {
                 let valStatesId;
                 if (!lastIdStates) valStatesId = [];
                 else valStatesId = [...lastIdStates];
-                this._purgeStates(valStatesId);
-                valStatesId.push(this.newBatchNumberDb);
+                if (!valStatesId.includes(this.newBatchNumberDb)) valStatesId.push(this.newBatchNumberDb);
 
                 // new state for idx
                 const newValueId = poseidonHash([newValue, tx.toIdx]);
@@ -473,6 +468,42 @@ module.exports = class BatchBuilder {
             this.input.isOld0_2[i]= 0;
             this.input.oldKey2[i]= 0;
             this.input.oldValue2[i]= 0;
+        }
+
+        // Database numBatch - Idx
+        const keyNumBatchIdx = Constants.DB_NumBatch_Idx.add(this.newBatchNumberDb);
+        let lastBatchIdx = await this.dbState.get(keyNumBatchIdx);
+
+        // get last state and add last batch number
+        let newBatchIdx;
+        if (!lastBatchIdx) lastBatchIdx = [];
+        newBatchIdx = [...lastBatchIdx];
+
+        if (op1 == "INSERT" || op1 == "UPDATE") {
+            if (!newBatchIdx.includes(tx.fromIdx)) newBatchIdx.push(tx.fromIdx); 
+        }
+
+        if (op2 == "UPDATE" && !isExit) {
+            if (!newBatchIdx.includes(tx.toIdx)) newBatchIdx.push(tx.toIdx);
+        }
+        await this.dbState.multiIns([
+            [keyNumBatchIdx, newBatchIdx],
+        ]);
+
+        // Database NumBatch - AxAy
+        if (op1 == "INSERT") {
+            const encodeAxAy =  this.input.ay[i].add(this.input.ax[i].shl(256));
+            const keyNumBatchAxAy = Constants.DB_NumBatch_AxAy.add(this.newBatchNumberDb);
+            let oldStatesAxAy = await this.dbState.get(keyNumBatchAxAy);
+            let newStatesAxAy;
+            if (!oldStatesAxAy) oldStatesAxAy = [];
+            newStatesAxAy = [...oldStatesAxAy];
+            if (!newStatesAxAy.includes(encodeAxAy)) {
+                newStatesAxAy.push(encodeAxAy);
+                await this.dbState.multiIns([
+                    [keyNumBatchAxAy, newStatesAxAy],
+                ]);
+            }
         }
     }
 
