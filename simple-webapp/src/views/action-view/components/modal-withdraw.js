@@ -9,15 +9,14 @@ import { handleSendWithdraw, handleGetExitRoot } from '../../../state/tx/actions
 
 class ModalWithdraw extends Component {
   static propTypes = {
-    wallet: PropTypes.object.isRequired,
     config: PropTypes.object.isRequired,
     abiRollup: PropTypes.array.isRequired,
-    password: PropTypes.string.isRequired,
     modalWithdraw: PropTypes.bool.isRequired,
     toggleModalWithdraw: PropTypes.func.isRequired,
     handleSendWithdraw: PropTypes.func.isRequired,
-    getInfoAccount: PropTypes.func.isRequired,
     handleGetExitRoot: PropTypes.func.isRequired,
+    gasMultiplier: PropTypes.number.isRequired,
+    desWallet: PropTypes.object.isRequired,
   };
 
   constructor(props) {
@@ -28,41 +27,34 @@ class ModalWithdraw extends Component {
       idFrom: -1,
       initModal: true,
       modalError: false,
-      error: "",
+      error: '',
     };
     this.idFromRef = React.createRef();
   }
 
-  toggleModalError = () =>  { this.setState((prev) => ({ modalError: !prev.modalError })); }
+  toggleModalError = () => { this.setState((prev) => ({ modalError: !prev.modalError })); }
 
     handleClick = async () => {
-      try {
-        const {
-          wallet, config, abiRollup, password,
-        } = this.props;
+      const {
+        config, abiRollup, desWallet,
+      } = this.props;
 
-        const idFrom = Number(this.state.idFrom);
-        const numExitRoot = Number(this.state.numExitRoot);
-        const { nodeEth } = config;
-        const addressSC = config.address;
-        const { operator } = config;
-        this.toggleModalChange();
-        this.props.toggleModalWithdraw();
-        const res = await this.props.handleSendWithdraw(nodeEth, addressSC, wallet, password,
-          abiRollup, operator, idFrom, numExitRoot, this.props.gasMultiplier);
-        this.props.getInfoAccount();
-        if(res !== undefined) {
-          if(res.message !== undefined){
-            if(res.message.includes("insufficient funds")){
-              this.setState({error:"1"});
-              this.toggleModalError();
-            }
+      const idFrom = Number(this.state.idFrom);
+      const numExitRoot = Number(this.state.numExitRoot);
+      const { nodeEth } = config;
+      const addressSC = config.address;
+      const { operator } = config;
+      this.toggleModalChange();
+      this.props.toggleModalWithdraw();
+      const res = await this.props.handleSendWithdraw(nodeEth, addressSC, desWallet,
+        abiRollup, operator, idFrom, numExitRoot, this.props.gasMultiplier);
+      if (res !== undefined) {
+        if (res.message !== undefined) {
+          if (res.message.includes('insufficient funds')) {
+            this.setState({ error: '1' });
+            this.toggleModalError();
           }
         }
-        console.log(res)
-      } catch (err) {
-        // eslint-disable-next-line no-console
-        console.log(err);
       }
     }
 
@@ -108,7 +100,7 @@ class ModalWithdraw extends Component {
                 <Icon name="arrow right" />
                 Next
               </Button>
-              <Button color="red" onClick={this.props.toggleModalWithdraw}>
+              <Button color="grey" basic onClick={this.props.toggleModalWithdraw}>
                 <Icon name="close" />
                 Close
               </Button>
@@ -134,7 +126,7 @@ class ModalWithdraw extends Component {
               <Icon name="sign-out" />
               Withdraw
             </Button>
-            <Button color="red" onClick={this.toogleCloseModal}>
+            <Button color="grey" basic onClick={this.toogleCloseModal}>
               <Icon name="close" />
               Close
             </Button>
@@ -161,10 +153,9 @@ class ModalWithdraw extends Component {
 }
 
 const mapStateToProps = (state) => ({
-  wallet: state.general.wallet,
   config: state.general.config,
   abiRollup: state.general.abiRollup,
-  password: state.general.password,
+  desWallet: state.general.desWallet,
 });
 
 export default connect(mapStateToProps, { handleSendWithdraw, handleGetExitRoot })(ModalWithdraw);

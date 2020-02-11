@@ -14,6 +14,7 @@ class ModalCreate extends Component {
     errorCreateWallet: PropTypes.string,
     isCreatingWallet: PropTypes.bool.isRequired,
     isLoadingWallet: PropTypes.bool.isRequired,
+    nameWallet: PropTypes.string,
   }
 
   isLoading = () => {
@@ -21,7 +22,8 @@ class ModalCreate extends Component {
       return (
         <Message warning>
           <Icon name="circle notched" loading />
-          We are creating and importing your wallet..
+          Your wallet is being created and imported...
+          This may take a few minutes!
         </Message>
       );
     } if (this.props.errorCreateWallet !== '') {
@@ -43,7 +45,7 @@ class ModalCreate extends Component {
             <Form.Field>
               <label htmlFor="file-name">
                 File Name
-                <input type="text" ref={this.props.fileNameRef} id="file-name" />
+                <input type="text" ref={this.props.fileNameRef} id="file-name" defaultValue={this.props.nameWallet} />
               </label>
             </Form.Field>
             <Form.Field>
@@ -60,7 +62,7 @@ class ModalCreate extends Component {
             <Icon name="check" />
             Create
           </Button>
-          <Button color="red" onClick={this.props.toggleModalCreate}>
+          <Button color="grey" basic onClick={this.props.toggleModalCreate}>
             <Icon name="close" />
             Close
           </Button>

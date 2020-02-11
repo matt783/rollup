@@ -1,3 +1,4 @@
+/* global BigInt */
 import * as CONSTANTS from './constants';
 import * as rollup from '../../utils/bundle-cli';
 import * as operator from '../../utils/bundle-op';
@@ -12,10 +13,10 @@ function loadWallet() {
   };
 }
 
-function loadWalletSuccess(wallet, password) {
+function loadWalletSuccess(wallet, password, desWallet) {
   return {
     type: CONSTANTS.LOAD_WALLET_SUCCESS,
-    payload: { wallet, password },
+    payload: { wallet, password, desWallet },
     error: '',
   };
 }
@@ -38,8 +39,8 @@ export function handleLoadWallet(walletFile, password, file) {
         } else {
           wallet = walletFile;
         }
-        await rollup.wallet.Wallet.fromEncryptedJson(wallet, password);
-        dispatch(loadWalletSuccess(wallet, password));
+        const desWallet = await rollup.wallet.Wallet.fromEncryptedJson(wallet, password);
+        dispatch(loadWalletSuccess(wallet, password, desWallet));
       } catch (error) {
         dispatch(loadWalletError(error));
       }
@@ -79,8 +80,6 @@ export function handleCreateWallet(walletName, password) {
         FileSaver.saveAs(blob, `${walletName}.json`);
         resolve(encWallet);
       } catch (error) {
-        // eslint-disable-next-line no-console
-        console.log(error);
         dispatch(createWalletError(error));
       }
     });
@@ -167,8 +166,6 @@ export function handleLoadOperator(config) {
         const apiOperator = new operator.cliExternalOperator(config.operator);
         dispatch(loadOperatorSuccess(apiOperator));
       } catch (error) {
-        // eslint-disable-next-line no-console
-        console.log(error);
         dispatch(loadOperatorError(error));
       }
     });
@@ -182,11 +179,11 @@ function infoAccount() {
   };
 }
 
-function infoAccountSuccess(balance, tokens, tokensR, tokensA, txs) {
+function infoAccountSuccess(balance, tokens, tokensR, tokensA, tokensE, txs, txsExits) {
   return {
     type: CONSTANTS.INFO_ACCOUNT_SUCCESS,
     payload: {
-      balance, tokens, tokensR, tokensA, txs,
+      balance, tokens, tokensR, tokensA, tokensE, txs, txsExits,
     },
     error: '',
   };
@@ -199,13 +196,13 @@ function infoAccountError(error) {
   };
 }
 
-export function handleInfoAccount(node, addressTokens, abiTokens, encWallet, password, operatorUrl, addressRollup) {
+export function handleInfoAccount(node, addressTokens, abiTokens, wallet, operatorUrl, addressRollup) {
   return function (dispatch) {
     dispatch(infoAccount());
     return new Promise(async () => {
       try {
         const provider = new ethers.providers.JsonRpcProvider(node);
-        const walletEthAddress = encWallet.ethWallet.address;
+        const walletEthAddress = wallet.ethWallet.address;
         const balanceHex = await provider.getBalance(walletEthAddress);
         const balance = ethers.utils.formatEther(balanceHex);
         const contractTokens = new ethers.Contract(addressTokens, abiTokens, provider);
@@ -215,11 +212,13 @@ export function handleInfoAccount(node, addressTokens, abiTokens, encWallet, pas
         else filters.ethAddr = `0x${walletEthAddress}`;
         let tokens = '0';
         let tokensA = '0';
-        let tokensRNum = 0;
+        let tokensENum = BigInt(0);
+        let tokensRNum = BigInt(0);
         const txs = [];
+        const txsExits = [];
         try {
-          const tokensHex = await contractTokens.balanceOf(encWallet.ethWallet.address);
-          const tokensAHex = await contractTokens.allowance(encWallet.ethWallet.address, addressRollup);
+          const tokensHex = await contractTokens.balanceOf(walletEthAddress);
+          const tokensAHex = await contractTokens.allowance(walletEthAddress, addressRollup);
           tokens = tokensHex.toString();
           tokensA = tokensAHex.toString();
           const allTxs = await apiOperator.getAccounts(filters);
@@ -228,18 +227,40 @@ export function handleInfoAccount(node, addressTokens, abiTokens, encWallet, pas
           for (let i = initTx; i <= numTx; i++) {
             if (allTxs.data.find((tx) => tx.idx === i) !== undefined) {
               txs.push(allTxs.data.find((tx) => tx.idx === i));
-              // eslint-disable-next-line radix
-              tokensRNum += parseInt(allTxs.data.find((tx) => tx.idx === i).amount);
+              tokensRNum += BigInt(allTxs.data.find((tx) => tx.idx === i).amount);
+            }
+          }
+          for (const tx in allTxs.data) {
+            if ({}.hasOwnProperty.call(allTxs.data, tx)) {
+              try {
+                // eslint-disable-next-line no-await-in-loop
+                const exits = await apiOperator.getExits(allTxs.data[tx].idx);
+                const batches = exits.data;
+                if (batches) {
+                  for (const batch in batches) {
+                    if ({}.hasOwnProperty.call(batches, batch)) {
+                      // eslint-disable-next-line no-await-in-loop
+                      const info = await apiOperator.getExitInfo(allTxs.data[tx].idx, batches[batch]);
+                      txsExits.push({
+                        idx: allTxs.data[tx].idx, batch: batches[batch], amount: info.data.state.amount,
+                      });
+                      tokensENum += BigInt(info.data.state.amount);
+                    }
+                  }
+                }
+              } catch (err) {
+                // eslint-disable-next-line no-continue
+                continue;
+              }
             }
           }
         } catch (err) {
           dispatch(infoAccountError(err));
         }
+        const tokensE = tokensENum.toString();
         const tokensR = tokensRNum.toString();
-        dispatch(infoAccountSuccess(balance, tokens, tokensR, tokensA, txs));
+        dispatch(infoAccountSuccess(balance, tokens, tokensR, tokensA, tokensE, txs, txsExits));
       } catch (error) {
-        // eslint-disable-next-line no-console
-        console.log(error);
         dispatch(infoAccountError(error));
       }
     });
@@ -297,11 +318,11 @@ function setGasMultiplier(num) {
   return {
     type: CONSTANTS.SET_GAS_MULTIPLIER,
     payload: num,
-  }
+  };
 }
 
 export function selectGasMultiplier(num) {
   return function (dispatch) {
     dispatch(setGasMultiplier(num));
-  }
+  };
 }

@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { Message, Icon } from 'semantic-ui-react';
+import { handleCloseMessage } from '../../../state/tx/actions';
 
 class MessageTx extends Component {
   static propTypes = {
@@ -15,6 +16,8 @@ class MessageTx extends Component {
     error: PropTypes.string.isRequired,
     tx: PropTypes.object.isRequired,
     chainId: PropTypes.number.isRequired,
+    messageOpen: PropTypes.bool.isRequired,
+    handleCloseMessage: PropTypes.func.isRequired,
   }
 
   getUrl = () => {
@@ -50,33 +53,33 @@ class MessageTx extends Component {
           </Message.Content>
         </Message>
       );
-    // } else if (this.props.errorDeposit !== '' || this.props.errorWithdraw !== '' || this.props.errorSend !== '' || this.props.errorApprove !== '' || this.props.errorGetTokens !== '') {
-    } if (this.props.error !== '') {
+    } if (this.props.error !== '' && this.props.messageOpen) {
       return (
-        <Message icon color="red">
+        <Message icon color="red" onDismiss={this.props.handleCloseMessage}>
           <Icon name="exclamation" />
           <Message.Content>
             <Message.Header>Error!</Message.Header>
+            <p>{this.props.error}</p>
           </Message.Content>
         </Message>
       );
-    } if (this.props.successTx === true) {
+    } if (this.props.successTx === true && this.props.messageOpen) {
       return (
-        <Message icon color="green">
+        <Message icon color="green" onDismiss={this.props.handleCloseMessage}>
           <Icon name="check" />
           <Message.Content>
-            <Message.Header>Transaction send!</Message.Header>
+            <Message.Header>Transaction sent!</Message.Header>
             <p>Transaction is being forged... Please click Reload in few seconds!</p>
             {this.getUrl()}
           </Message.Content>
         </Message>
       );
-    } if (this.props.successSend === true) {
+    } if (this.props.successSend === true && this.props.messageOpen) {
       return (
-        <Message icon color="green">
+        <Message icon color="green" onDismiss={this.props.handleCloseMessage}>
           <Icon name="check" />
           <Message.Content>
-            <Message.Header>Transaction send!</Message.Header>
+            <Message.Header>Transaction sent!</Message.Header>
             <p>Transaction is being forged... Please click Reload in few seconds!</p>
           </Message.Content>
         </Message>
@@ -103,7 +106,8 @@ const mapStateToProps = (state) => ({
   successTx: state.transactions.successTx,
   error: state.transactions.error,
   tx: state.transactions.tx,
+  messageOpen: state.transactions.messageOpen,
   chainId: state.general.chainId,
 });
 
-export default connect(mapStateToProps, { })(MessageTx);
+export default connect(mapStateToProps, { handleCloseMessage })(MessageTx);

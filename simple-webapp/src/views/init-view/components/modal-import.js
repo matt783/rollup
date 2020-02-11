@@ -20,7 +20,8 @@ class ModalImport extends Component {
         return (
           <Message warning>
             <Icon name="circle notched" loading />
-            We are checking your wallet...
+            Your wallet is being checked...
+            This may take a few minutes!
           </Message>
         );
       } if (this.props.errorWallet !== '') {
@@ -59,7 +60,7 @@ class ModalImport extends Component {
               <Icon name="check" />
               Import
             </Button>
-            <Button color="red" onClick={this.props.toggleModalImport}>
+            <Button color="grey" basic onClick={this.props.toggleModalImport}>
               <Icon name="close" />
               Close
             </Button>

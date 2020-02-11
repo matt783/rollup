@@ -41,6 +41,7 @@ class InitView extends Component {
       modalImport: false,
       modalCreate: false,
       walletImport: '',
+      nameWallet: '',
     };
   }
 
@@ -74,8 +75,9 @@ class InitView extends Component {
           this.props.handleLoadOperator(config);
         }
       } catch (err) {
-        // eslint-disable-next-line no-console
-        console.log(err.message);
+        this.setState({
+          walletImport: '',
+        });
       }
     }
 
@@ -93,14 +95,26 @@ class InitView extends Component {
           this.props.handleLoadOperator(config);
         }
       } catch (err) {
-        // eslint-disable-next-line no-console
-        console.log(err.message);
+        
       }
     }
 
     toggleModalImport = () => { this.setState((prev) => ({ modalImport: !prev.modalImport })); }
 
-    toggleModalCreate = () => { this.setState((prev) => ({ modalCreate: !prev.modalCreate })); }
+    toggleModalCreate = () => {
+      const nameWallet = 'zkrollup-backup-';
+      const date = new Date(Date.now());
+      const year = date.getFullYear();
+      const month = date.getMonth() + 1;
+      const day = date.getDay();
+      const hour = date.getHours();
+      const min = date.getMinutes();
+
+      this.setState((prev) => ({
+        modalCreate: !prev.modalCreate,
+        nameWallet: `${nameWallet}${year}${month}${day}-${hour}${min}`,
+      }));
+    }
 
     renderRedirect = () => {
       if (this.state.isLoaded === true) {
@@ -146,7 +160,8 @@ class InitView extends Component {
             passwordRef={this.passwordRef}
             isLoadingWallet={this.props.isLoadingWallet}
             isCreatingWallet={this.props.isCreatingWallet}
-            errorCreateWallet={this.props.errorCreateWallet} />
+            errorCreateWallet={this.props.errorCreateWallet}
+            nameWallet={this.state.nameWallet} />
           <ModalImport
             modalImport={this.state.modalImport}
             toggleModalImport={this.toggleModalImport}

@@ -11,13 +11,11 @@ const web3 = require('web3');
 class ModalSend extends Component {
     static propTypes = {
       activeItem: PropTypes.string.isRequired,
-      wallet: PropTypes.object.isRequired,
       config: PropTypes.object.isRequired,
-      password: PropTypes.string.isRequired,
       modalSend: PropTypes.bool.isRequired,
       toggleModalSend: PropTypes.func.isRequired,
       handleSendSend: PropTypes.func.isRequired,
-      getInfoAccount: PropTypes.func.isRequired,
+      desWallet: PropTypes.object.isRequired,
     }
 
     constructor(props) {
@@ -51,7 +49,7 @@ class ModalSend extends Component {
     }
 
     handleClick = async () => {
-      const { wallet, config, password } = this.props;
+      const { config, desWallet } = this.props;
 
       const idTo = Number(this.idToRef.current.value);
       const tokenId = Number(this.tokenIdRef.current.value);
@@ -60,10 +58,7 @@ class ModalSend extends Component {
       const fee = web3.utils.toWei(this.feeRef.current.value, 'ether');
       const { operator } = config;
       this.props.toggleModalSend();
-      const res = await this.props.handleSendSend(operator, idTo, amount, wallet, password, tokenId, fee, idFrom);
-      this.props.getInfoAccount();
-      // eslint-disable-next-line no-console
-      console.log(res);
+      await this.props.handleSendSend(operator, idTo, amount, desWallet, tokenId, fee, idFrom, config.operator);
     }
 
     render() {
@@ -104,7 +99,7 @@ class ModalSend extends Component {
               <Icon name="share" />
               Send
             </Button>
-            <Button color="red" onClick={this.props.toggleModalSend}>
+            <Button color="grey" basic onClick={this.props.toggleModalSend}>
               <Icon name="close" />
               Close
             </Button>
@@ -115,9 +110,8 @@ class ModalSend extends Component {
 }
 
 const mapStateToProps = (state) => ({
-  wallet: state.general.wallet,
   config: state.general.config,
-  password: state.general.password,
+  desWallet: state.general.desWallet,
 });
 
 export default connect(mapStateToProps, { handleSendSend })(ModalSend);

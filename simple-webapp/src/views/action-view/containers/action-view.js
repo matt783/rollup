@@ -12,30 +12,35 @@ import ModalDeposit from '../components/modal-deposit';
 import ModalWithdraw from '../components/modal-withdraw';
 import ModalSend from '../components/modal-send';
 import MessageTx from '../components/message-tx';
+import ModalError from '../components/modal-error';
 
 class ActionView extends Component {
   static propTypes = {
-    wallet: PropTypes.object.isRequired,
+    desWallet: PropTypes.object.isRequired,
     config: PropTypes.object.isRequired,
-    password: PropTypes.string.isRequired,
     abiTokens: PropTypes.array.isRequired,
     tokens: PropTypes.string,
     tokensR: PropTypes.string,
     tokensA: PropTypes.string,
+    tokensE: PropTypes.string,
     balance: PropTypes.string,
     txs: PropTypes.array,
+    txsExits: PropTypes.array,
     apiOperator: PropTypes.object.isRequired,
     isLoadingInfoAccount: PropTypes.bool.isRequired,
     handleInfoAccount: PropTypes.func.isRequired,
     handleGetTokens: PropTypes.func.isRequired,
     handleApprove: PropTypes.func.isRequired,
+    gasMultiplier: PropTypes.number.isRequired,
   }
 
   static defaultProps = {
-    tokens: 0,
-    tokensR: 0,
+    tokens: '0',
+    tokensR: '0',
+    tokensE: '0',
     balance: '0',
     txs: [],
+    txsExits: [],
   }
 
   constructor(props) {
@@ -45,18 +50,24 @@ class ActionView extends Component {
       modalDeposit: false,
       modalWithdraw: false,
       modalSend: false,
+      modalError: false,
+      error: '',
+      noImported: false,
     };
   }
 
   componentDidMount = async () => {
     this.getInfoAccount();
+    if (Object.keys(this.props.desWallet).length === 0) {
+      this.setState({ noImported: true });
+    }
   }
 
 
   getInfoAccount = () => {
-    if (Object.keys(this.props.wallet).length !== 0) {
+    if (Object.keys(this.props.desWallet).length !== 0) {
       this.props.handleInfoAccount(this.props.config.nodeEth, this.props.config.tokensAddress, this.props.abiTokens,
-        this.props.wallet, this.props.password, this.props.config.operator, this.props.config.address);
+        this.props.desWallet, this.props.config.operator, this.props.config.address);
     }
   }
 
@@ -78,17 +89,23 @@ class ActionView extends Component {
 
   toggleModalSend = () => { this.setState((prev) => ({ modalSend: !prev.modalSend })); }
 
+  toggleModalError = () => { this.setState((prev) => ({ modalError: !prev.modalError })); }
+
   handleClickGetTokens = () => {
     this.props.handleGetTokens(this.props.config.nodeEth, this.props.config.tokensAddress,
-      this.props.wallet, this.props.password);
+      this.props.desWallet);
     this.getInfoAccount();
   }
 
   handleClickApprove = async (addressTokens, amountToken) => {
-    const res = await this.props.handleApprove(addressTokens, this.props.abiTokens, this.props.wallet,
-      amountToken, this.props.config.address, this.props.password, this.props.config.nodeEth, this.props.gasMultiplier);
-    // eslint-disable-next-line no-console
-    console.log(res);
+    const res = await this.props.handleApprove(addressTokens, this.props.abiTokens, this.props.desWallet,
+      amountToken, this.props.config.address, this.props.config.nodeEth, this.props.gasMultiplier);
+    if (res.message !== undefined) {
+      if (res.message.includes('insufficient funds')) {
+        this.setState({ error: '1' });
+        this.toggleModalError();
+      }
+    }
   }
 
   render() {
@@ -107,11 +124,11 @@ class ActionView extends Component {
         </Header>
         <Divider />
         <MenuActions
-          handleItemClick={this.handleItemClick} />
+          handleItemClick={this.handleItemClick}
+          noImported={this.state.noImported} />
         <MessageTx />
         <InfoWallet
-          wallet={this.props.wallet}
-          apiOperator={this.props.apiOperator}
+          desWallet={this.props.desWallet}
           handleClickApprove={this.handleClickApprove}
           addressTokensRef={this.addressTokensRef}
           amountTokensRef={this.amountTokensRef}
@@ -119,28 +136,34 @@ class ActionView extends Component {
           balance={this.props.balance}
           tokens={this.props.tokens}
           tokensR={this.props.tokensR}
+          tokensE={this.props.tokensE}
           tokensA={this.props.tokensA}
           isLoadingInfoAccount={this.props.isLoadingInfoAccount}
           getInfoAccount={this.getInfoAccount}
           txs={this.props.txs}
-          tokensAddress={this.props.config.tokensAddress} />
+          txsExits={this.props.txsExits}
+          tokensAddress={this.props.config.tokensAddress}
+          noImported={this.state.noImported} />
         <ModalDeposit
           balance={this.props.balance}
           tokensA={this.props.tokensA}
           modalDeposit={this.state.modalDeposit}
           toggleModalDeposit={this.toggleModalDeposit}
-          getInfoAccount={this.getInfoAccount} 
           gasMultiplier={this.props.gasMultiplier} />
         <ModalWithdraw
           modalWithdraw={this.state.modalWithdraw}
           toggleModalWithdraw={this.toggleModalWithdraw}
-          getInfoAccount={this.getInfoAccount}
           gasMultiplier={this.props.gasMultiplier} />
         <ModalSend
+          apiOperator={this.props.apiOperator}
           modalSend={this.state.modalSend}
           toggleModalSend={this.toggleModalSend}
-          activeItem={this.state.activeItem}
-          getInfoAccount={this.getInfoAccount} />
+          activeItem={this.state.activeItem} />
+        <ModalError
+          error={this.state.error}
+          modalError={this.state.modalError}
+          toggleModalError={this.toggleModalError} />
+        <Divider horizontal>ROLLUP</Divider>
       </Container>
     );
   }
@@ -148,6 +171,7 @@ class ActionView extends Component {
 
 const mapStateToProps = (state) => ({
   wallet: state.general.wallet,
+  desWallet: state.general.desWallet,
   apiOperator: state.general.apiOperator,
   abiTokens: state.general.abiTokens,
   config: state.general.config,
@@ -156,7 +180,9 @@ const mapStateToProps = (state) => ({
   tokens: state.general.tokens,
   tokensR: state.general.tokensR,
   tokensA: state.general.tokensA,
+  tokensE: state.general.tokensE,
   txs: state.general.txs,
+  txsExits: state.general.txsExits,
   isLoadingInfoAccount: state.general.isLoadingInfoAccount,
   gasMultiplier: state.general.gasMultiplier,
 });
