@@ -151,13 +151,11 @@ class Synchronizer {
                 // check last batch number matches. Last state saved should match state in contract.
                 const stateDepth = parseInt(await this.rollupContract.methods.getStateDepth()
                     .call({from: this.ethAddress}, stateSaved.blockNumber));
-
-                // console.log("last batch saved: ", lastBatchSaved);
-                // console.log("state depth - 1: ", stateDepth - 1);
-                // console.log("stateSaved:", stateSaved);
                 
                 if (stateSaved.root && (stateDepth - 1) !== lastBatchSaved){
-                    console.log("+++++++++++ROLL BACK 1");
+                    // clear cache memory forge events
+                    this.forgeEventsCache.clear();
+                    await this._infoRollback("Contract State depth does not match last state depth saved");
                     await this._rollback(lastBatchSaved);
                     continue;
                 }
@@ -169,7 +167,9 @@ class Synchronizer {
                 const stateRootHex = `0x${bigInt(stateRoot).toString(16)}`;
                 
                 if (stateSaved.root && (stateRootHex !== stateSaved.root)) {
-                    console.log("+++++++++++ROLL BACK 2");
+                    // clear cache memory forge events
+                    this.forgeEventsCache.clear();
+                    await this._infoRollback("Contract root does not match last root saved");
                     await this._rollback(lastBatchSaved);
                     continue;
                 }
@@ -179,9 +179,8 @@ class Synchronizer {
 
                 if (currentBatchDepth - 1 > lastBatchSaved) {
                     const targetBlockNumber = await this._getTargetBlock(lastBatchSaved, stateSaved.blockNumber);
-                    // If no event is found, no tree is updated
+                    // If no event is found, tree is not updated
                     if (!targetBlockNumber) {
-                        console.log("Undefined targetBlockNumber");
                         continue;
                     }
                     // get all logs from last batch
@@ -208,6 +207,14 @@ class Synchronizer {
         }
     }
 
+    async _infoRollback(message){
+        let info = `${chalk.blue("STATE SYNCH".padEnd(12))} | `;
+        info += `${chalk.white.bold("Rollback one batch")} | `;
+        info += "info ==> ";
+        info += `${chalk.white.bold(message)}`;
+        this.logger.info(info);
+    }
+
     _fillInfo(currentBlock, lastSynchBlock, currentBatchDepth, lastBatchSaved){
         this.info = `${chalk.blue("STATE SYNCH".padEnd(12))} | `;
         this.info += `current block number: ${currentBlock} | `;
@@ -218,21 +225,28 @@ class Synchronizer {
     }
 
     async _getTargetBlock(lastBatchSaved, lastSynchBlock){
-        // read events to get block number for each batch forged
-        let targetBlockNumber = undefined;
-        const logsForge = await this.rollupContract.getPastEvents("ForgeBatch", {
-            fromBlock: lastSynchBlock + 1,
-            toBlock: "latest",
-        });
-
-        for (const log of logsForge){
-            const batchNumber = Number(log.returnValues.batchNumber);
-            if (batchNumber === lastBatchSaved + 1){
-                targetBlockNumber = Number(log.returnValues.blockNumber);
-                break;
+        // Check if next target block number is in cache memory
+        let targetBlockNumber = this.forgeEventsCache.get(lastBatchSaved + 1);
+        if (!targetBlockNumber){
+            // read events to get block number for each batch forged
+            const logsForge = await this.rollupContract.getPastEvents("ForgeBatch", {
+                fromBlock: lastSynchBlock + 1,
+                toBlock: "latest",
+            });
+            for (const log of logsForge) {
+                const key = Number(log.returnValues.batchNumber);
+                const value = Number(log.returnValues.blockNumber);
+                this.forgeEventsCache.set(key, value);
             }
         }
-        return targetBlockNumber;
+        // purge cache memory
+        const lastEventPurged = this.forgeEventsCache.get(lastPurgedKey);
+        for (let i = lastBatchSaved; i > lastEventPurged; i--) {
+            this.forgeEventsCache.delete(i);
+        }
+        this.forgeEventsCache.set(lastPurgedKey, lastBatchSaved);
+        // return block number according batch forged
+        return this.forgeEventsCache.get(lastBatchSaved + 1);
     }
 
     async _rollback(batchNumber) {
@@ -281,9 +295,6 @@ class Synchronizer {
             await this._purgeEvents(nextBatchSynched);
 
         const root = `0x${this.treeDb.getRoot().toString(16)}`;
-        // console.log("KEY ADDED: ", `${batchStateKey}${separator}${nextBatchSynched}`);
-        // console.log("VALUE ROOT: ", root);
-        // console.log("VALUE BLOCK: ", blockNumber);
         await this.db.insert(`${batchStateKey}${separator}${nextBatchSynched}`, this._toString({root, blockNumber}));
         await this.db.insert(lastBlockKey, this._toString(blockNumber));
         await this.db.insert(lastBatchKey, this._toString(nextBatchSynched));
@@ -422,8 +433,6 @@ class Synchronizer {
 
         const fromBlock = txForge.blockNumber - this.blocksPerSlot;
         const toBlock = txForge.blockNumber;
-        // console.log("update tree from: ", fromBlock);
-        // console.log("update tree to: ", toBlock);
         const logs = await this.rollupPoSContract.getPastEvents("dataCommitted", {
             fromBlock: fromBlock, // previous slot
             toBlock: toBlock, // current slot
@@ -435,7 +444,6 @@ class Synchronizer {
                 break;
             }
         }
-        // console.log("getting data committed...");
         const txDataCommitted = await this.web3.eth.getTransaction(txHash);
         const decodedData2 = abiDecoder.decodeMethod(txDataCommitted.input);
         let compressedTx;
@@ -444,7 +452,6 @@ class Synchronizer {
                 compressedTx = elem.value;
             }
         });
-        // console.log("finish getting data commited");
         const headerBytes = Math.ceil(this.maxTx/8);
         const txs = [];
         const buffCompressedTxs = Buffer.from(compressedTx.slice(2), "hex");
