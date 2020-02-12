@@ -144,6 +144,7 @@ class Synchronizer {
                 let totalSynch = 0;
                 let lastBatchSaved = await this.getLastBatch();
                 const currentBlock = await this.web3.eth.getBlockNumber();
+
                 // get last state saved
                 const stateSaved = await this.getStateFromBatch(lastBatchSaved);
                 // check last batch number matches. Last state saved should match state in contract.
@@ -153,7 +154,7 @@ class Synchronizer {
                 if (stateSaved.root && (stateDepth - 1) !== lastBatchSaved){
                     // clear cache memory forge events
                     this.forgeEventsCache.clear();
-                    await this._infoRollback("Contract State depth does not match last state depth saved");
+                    this._infoRollback("Contract State depth does not match last state depth saved");
                     await this._rollback(lastBatchSaved);
                     continue;
                 }
@@ -167,7 +168,7 @@ class Synchronizer {
                 if (stateSaved.root && (stateRootHex !== stateSaved.root)) {
                     // clear cache memory forge events
                     this.forgeEventsCache.clear();
-                    await this._infoRollback("Contract root does not match last root saved");
+                    this._infoRollback("Contract root does not match last root saved");
                     await this._rollback(lastBatchSaved);
                     continue;
                 }
@@ -178,17 +179,19 @@ class Synchronizer {
                 if (currentBatchDepth - 1 > lastBatchSaved) {
                     const targetBlockNumber = await this._getTargetBlock(lastBatchSaved, stateSaved.blockNumber);
                     // If no event is found, tree is not updated
-                    if (!targetBlockNumber) {
-                        continue;
-                    }
+                    if (!targetBlockNumber) continue;
                     // get all logs from last batch
                     const logs = await this.rollupContract.getPastEvents("allEvents", {
                         fromBlock: stateSaved.blockNumber + 1,
                         toBlock: targetBlockNumber,
                     });
+                    if (!logs.length || !logs) continue;
                     // update events
-                    await this._updateEvents(logs, lastBatchSaved + 1, targetBlockNumber);
-                    lastBatchSaved = await this.getLastBatch();
+                    const updateOk = await this._updateEvents(logs, lastBatchSaved + 1, targetBlockNumber);
+                    if (updateOk)
+                        lastBatchSaved = await this.getLastBatch();
+                    else
+                        continue;
                 }
 
                 totalSynch = (currentBatchDepth == 0) ? 100 : (((lastBatchSaved + 1) / currentBatchDepth) * 100);
@@ -205,7 +208,7 @@ class Synchronizer {
         }
     }
 
-    async _infoRollback(message){
+    _infoRollback(message){
         let info = `${chalk.blue("STATE SYNCH".padEnd(12))} | `;
         info += `${chalk.white.bold("Rollback one batch")} | `;
         info += "info ==> ";
@@ -220,6 +223,13 @@ class Synchronizer {
         this.info += `current batch depth: ${currentBatchDepth} | `;
         this.info += `last batch saved: ${lastBatchSaved} | `;
         this.info += `Synched: ${chalk.white.bold(`${this.totalSynch} %`)}`;
+    }
+
+    _logError(message){
+        let info = `${chalk.blue("STATE SYNCH".padEnd(12))} | `;
+        info += "info ==> ";
+        info += `${chalk.white.bold(message)}`;
+        this.logger.info(info);
     }
 
     async _getTargetBlock(lastBatchSaved, lastSynchBlock){
@@ -271,31 +281,38 @@ class Synchronizer {
     }
 
     async _updateEvents(logs, nextBatchSynched, blockNumber){
-        // save events on database
-        await this._saveEvents(logs, nextBatchSynched);
+        try {
+            // save events on database
+            await this._saveEvents(logs, nextBatchSynched);
 
-        const tmpForgeArray = await this.db.getOrDefault(`${eventForgeBatchKey}${separator}${nextBatchSynched}`);
-        const tmpOnChainArray = await this.db.getOrDefault(`${eventOnChainKey}${separator}${nextBatchSynched-1}`);
+            const tmpForgeArray = await this.db.getOrDefault(`${eventForgeBatchKey}${separator}${nextBatchSynched}`);
+            const tmpOnChainArray = await this.db.getOrDefault(`${eventOnChainKey}${separator}${nextBatchSynched-1}`);
 
-        let eventOnChain = [];
-        let eventForge = [];
-        if (tmpForgeArray) 
-            eventForge = this._fromString(tmpForgeArray);
-        if (tmpOnChainArray) 
-            eventOnChain = this._fromString(tmpOnChainArray); 
+            let eventOnChain = [];
+            let eventForge = [];
+            if (tmpForgeArray)
+                eventForge = this._fromString(tmpForgeArray);
+            if (tmpOnChainArray)
+                eventOnChain = this._fromString(tmpOnChainArray);
 
-        // Update rollupTree and last batch synched
-        // Add events to rollup-tree
-        if ((eventForge.length > 0) || (eventOnChain.length > 0)) 
-            await this._updateTree(eventForge, eventOnChain);
-        
-        if (this.mode !== Constants.mode.archive)
-            await this._purgeEvents(nextBatchSynched);
+            // Update rollupTree and last batch synched
+            // Add events to rollup-tree
+            if ((eventForge.length > 0) || (eventOnChain.length > 0))
+                await this._updateTree(eventForge, eventOnChain);
 
-        const root = `0x${this.treeDb.getRoot().toString(16)}`;
-        await this.db.insert(`${batchStateKey}${separator}${nextBatchSynched}`, this._toString({root, blockNumber}));
-        await this.db.insert(lastBlockKey, this._toString(blockNumber));
-        await this.db.insert(lastBatchKey, this._toString(nextBatchSynched));
+            if (this.mode !== Constants.mode.archive)
+                await this._purgeEvents(nextBatchSynched);
+
+            const root = `0x${this.treeDb.getRoot().toString(16)}`;
+            await this.db.insert(`${batchStateKey}${separator}${nextBatchSynched}`, this._toString({root, blockNumber}));
+            await this.db.insert(lastBlockKey, this._toString(blockNumber));
+            await this.db.insert(lastBatchKey, this._toString(nextBatchSynched));
+            return true;
+        } catch (error) {
+            this._logError(`error updating batch number: ${nextBatchSynched}`);
+            this._logError("Events are not saved. Retry in the next synchronization loop");
+            return false;
+        }
     }
 
     async _purgeEvents(batchKey){
@@ -304,7 +321,6 @@ class Synchronizer {
         // purge off-chain
         for (let i = batchKey; i > lastEventPurged; i--) {
             await this.db.delete(`${eventForgeBatchKey}${separator}${i}`);
-            
         }
         // purge on-chain
         for (let i = (batchKey - 1); i > (lastEventPurged - 1); i--) {
@@ -374,7 +390,7 @@ class Synchronizer {
                         await this._addExitEntry(tx, batch.batchNumber);
                     }
                 }
-                    
+                        
             }
         }
 
@@ -388,6 +404,7 @@ class Synchronizer {
         }
         await batch.build();
         await this.treeDb.consolidate(batch);
+        return true;
     }
 
     async _addExitEntry(tx, batch){
