@@ -144,14 +144,12 @@ class Synchronizer {
                 let totalSynch = 0;
                 let lastBatchSaved = await this.getLastBatch();
                 const currentBlock = await this.web3.eth.getBlockNumber();
-
                 // get last state saved
                 const stateSaved = await this.getStateFromBatch(lastBatchSaved);
-
                 // check last batch number matches. Last state saved should match state in contract.
                 const stateDepth = parseInt(await this.rollupContract.methods.getStateDepth()
                     .call({from: this.ethAddress}, stateSaved.blockNumber));
-                
+
                 if (stateSaved.root && (stateDepth - 1) !== lastBatchSaved){
                     // clear cache memory forge events
                     this.forgeEventsCache.clear();
@@ -251,9 +249,9 @@ class Synchronizer {
 
     async _rollback(batchNumber) {
         const rollbackBatch = batchNumber - 1;
-        const state = this.getStateFromBatch(rollbackBatch);
+        const state = await this.getStateFromBatch(rollbackBatch);
         if (state) {
-            await this.treeDb.rollbackToBatch(batchNumber);
+            await this.treeDb.rollbackToBatch(rollbackBatch);
             await this.db.insert(lastBatchKey, this._toString(rollbackBatch));
         } else
             throw new Error("can not rollback to a non-existent state");
