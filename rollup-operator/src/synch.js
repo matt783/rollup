@@ -147,6 +147,7 @@ class Synchronizer {
 
                 // get last state saved
                 const stateSaved = await this.getStateFromBatch(lastBatchSaved);
+
                 // check last batch number matches. Last state saved should match state in contract
                 const stateDepth = parseInt(await this.rollupContract.methods.getStateDepth()
                     .call({from: this.ethAddress}, stateSaved.blockNumber));
@@ -171,7 +172,21 @@ class Synchronizer {
                     this._infoRollback("Contract root does not match last root saved");
                     await this._rollback(lastBatchSaved);
                     continue;
-                }                
+                }
+
+                // Check current mining onChain hash
+                const stateMiningOnChainHash = bigInt(await this.rollupContract.methods.miningOnChainTxsHash()
+                    .call({ from: this.ethAddress }, stateSaved.blockNumber));
+
+                const stateMiningOnChainHashHex = `0x${bigInt(stateMiningOnChainHash).toString(16)}`;
+
+                if (stateSaved.root && (stateMiningOnChainHashHex !== stateSaved.miningOnChainHash)) {
+                    // clear cache memory forge events
+                    this.forgeEventsCache.clear();
+                    this._infoRollback("Contract miningOnChainHash does not match with the saved one");
+                    await this._rollback(lastBatchSaved);
+                    continue;
+                }
 
                 const currentBatchDepth = await this.rollupContract.methods.getStateDepth()
                     .call({from: this.ethAddress}, currentBlock);
@@ -230,28 +245,43 @@ class Synchronizer {
     }
 
     async _getTargetBlock(lastBatchSaved, lastSynchBlock){
-        // Check if next target block number is in cache memory
-        let targetBlockNumber = this.forgeEventsCache.get(lastBatchSaved + 1);
-        if (!targetBlockNumber){
-            // read events to get block number for each batch forged
-            const logsForge = await this.rollupContract.getPastEvents("ForgeBatch", {
-                fromBlock: lastSynchBlock + 1,
-                toBlock: "latest",
-            });
-            for (const log of logsForge) {
-                const key = Number(log.returnValues.batchNumber);
-                const value = Number(log.returnValues.blockNumber);
-                this.forgeEventsCache.set(key, value);
+        // // Check if next target block number is in cache memory
+        // let targetBlockNumber = this.forgeEventsCache.get(lastBatchSaved + 1);
+        // if (!targetBlockNumber){
+        //     // read events to get block number for each batch forged
+        //     const logsForge = await this.rollupContract.getPastEvents("ForgeBatch", {
+        //         fromBlock: lastSynchBlock + 1,
+        //         toBlock: "latest",
+        //     });
+        //     for (const log of logsForge) {
+        //         const key = Number(log.returnValues.batchNumber);
+        //         const value = Number(log.returnValues.blockNumber);
+        //         this.forgeEventsCache.set(key, value);
+        //     }
+        // }
+        // // purge cache memory
+        // const lastEventPurged = this.forgeEventsCache.get(lastPurgedKey);
+        // for (let i = lastBatchSaved; i > lastEventPurged; i--) {
+        //     this.forgeEventsCache.delete(i);
+        // }
+        // this.forgeEventsCache.set(lastPurgedKey, lastBatchSaved);
+        // // return block number according batch forged
+        // return this.forgeEventsCache.get(lastBatchSaved + 1);
+
+        let targetBlockNumber = undefined;
+        const logsForge = await this.rollupContract.getPastEvents("ForgeBatch", {
+            fromBlock: lastSynchBlock + 1,
+            toBlock: "latest",
+        });
+
+        for (const log of logsForge){
+            const batchNumber = Number(log.returnValues.batchNumber);
+            if (batchNumber === lastBatchSaved + 1){
+                targetBlockNumber = Number(log.returnValues.blockNumber);
+                break;
             }
         }
-        // purge cache memory
-        const lastEventPurged = this.forgeEventsCache.get(lastPurgedKey);
-        for (let i = lastBatchSaved; i > lastEventPurged; i--) {
-            this.forgeEventsCache.delete(i);
-        }
-        this.forgeEventsCache.set(lastPurgedKey, lastBatchSaved);
-        // return block number according batch forged
-        return this.forgeEventsCache.get(lastBatchSaved + 1);
+        return targetBlockNumber;
     }
 
     async _rollback(batchNumber) {
@@ -297,8 +327,9 @@ class Synchronizer {
                 // Add events to rollup-tree
                 if ((eventForge.length > 0) || (eventOnChain.length > 0)){
                     await this._updateTree(eventForge, eventOnChain);
+                    const miningOnChainHash = await this._getMiningOnChainHash(batchSynch);
                     const root = `0x${this.treeDb.getRoot().toString(16)}`;
-                    await this.db.insert(`${batchStateKey}${separator}${batchSynch}`, this._toString({root, blockNumber}));
+                    await this.db.insert(`${batchStateKey}${separator}${batchSynch}`, this._toString({root, blockNumber, miningOnChainHash}));
                     await this.db.insert(lastBlockKey, this._toString(blockNumber));
                     await this.db.insert(lastBatchKey, this._toString(batchSynch));
                 }
@@ -361,6 +392,22 @@ class Synchronizer {
         }
         // return forge events to save
         return totalBatchForged;
+    }
+
+    async _getMiningOnChainHash(batchNumber){
+        const tmpOnChainArray = await this.db.getOrDefault(`${eventOnChainKey}${separator}${batchNumber}`);
+        let eventsOnChain = [];
+        if (tmpOnChainArray)
+            eventsOnChain = this._fromString(tmpOnChainArray);
+
+        const bb = await this.treeDb.buildBatch(this.maxTx, this.nLevels);
+
+        for (const event of eventsOnChain) {
+            const tx = await this._getTxOnChain(event);
+            bb.addTx(tx);
+        }
+        await bb.build();
+        return `0x${bb.getOnChainHash().toString(16)}`;
     }
 
     _getOnChainEventData(onChainData) {
