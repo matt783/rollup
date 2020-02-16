@@ -101,8 +101,8 @@ contract("Synchronizer - archive mode", (accounts) => {
     let ptr = 0;
     const initialMsg = "rollup";
 
-    const slotPerEra = 20;
-    const blocksPerSlot = 100;
+    const slotPerEra = 4;
+    const blocksPerSlot = 20;
     const blockPerEra = slotPerEra * blocksPerSlot;
     // Operator database
     let opDb;
