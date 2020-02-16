@@ -153,8 +153,8 @@ class Synchronizer {
                     .call({from: this.ethAddress}, stateSaved.blockNumber));
 
                 if (stateSaved.root && (stateDepth - 1) !== lastBatchSaved){
-                    // clear cache memory forge events
-                    this.forgeEventsCache.clear();
+                    // clear database
+                    await this._clearRollback(lastBatchSaved);
                     this._infoRollback("Contract State depth does not match last state depth saved");
                     await this._rollback(lastBatchSaved);
                     continue;
@@ -167,8 +167,8 @@ class Synchronizer {
                 const stateRootHex = `0x${bigInt(stateRoot).toString(16)}`;
 
                 if (stateSaved.root && (stateRootHex !== stateSaved.root)) {
-                    // clear cache memory forge events
-                    this.forgeEventsCache.clear();
+                    // clear database
+                    await this._clearRollback(lastBatchSaved);
                     this._infoRollback("Contract root does not match last root saved");
                     await this._rollback(lastBatchSaved);
                     continue;
@@ -179,10 +179,9 @@ class Synchronizer {
                     .call({ from: this.ethAddress }, stateSaved.blockNumber));
 
                 const stateMiningOnChainHashHex = `0x${bigInt(stateMiningOnChainHash).toString(16)}`;
-
                 if (stateSaved.root && (stateMiningOnChainHashHex !== stateSaved.miningOnChainHash)) {
-                    // clear cache memory forge events
-                    this.forgeEventsCache.clear();
+                    // clear database
+                    await this._clearRollback(lastBatchSaved);
                     this._infoRollback("Contract miningOnChainHash does not match with the saved one");
                     await this._rollback(lastBatchSaved);
                     continue;
@@ -284,6 +283,15 @@ class Synchronizer {
         return targetBlockNumber;
     }
 
+    async _clearRollback(batchNumber) {
+        // clear last batch saved
+        await this.db.delete(`${batchStateKey}${separator}${batchNumber}`);
+        // clear onChain events
+        await this.db.delete(`${eventOnChainKey}${separator}${batchNumber}`);
+        // clear forge events
+        await this.db.delete(`${eventForgeBatchKey}${separator}${batchNumber}`);
+    }
+
     async _rollback(batchNumber) {
         const rollbackBatch = batchNumber - 1;
         const state = await this.getStateFromBatch(rollbackBatch);
@@ -311,8 +319,7 @@ class Synchronizer {
         try {
             // save events on database
             const numBatchesToSynch = await this._saveEvents(logs);
-            for (let i = 0; i < numBatchesToSynch; i++){
-                const batchSynch = nextBatchSynched + i;
+            for (const batchSynch of  numBatchesToSynch){
                 const tmpForgeArray = await this.db.getOrDefault(`${eventForgeBatchKey}${separator}${batchSynch}`);
                 const tmpOnChainArray = await this.db.getOrDefault(`${eventOnChainKey}${separator}${batchSynch-1}`);
 
@@ -335,12 +342,11 @@ class Synchronizer {
                 }
             }
             if (this.mode !== Constants.mode.archive)
-                await this._purgeEvents(nextBatchSynched + numBatchesToSynch - 1);
+                await this._purgeEvents(nextBatchSynched + numBatchesToSynch.length - 1);
             return true;
         } catch (error) {
             this._logError(`error updating batch number: ${nextBatchSynched}`);
             this._logError("Events are not saved. Retry in the next synchronization loop");
-            this.forgeEventsCache.clear();
             return false;
         }
     }
@@ -361,7 +367,7 @@ class Synchronizer {
     }
 
     async _saveEvents(logs) {
-        let totalBatchForged = 0;
+        let batchesForged = [];
 
         for(const event of logs){
             // Add onChain events
@@ -384,14 +390,14 @@ class Synchronizer {
             if (event.event == "ForgeBatch"){
                 const eventForge = [];
                 const numBatchForged = event.returnValues.batchNumber;
+                batchesForged.push(numBatchForged);
                 eventForge.push(event.transactionHash);
                 await this.db.insert(`${eventForgeBatchKey}${separator}${numBatchForged}`,
                     this._toString(eventForge));
-                totalBatchForged += 1;
             }
         }
         // return forge events to save
-        return totalBatchForged;
+        return batchesForged;
     }
 
     async _getMiningOnChainHash(batchNumber){
@@ -401,7 +407,6 @@ class Synchronizer {
             eventsOnChain = this._fromString(tmpOnChainArray);
 
         const bb = await this.treeDb.buildBatch(this.maxTx, this.nLevels);
-
         for (const event of eventsOnChain) {
             const tx = await this._getTxOnChain(event);
             bb.addTx(tx);
@@ -445,7 +450,7 @@ class Synchronizer {
         for (const event of offChain) {
             const offChainTxs = await this._getTxOffChain(event);
             await this._addFeePlan(batch, offChainTxs.inputFeePlanCoin, offChainTxs.inputFeePlanFee);
-            await this._setUserFee(batch, offChainTxs.txs);
+            await this._setUserFee(offChainTxs.txs);
             for (const tx of offChainTxs.txs) {
                 batch.addTx(tx);
                 if (this.mode !== Constants.mode.light){
@@ -559,7 +564,7 @@ class Synchronizer {
         }
     }
 
-    async _setUserFee(bb, txs){
+    async _setUserFee(txs){
         for (const tx of txs) {
             const stateId = await this.getStateById(tx.fromIdx);
             tx.coin = Number(stateId.coin);
@@ -607,7 +612,7 @@ class Synchronizer {
         const res = [];
         // add off-chain tx
         if (this.mode === Constants.mode.archive){
-            const bb = await this.treeDb.buildBatch(this.maxTx, this.nLevels); 
+            const bb = await this.treeDb.buildBatch(this.maxTx, this.nLevels);
             const tmpForgeArray = await this.db.getOrDefault(`${eventForgeBatchKey}${separator}${numBatch}`);
             let eventForge = [];
             if (tmpForgeArray) 
@@ -616,7 +621,7 @@ class Synchronizer {
             for (const hashTx of eventForge) {
                 const offChainTxs = await this._getTxOffChain(hashTx);
                 await this._addFeePlan(bb, offChainTxs.inputFeePlanCoin, offChainTxs.inputFeePlanFee);
-                await this._setUserFee(bb, offChainTxs.txs);
+                await this._setUserFee(offChainTxs.txs);
                 for (const tx of offChainTxs.txs) res.push(tx);
             }
         }
