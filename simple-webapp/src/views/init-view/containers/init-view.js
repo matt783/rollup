@@ -95,7 +95,7 @@ class InitView extends Component {
           this.props.handleLoadOperator(config);
         }
       } catch (err) {
-        
+        this.props.handleInitStateTx();
       }
     }
 
@@ -106,10 +106,9 @@ class InitView extends Component {
       const date = new Date(Date.now());
       const year = date.getFullYear();
       const month = date.getMonth() + 1;
-      const day = date.getDay();
+      const day = date.getDate();
       const hour = date.getHours();
       const min = date.getMinutes();
-
       this.setState((prev) => ({
         modalCreate: !prev.modalCreate,
         nameWallet: `${nameWallet}${year}${month}${day}-${hour}${min}`,

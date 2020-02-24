@@ -27,6 +27,12 @@ const initialState = {
   chainId: -1,
   errorInfoAccount: '',
   gasMultiplier: 2,
+  isLoadingInfoOperator: false,
+  currentBlock: 0,
+  currentEra: 0,
+  currentSlot: 0,
+  currentBatch: 0,
+  errorInfoOperator: '',
 };
 
 function general(state = initialState, action) {
@@ -169,6 +175,32 @@ function general(state = initialState, action) {
       return {
         ...state,
         gasMultiplier: action.payload,
+      };
+    case CONSTANTS.INFO_OPERATOR:
+      return {
+        ...state,
+        isLoadingInfoOperator: true,
+        errorInfoOperator: '',
+      };
+    case CONSTANTS.INFO_OPERATOR_SUCCESS:
+      return {
+        ...state,
+        isLoadingInfoOperator: false,
+        currentBlock: action.payload.currentBlock,
+        currentEra: action.payload.currentEra,
+        currentSlot: action.payload.currentSlot,
+        currentBatch: action.payload.currentBatch,
+        errorInfoOperator: '',
+      };
+    case CONSTANTS.INFO_OPERATOR_ERROR:
+      return {
+        ...state,
+        isLoadingInfoOperator: false,
+        errorInfoOperator: action.error,
+        currentBlock: 0,
+        currentEra: 0,
+        currentSlot: 0,
+        currentBatch: 0,
       };
     default:
       return state;

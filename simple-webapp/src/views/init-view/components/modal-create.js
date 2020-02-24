@@ -29,7 +29,6 @@ class ModalCreate extends Component {
     } if (this.props.errorCreateWallet !== '') {
       return (
         <Message error>
-          <Icon name="close" />
           Error
         </Message>
       );

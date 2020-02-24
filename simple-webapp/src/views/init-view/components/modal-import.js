@@ -27,7 +27,6 @@ class ModalImport extends Component {
       } if (this.props.errorWallet !== '') {
         return (
           <Message error>
-            <Icon name="close" />
             Invalid Wallet or Password
           </Message>
         );

@@ -6,6 +6,7 @@ import {
 import ModalInfoId from './modal-info-id';
 import ModalInfoIdExits from './modal-info-id-exits';
 import ButtonGM from './gmButtons';
+import { pointToCompress } from '../../../utils/utils';
 
 const web3 = require('web3');
 
@@ -39,6 +40,7 @@ class InfoWallet extends Component {
     super(props);
     this.state = {
       address: '0x0000000000000000000000000000000000000000',
+      babyjub: '0x0000000000000000000000000000000000000000',
       loading: false,
       firstLoading: true,
     };
@@ -56,11 +58,13 @@ class InfoWallet extends Component {
           address = `0x${this.props.desWallet.ethWallet.address}`;
         }
         if (this.state.address !== address) {
-          this.setState({ address });
+          const babyjub = pointToCompress(this.props.desWallet.babyjubWallet.publicKey);
+          this.setState({ address, babyjub });
         }
       }
     } catch (e) {
       this.state.address = '0x0000000000000000000000000000000000000000';
+      this.state.babyjub = '0x0000000000000000000000000000000000000000';
     }
   }
 
@@ -92,6 +96,18 @@ class InfoWallet extends Component {
       );
     }
     return this.state.address;
+  }
+
+  importedWalletBabyJub = () => {
+    if (this.state.babyjub === '0x0000000000000000000000000000000000000000') {
+      return (
+        <div>
+          <Icon name="close" color="red" />
+              You must import a wallet!
+        </div>
+      );
+    }
+    return this.state.babyjub;
   }
 
   reload = () => {
@@ -143,30 +159,48 @@ class InfoWallet extends Component {
     document.body.removeChild(aux);
   }
 
+  copyBabyJub = () => {
+    const auxBaby = document.createElement('input');
+    auxBaby.setAttribute('value', this.state.babyjub);
+    document.body.appendChild(auxBaby);
+    auxBaby.select();
+    document.execCommand('copy');
+    document.body.removeChild(auxBaby);
+  }
+
   render() {
     return (
       <Container>
-        <Table padded attached>
+        <Table attached color="blue" inverted>
           <Table.Header>
             <Table.Row>
-              <Table.HeaderCell colSpan="3">Rollup Wallet</Table.HeaderCell>
+              <Table.HeaderCell colSpan="3">INFORMATION</Table.HeaderCell>
               <Table.HeaderCell textAlign="right">
-                <Button onClick={this.reload} color="blue" disabled={this.props.noImported}>
-                  <Icon name="sync" />
+                <Button onClick={this.reload} disabled={this.props.noImported}>
+                  <Icon name="sync" color="blue" />
                   Reload
                 </Button>
               </Table.HeaderCell>
             </Table.Row>
           </Table.Header>
+        </Table>
+        <Table attached>
+          <Table.Header>
+            <Table.Row>
+              <Table.HeaderCell colSpan="3">Ethereum</Table.HeaderCell>
+            </Table.Row>
+          </Table.Header>
+        </Table>
+        <Table attached fixed>
           <Table.Body>
             <Table.Row>
               <Table.Cell colSpan="1" width="3">
-                Address:
+                Ethereum Address:
               </Table.Cell>
               <Table.Cell colSpan="2">
                 {this.importedWallet()}
               </Table.Cell>
-              <Table.Cell colSpan="1" floated="left">
+              <Table.Cell colSpan="2" floated="left">
                 <Button
                   icon="copy outline"
                   circular
@@ -179,55 +213,8 @@ class InfoWallet extends Component {
               <Table.Cell colSpan="1" width="3">
                 Transaction Fee:
               </Table.Cell>
-              <Table.Cell colSpan="3">
+              <Table.Cell colSpan="4">
                 <ButtonGM />
-              </Table.Cell>
-            </Table.Row>
-          </Table.Body>
-        </Table>
-        <Table padded attached>
-          <Table.Header>
-            <Table.Row>
-              <Table.HeaderCell>
-                Balance
-              </Table.HeaderCell>
-              <Table.HeaderCell>
-                Account
-              </Table.HeaderCell>
-              <Table.HeaderCell>
-                Rollup Network
-              </Table.HeaderCell>
-              <Table.HeaderCell>
-                Unlock
-              </Table.HeaderCell>
-              <Table.HeaderCell>
-              </Table.HeaderCell>
-            </Table.Row>
-          </Table.Header>
-          <Table.Body>
-            <Table.Row>
-              <Table.Cell>
-                TOKENS:
-              </Table.Cell>
-              <Table.Cell>
-                {this.isLoadingTokens()}
-              </Table.Cell>
-              <Table.Cell>
-                <ModalInfoId txs={this.props.txs} />
-                {this.isLoadingTokensR()}
-              </Table.Cell>
-              <Table.Cell>
-                <ModalInfoIdExits txsExits={this.props.txsExits} />
-                {this.isLoadingTokensE()}
-              </Table.Cell>
-              <Table.Cell textAlign="right">
-                <Popup
-                  content="You need ether to get tokens"
-                  trigger={<Icon name="info" circular />} />
-                <Button onClick={this.handleClickTokens} disabled={this.state.loading || this.props.balance === '0.0'}>
-                  GET TOKENS
-                  <Icon name="ethereum" />
-                </Button>
               </Table.Cell>
             </Table.Row>
             <Table.Row>
@@ -246,16 +233,80 @@ class InfoWallet extends Component {
                 </a>
               </Table.Cell>
             </Table.Row>
+            <Table.Row>
+              <Table.Cell>
+                TOKENS:
+              </Table.Cell>
+              <Table.Cell colSpan="3">
+                {this.isLoadingTokens()}
+              </Table.Cell>
+              <Table.Cell textAlign="right">
+                <Popup
+                  content="You need ether to get tokens"
+                  trigger={<Icon name="info" circular />} />
+                <Button onClick={this.handleClickTokens} disabled={this.state.loading || this.props.balance === '0.0'}>
+                  GET TOKENS
+                  <Icon name="ethereum" />
+                </Button>
+              </Table.Cell>
+            </Table.Row>
           </Table.Body>
         </Table>
-        <Table padded attached>
+        <Table attached>
+          <Table.Header>
+            <Table.Row>
+              <Table.HeaderCell colSpan="3">Rollup</Table.HeaderCell>
+            </Table.Row>
+          </Table.Header>
+        </Table>
+        <Table attached fixed>
+          <Table.Body>
+            <Table.Row>
+              <Table.Cell colSpan="1" width="3">
+                Rollup Address (BabyJubJub):
+              </Table.Cell>
+              <Table.Cell colSpan="2">
+                {this.importedWalletBabyJub()}
+              </Table.Cell>
+              <Table.Cell colSpan="1" floated="left">
+                <Button
+                  icon="copy outline"
+                  circular
+                  size="large"
+                  onClick={this.copyBabyJub}
+                  disabled={this.props.noImported} />
+              </Table.Cell>
+            </Table.Row>
+            <Table.Row>
+              <Table.Cell>
+                TOKENS ROLLUP:
+              </Table.Cell>
+              <Table.Cell textAlign="left" colSpan="3">
+                <ModalInfoId txs={this.props.txs} />
+                {this.isLoadingTokensR()}
+              </Table.Cell>
+            </Table.Row>
+            <Table.Row>
+              <Table.Cell>
+                PENDING EXIT TOKENS:
+              </Table.Cell>
+              <Table.Cell textAlign="left" colSpan="3">
+                <ModalInfoIdExits txsExits={this.props.txsExits} />
+                {this.isLoadingTokensE()}
+              </Table.Cell>
+            </Table.Row>
+          </Table.Body>
+        </Table>
+        <Table attached="top" color="teal" inverted>
           <Table.Header>
             <Table.Row>
               <Table.HeaderCell colSpan="4">
-                Approve tokens
+                APPROVE TOKENS
               </Table.HeaderCell>
             </Table.Row>
           </Table.Header>
+        </Table>
+        <Table attached fixed>
           <Table.Body>
             <Table.Row>
               <Table.Cell>

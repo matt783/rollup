@@ -2,6 +2,7 @@
 import * as CONSTANTS from './constants';
 import * as rollup from '../../utils/bundle-cli';
 import * as operator from '../../utils/bundle-op';
+import { getNullifier } from '../../utils/utils';
 
 const ethers = require('ethers');
 const FileSaver = require('file-saver');
@@ -42,7 +43,7 @@ export function handleLoadWallet(walletFile, password, file) {
         const desWallet = await rollup.wallet.Wallet.fromEncryptedJson(wallet, password);
         dispatch(loadWalletSuccess(wallet, password, desWallet));
       } catch (error) {
-        dispatch(loadWalletError(error));
+        dispatch(loadWalletError(error.message));
       }
     });
   };
@@ -196,13 +197,21 @@ function infoAccountError(error) {
   };
 }
 
-export function handleInfoAccount(node, addressTokens, abiTokens, wallet, operatorUrl, addressRollup) {
+export function handleInfoAccount(node, addressTokens, abiTokens, wallet, operatorUrl, addressRollup, abiRollup) {
   return function (dispatch) {
     dispatch(infoAccount());
     return new Promise(async () => {
       try {
+        let tokens = '0';
+        let tokensA = '0';
+        let tokensE = '0';
+        let tokensR = '0';
+        const txs = [];
+        const txsExits = [];
         const provider = new ethers.providers.JsonRpcProvider(node);
         const walletEthAddress = wallet.ethWallet.address;
+        let walletEth = new ethers.Wallet(wallet.ethWallet.privateKey);
+        walletEth = walletEth.connect(provider);
         const balanceHex = await provider.getBalance(walletEthAddress);
         const balance = ethers.utils.formatEther(balanceHex);
         const contractTokens = new ethers.Contract(addressTokens, abiTokens, provider);
@@ -210,55 +219,20 @@ export function handleInfoAccount(node, addressTokens, abiTokens, wallet, operat
         const filters = {};
         if (walletEthAddress.startsWith('0x')) filters.ethAddr = walletEthAddress;
         else filters.ethAddr = `0x${walletEthAddress}`;
-        let tokens = '0';
-        let tokensA = '0';
-        let tokensENum = BigInt(0);
-        let tokensRNum = BigInt(0);
-        const txs = [];
-        const txsExits = [];
         try {
+          const contractRollup = new ethers.Contract(addressRollup, abiRollup, walletEth);
           const tokensHex = await contractTokens.balanceOf(walletEthAddress);
           const tokensAHex = await contractTokens.allowance(walletEthAddress, addressRollup);
+          const allTxs = await apiOperator.getAccounts(filters);
+          const tokensRNum = getTokensRollup(allTxs, txs);
+          const tokensENum = await getTokensExit(txsExits, apiOperator, wallet, allTxs, contractRollup);
           tokens = tokensHex.toString();
           tokensA = tokensAHex.toString();
-          const allTxs = await apiOperator.getAccounts(filters);
-          const initTx = allTxs.data[0].idx;
-          const numTx = allTxs.data[allTxs.data.length - 1].idx;
-          for (let i = initTx; i <= numTx; i++) {
-            if (allTxs.data.find((tx) => tx.idx === i) !== undefined) {
-              txs.push(allTxs.data.find((tx) => tx.idx === i));
-              tokensRNum += BigInt(allTxs.data.find((tx) => tx.idx === i).amount);
-            }
-          }
-          for (const tx in allTxs.data) {
-            if ({}.hasOwnProperty.call(allTxs.data, tx)) {
-              try {
-                // eslint-disable-next-line no-await-in-loop
-                const exits = await apiOperator.getExits(allTxs.data[tx].idx);
-                const batches = exits.data;
-                if (batches) {
-                  for (const batch in batches) {
-                    if ({}.hasOwnProperty.call(batches, batch)) {
-                      // eslint-disable-next-line no-await-in-loop
-                      const info = await apiOperator.getExitInfo(allTxs.data[tx].idx, batches[batch]);
-                      txsExits.push({
-                        idx: allTxs.data[tx].idx, batch: batches[batch], amount: info.data.state.amount,
-                      });
-                      tokensENum += BigInt(info.data.state.amount);
-                    }
-                  }
-                }
-              } catch (err) {
-                // eslint-disable-next-line no-continue
-                continue;
-              }
-            }
-          }
+          tokensE = tokensENum.toString();
+          tokensR = tokensRNum.toString();
         } catch (err) {
           dispatch(infoAccountError(err));
         }
-        const tokensE = tokensENum.toString();
-        const tokensR = tokensRNum.toString();
         dispatch(infoAccountSuccess(balance, tokens, tokensR, tokensA, tokensE, txs, txsExits));
       } catch (error) {
         dispatch(infoAccountError(error));
@@ -266,6 +240,55 @@ export function handleInfoAccount(node, addressTokens, abiTokens, wallet, operat
     });
   };
 }
+
+function getTokensRollup(allTxs, txs) {
+  let tokensRNum = BigInt(0);
+  const initTx = allTxs.data[0].idx;
+  const numTx = allTxs.data[allTxs.data.length - 1].idx;
+  for (let i = initTx; i <= numTx; i++) {
+    if (allTxs.data.find((tx) => tx.idx === i) !== undefined) {
+      txs.push(allTxs.data.find((tx) => tx.idx === i));
+      tokensRNum += BigInt(allTxs.data.find((tx) => tx.idx === i).amount);
+    }
+  }
+  return tokensRNum;
+}
+
+async function getTokensExit(txsExits, apiOperator, wallet, allTxs, contractRollup) {
+  let tokensENum = BigInt(0);
+  for (const tx in allTxs.data) {
+    if ({}.hasOwnProperty.call(allTxs.data, tx)) {
+      try {
+        // eslint-disable-next-line no-await-in-loop
+        const exits = await apiOperator.getExits(allTxs.data[tx].idx);
+        const batches = exits.data;
+        if (batches) {
+          for (const batch in batches) {
+            if ({}.hasOwnProperty.call(batches, batch)) {
+              // eslint-disable-next-line no-await-in-loop
+              const info = await apiOperator.getExitInfo(allTxs.data[tx].idx, batches[batch]);
+              // eslint-disable-next-line no-await-in-loop
+              const boolNullifier = await getNullifier(wallet, info, contractRollup, batches[batch]);
+              if (!boolNullifier) {
+                if (!txsExits.find((leaf) => leaf.idx === allTxs.data[tx].idx && leaf.batch === batches[batch])) {
+                  txsExits.push({
+                    idx: allTxs.data[tx].idx, batch: batches[batch], amount: info.data.state.amount,
+                  });
+                  tokensENum += BigInt(info.data.state.amount);
+                }
+              }
+            }
+          }
+        }
+      } catch (err) {
+        // eslint-disable-next-line no-continue
+        continue;
+      }
+    }
+  }
+  return tokensENum;
+}
+
 
 function checkApprovedTokensError() {
   return {
@@ -324,5 +347,49 @@ function setGasMultiplier(num) {
 export function selectGasMultiplier(num) {
   return function (dispatch) {
     dispatch(setGasMultiplier(num));
+  };
+}
+
+function getInfoOperator() {
+  return {
+    type: CONSTANTS.INFO_OPERATOR,
+  };
+}
+
+function getInfoOperatorSuccess(currentBlock, currentEra, currentSlot, currentBatch) {
+  return {
+    type: CONSTANTS.INFO_OPERATOR_SUCCESS,
+    payload: {
+      currentBlock, currentEra, currentSlot, currentBatch,
+    },
+    error: '',
+  };
+}
+
+function getInfoOperatorError(error) {
+  return {
+    type: CONSTANTS.INFO_OPERATOR_ERROR,
+    error,
+  };
+}
+
+
+export function handleInfoOperator(operatorUrl) {
+  return function (dispatch) {
+    dispatch(getInfoOperator());
+    return new Promise(async () => {
+      try {
+        const apiOperator = new operator.cliExternalOperator(operatorUrl);
+        const res = await apiOperator.getState();
+        const generalInfo = res.data;
+        const { currentBlock } = generalInfo;
+        const { currentEra } = generalInfo.posSynch;
+        const { currentSlot } = generalInfo.posSynch;
+        const currentBatch = generalInfo.rollupSynch.lastBatchSynched;
+        dispatch(getInfoOperatorSuccess(currentBlock, currentEra, currentSlot, currentBatch));
+      } catch (error) {
+        dispatch(getInfoOperatorError(error));
+      }
+    });
   };
 }

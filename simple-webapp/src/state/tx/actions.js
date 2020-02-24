@@ -12,10 +12,10 @@ function sendDeposit() {
   };
 }
 
-function sendDepositSuccess(res) {
+function sendDepositSuccess(res, currentBatch) {
   return {
     type: CONSTANTS.SEND_DEPOSIT_SUCCESS,
-    payload: res,
+    payload: { res, currentBatch },
     error: '',
   };
 }
@@ -28,18 +28,21 @@ function sendDepositError(error) {
 }
 
 export function handleSendDeposit(nodeEth, addressSC, amount, tokenId, wallet, ethAddress,
-  abiRollup, gasMultiplier) {
+  abiRollup, gasMultiplier, operatorUrl) {
   return function (dispatch) {
     dispatch(sendDeposit());
     return new Promise(async (resolve) => {
       try {
+        const apiOperator = new operator.cliExternalOperator(operatorUrl);
+        const resOperator = await apiOperator.getState();
+        const currentBatch = resOperator.data.rollupSynch.lastBatchSynched;
         const res = await rollup.onchain.deposit.deposit(nodeEth, addressSC, amount, tokenId, wallet,
           ethAddress, abiRollup, gasLimit, gasMultiplier);
+        dispatch(sendDepositSuccess(res, currentBatch));
         resolve(res);
-        dispatch(sendDepositSuccess(res));
       } catch (error) {
-        resolve(error.message);
         dispatch(sendDepositError('Deposit Error'));
+        resolve(error);
       }
     });
   };
@@ -79,9 +82,11 @@ export function handleGetExitRoot(urlOperator, id) {
           // eslint-disable-next-line no-console
           const info = await apiOperator.getExitInfo(id, key).catch((err) => { console.log(err); });
           const amount = ethers.utils.formatEther(info.data.state.amount);
-          infoExits.push({
-            key: index, value: key, amount, text: `Num: ${key} Amount: ${amount}`,
-          });
+          if (!infoExits.find((leaf) => leaf.value === key)) {
+            infoExits.push({
+              key: index, value: key, amount, text: `Batch: ${key} Amount: ${amount}`,
+            });
+          }
         });
         resolve(infoExits);
         dispatch(getNumExitRootSuccess(infoExits));
@@ -99,10 +104,10 @@ function sendWithdraw() {
   };
 }
 
-function sendWithdrawSuccess(res) {
+function sendWithdrawSuccess(res, currentBatch) {
   return {
     type: CONSTANTS.SEND_WITHDRAW_SUCCESS,
-    payload: res,
+    payload: { res, currentBatch },
     error: '',
   };
 }
@@ -124,14 +129,61 @@ export function handleSendWithdraw(nodeEth, addressSC, wallet, abiRollup, op,
           dispatch(sendWithdrawError('No numExitRoot'));
           resolve('No numExitRoot');
         } else {
+          const apiOperator = new operator.cliExternalOperator(op);
+          const resOperator = await apiOperator.getState();
+          const currentBatch = resOperator.data.rollupSynch.lastBatchSynched;
           const res = await rollup.onchain.withdraw.withdraw(nodeEth, addressSC, wallet, abiRollup,
             op, idFrom, numExitRoot, gasLimit, gasMultiplier);
-          dispatch(sendWithdrawSuccess(res));
+          dispatch(sendWithdrawSuccess(res, currentBatch));
           resolve(res);
         }
       } catch (error) {
         dispatch(sendWithdrawError('Withdraw Error'));
-        resolve(error.message);
+        resolve(error);
+      }
+    });
+  };
+}
+
+function getIds() {
+  return {
+    type: CONSTANTS.GET_IDS,
+  };
+}
+
+function getIdsSuccess(res) {
+  return {
+    type: CONSTANTS.GET_IDS_SUCCESS,
+    payload: res,
+    error: '',
+  };
+}
+
+function getIdsError(error) {
+  return {
+    type: CONSTANTS.GET_IDS_ERROR,
+    error,
+  };
+}
+
+export function handleGetIds(urlOperator, filters) {
+  return function (dispatch) {
+    dispatch(getIds());
+    return new Promise(async (resolve) => {
+      try {
+        const apiOperator = new operator.cliExternalOperator(urlOperator);
+        const res = await apiOperator.getAccounts(filters);
+        const ids = [];
+        res.data.map(async (key) => {
+          ids.push({
+            key: key.idx, value: key.idx, amount: key.amount, text: key.idx,
+          });
+        });
+        resolve(ids);
+        dispatch(getIdsSuccess(ids));
+      } catch (err) {
+        resolve([]);
+        dispatch(getIdsError(err.message));
       }
     });
   };
@@ -143,9 +195,10 @@ function sendSend() {
   };
 }
 
-function sendSendSuccess() {
+function sendSendSuccess(currentBatch) {
   return {
     type: CONSTANTS.SEND_SEND_SUCCESS,
+    payload: currentBatch,
     error: '',
   };
 }
@@ -176,17 +229,19 @@ export function handleSendSend(op, idTo, amount, wallet, tokenId, fee, idFrom, u
           address = `0x${wallet.ethWallet.address}`;
         }
         if (resId && resId.data.ethAddress.toUpperCase() === address.toUpperCase()) {
+          const resOperator = await apiOperator.getState();
+          const currentBatch = resOperator.data.rollupSynch.lastBatchSynched;
           const res = await rollup.offchain.send.send(op, idTo, amount, wallet, tokenId,
             fee, idFrom, undefined, nonceObject);
           localStorage.setItem('nonceObject', JSON.stringify(res.nonceObject));
-          dispatch(sendSendSuccess());
+          dispatch(sendSendSuccess(currentBatch));
           resolve(res);
         } else {
           throw new Error('This is not your ID');
         }
       } catch (error) {
         dispatch(sendSendError('Send Error'));
-        resolve(error.message);
+        resolve(error);
       }
     });
   };

@@ -7,6 +7,7 @@ import {
 
 import ModalError from './modal-error';
 import { handleSendDeposit } from '../../../state/tx/actions';
+import { handleInfoOperator } from '../../../state/general/actions';
 
 const web3 = require('web3');
 
@@ -17,6 +18,7 @@ class ModalDeposit extends Component {
       modalDeposit: PropTypes.bool.isRequired,
       toggleModalDeposit: PropTypes.func.isRequired,
       handleSendDeposit: PropTypes.func.isRequired,
+      handleInfoOperator: PropTypes.func.isRequired,
       tokensA: PropTypes.string.isRequired,
       gasMultiplier: PropTypes.number.isRequired,
       desWallet: PropTypes.object.isRequired,
@@ -45,7 +47,7 @@ class ModalDeposit extends Component {
         amount = 0;
       }
       const tokenId = Number(this.tokenIdRef.current.value);
-      const { nodeEth } = config;
+      const { nodeEth, operator } = config;
       const addressSC = config.address;
       if (parseInt(amount, 10) > parseInt(this.props.tokensA, 10)) {
         this.setState({ error: '0' });
@@ -53,7 +55,8 @@ class ModalDeposit extends Component {
       } else {
         this.props.toggleModalDeposit();
         const res = await this.props.handleSendDeposit(nodeEth, addressSC, amount, tokenId, desWallet,
-          undefined, abiRollup, this.props.gasMultiplier);
+          undefined, abiRollup, this.props.gasMultiplier, operator);
+        this.props.handleInfoOperator(operator);
         if (res.message !== undefined) {
           if (res.message.includes('insufficient funds')) {
             this.setState({ error: '1' });
@@ -110,4 +113,4 @@ const mapStateToProps = (state) => ({
   desWallet: state.general.desWallet,
 });
 
-export default connect(mapStateToProps, { handleSendDeposit })(ModalDeposit);
+export default connect(mapStateToProps, { handleSendDeposit, handleInfoOperator })(ModalDeposit);
