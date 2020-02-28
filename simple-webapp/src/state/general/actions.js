@@ -219,20 +219,21 @@ export function handleInfoAccount(node, addressTokens, abiTokens, wallet, operat
         const filters = {};
         if (walletEthAddress.startsWith('0x')) filters.ethAddr = walletEthAddress;
         else filters.ethAddr = `0x${walletEthAddress}`;
+        const contractRollup = new ethers.Contract(addressRollup, abiRollup, walletEth);
+        const tokensHex = await contractTokens.balanceOf(walletEthAddress);
+        const tokensAHex = await contractTokens.allowance(walletEthAddress, addressRollup);
+        let allTxs = {};
         try {
-          const contractRollup = new ethers.Contract(addressRollup, abiRollup, walletEth);
-          const tokensHex = await contractTokens.balanceOf(walletEthAddress);
-          const tokensAHex = await contractTokens.allowance(walletEthAddress, addressRollup);
-          const allTxs = await apiOperator.getAccounts(filters);
-          const tokensRNum = getTokensRollup(allTxs, txs);
-          const tokensENum = await getTokensExit(txsExits, apiOperator, wallet, allTxs, contractRollup);
-          tokens = tokensHex.toString();
-          tokensA = tokensAHex.toString();
-          tokensE = tokensENum.toString();
-          tokensR = tokensRNum.toString();
+          allTxs = await apiOperator.getAccounts(filters);
         } catch (err) {
-          dispatch(infoAccountError(err));
+          allTxs.data = [];
         }
+        const tokensRNum = getTokensRollup(allTxs, txs);
+        const tokensENum = await getTokensExit(txsExits, apiOperator, wallet, allTxs, contractRollup);
+        tokens = tokensHex.toString();
+        tokensA = tokensAHex.toString();
+        tokensE = tokensENum.toString();
+        tokensR = tokensRNum.toString();
         dispatch(infoAccountSuccess(balance, tokens, tokensR, tokensA, tokensE, txs, txsExits));
       } catch (error) {
         dispatch(infoAccountError(error));
@@ -243,12 +244,14 @@ export function handleInfoAccount(node, addressTokens, abiTokens, wallet, operat
 
 function getTokensRollup(allTxs, txs) {
   let tokensRNum = BigInt(0);
-  const initTx = allTxs.data[0].idx;
-  const numTx = allTxs.data[allTxs.data.length - 1].idx;
-  for (let i = initTx; i <= numTx; i++) {
-    if (allTxs.data.find((tx) => tx.idx === i) !== undefined) {
-      txs.push(allTxs.data.find((tx) => tx.idx === i));
-      tokensRNum += BigInt(allTxs.data.find((tx) => tx.idx === i).amount);
+  if (allTxs.data.length !== 0) {
+    const initTx = allTxs.data[0].idx;
+    const numTx = allTxs.data[allTxs.data.length - 1].idx;
+    for (let i = initTx; i <= numTx; i++) {
+      if (allTxs.data.find((tx) => tx.idx === i) !== undefined) {
+        txs.push(allTxs.data.find((tx) => tx.idx === i));
+        tokensRNum += BigInt(allTxs.data.find((tx) => tx.idx === i).amount);
+      }
     }
   }
   return tokensRNum;
