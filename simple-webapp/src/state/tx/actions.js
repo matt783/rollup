@@ -81,11 +81,13 @@ export function handleGetExitRoot(urlOperator, id) {
         res.data.map(async (key, index) => {
           // eslint-disable-next-line no-console
           const info = await apiOperator.getExitInfo(id, key).catch((err) => { console.log(err); });
-          const amount = ethers.utils.formatEther(info.data.state.amount);
-          if (!infoExits.find((leaf) => leaf.value === key)) {
-            infoExits.push({
-              key: index, value: key, amount, text: `Batch: ${key} Amount: ${amount}`,
-            });
+          if (info.data.found) {
+            const amount = ethers.utils.formatEther(info.data.state.amount);
+            if (!infoExits.find((leaf) => leaf.value === key)) {
+              infoExits.push({
+                key: index, value: key, amount, text: `Batch: ${key} Amount: ${amount}`,
+              });
+            }
           }
         });
         resolve(infoExits);

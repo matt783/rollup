@@ -1,13 +1,20 @@
 /* eslint-disable react/no-unescaped-entities */
 import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 import {
   Menu, Icon, Modal, Button,
 } from 'semantic-ui-react';
 import { Link } from 'react-router-dom';
 
 class MenuBack extends Component {
+  static propTypes = {
+    config: PropTypes.object.isRequired,
+    changeNode: PropTypes.func.isRequired,
+  }
+
   constructor(props) {
     super(props);
+    this.nodeRef = React.createRef();
     this.state = {
       modalHelp: false,
     };
@@ -15,9 +22,21 @@ class MenuBack extends Component {
 
   toggleModalHelp = () => { this.setState((prev) => ({ modalHelp: !prev.modalHelp })); }
 
+  handleClickChangeNode = () => {
+    const currentNode = this.nodeRef.current.value;
+    this.props.changeNode(currentNode);
+  }
+
   render() {
     return (
       <Menu secondary size="large">
+        <Menu.Item>
+          <label htmlFor="nodeEth">
+            <b>Url Node Ethereum: </b>
+            <input type="text" id="node" size="40" defaultValue={this.props.config.nodeEth} ref={this.nodeRef} />
+            <Button size="mini" onClick={this.handleClickChangeNode}>Change Node</Button>
+          </label>
+        </Menu.Item>
         <Menu.Menu position="right">
           <Menu.Item
             name="help"
@@ -83,8 +102,8 @@ class MenuBack extends Component {
             </p>
             <p>
               <dd>
-                - How do I approve? Indicating the number of tokens you want to approve and clicking the "APPROVE" button.
-                You will need ether, since you are sending a transaction.
+                - How do I approve? Indicating the number of tokens you want to approve and clicking the "APPROVE"
+                button. You will need ether, since you are sending a transaction.
               </dd>
             </p>
             <p>ID's:</p>

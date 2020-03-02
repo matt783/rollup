@@ -128,11 +128,23 @@ export function handleLoadFiles(config) {
     return new Promise(async () => {
       try {
         const Web3 = require('web3');
-        const web3 = new Web3(config.nodeEth);
-        const chainId = await web3.eth.getChainId();
+        const urlParams = new URLSearchParams(window.location.search);
+        let chainId;
+        let web3;
+        if (config.nodeEth) {
+          web3 = new Web3(config.nodeEth);
+          chainId = await web3.eth.getChainId();
+        } else if (urlParams.has('node')) {
+          const tokenInfura = urlParams.get('node');
+          config.nodeEth = `https://goerli.infura.io/v3/${tokenInfura}`;
+          web3 = new Web3(config.nodeEth);
+          chainId = await web3.eth.getChainId();
+        } else {
+          chainId = -1;
+        }
         dispatch(loadFilesSuccess(config, config.abiRollup, config.abiTokens, chainId));
       } catch (error) {
-        dispatch(loadFilesError(error));
+        dispatch(loadFilesError(error.message));
       }
     });
   };
@@ -270,14 +282,16 @@ async function getTokensExit(txsExits, apiOperator, wallet, allTxs, contractRoll
             if ({}.hasOwnProperty.call(batches, batch)) {
               // eslint-disable-next-line no-await-in-loop
               const info = await apiOperator.getExitInfo(allTxs.data[tx].idx, batches[batch]);
-              // eslint-disable-next-line no-await-in-loop
-              const boolNullifier = await getNullifier(wallet, info, contractRollup, batches[batch]);
-              if (!boolNullifier) {
-                if (!txsExits.find((leaf) => leaf.idx === allTxs.data[tx].idx && leaf.batch === batches[batch])) {
-                  txsExits.push({
-                    idx: allTxs.data[tx].idx, batch: batches[batch], amount: info.data.state.amount,
-                  });
-                  tokensENum += BigInt(info.data.state.amount);
+              if (info.data.found) {
+                // eslint-disable-next-line no-await-in-loop
+                const boolNullifier = await getNullifier(wallet, info, contractRollup, batches[batch]);
+                if (!boolNullifier) {
+                  if (!txsExits.find((leaf) => leaf.idx === allTxs.data[tx].idx && leaf.batch === batches[batch])) {
+                    txsExits.push({
+                      idx: allTxs.data[tx].idx, batch: batches[batch], amount: info.data.state.amount,
+                    });
+                    tokensENum += BigInt(info.data.state.amount);
+                  }
                 }
               }
             }

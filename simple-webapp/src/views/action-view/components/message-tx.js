@@ -15,6 +15,7 @@ class MessageTx extends Component {
     successTx: PropTypes.bool.isRequired,
     successDeposit: PropTypes.bool.isRequired,
     error: PropTypes.string.isRequired,
+    errorFiles: PropTypes.string.isRequired,
     tx: PropTypes.object.isRequired,
     chainId: PropTypes.number.isRequired,
     messageOpen: PropTypes.bool.isRequired,
@@ -24,6 +25,9 @@ class MessageTx extends Component {
 
   getUrl = () => {
     let net;
+    if (this.props.chainId === -1) {
+      return '';
+    }
     if (this.props.chainId === 5) {
       net = 'goerli.';
     } else if (this.props.chainId === 3) {
@@ -44,6 +48,16 @@ class MessageTx extends Component {
   }
 
   getMessage = () => {
+    if (this.props.errorFiles !== '') {
+      return (
+        <Message icon color="red">
+          <Icon name="exclamation" />
+          <Message.Content>
+            <Message.Header>Error Node Ethereum!</Message.Header>
+          </Message.Content>
+        </Message>
+      );
+    }
     if (this.props.isLoadingDeposit === true || this.props.isLoadingWithdraw === true
       || this.props.isLoadingSend === true || this.props.isLoadingApprove === true
       || this.props.isLoadingGetTokens === true) {
@@ -131,6 +145,7 @@ const mapStateToProps = (state) => ({
   successTx: state.transactions.successTx,
   successDeposit: state.transactions.successDeposit,
   error: state.transactions.error,
+  errorFiles: state.general.errorFiles,
   tx: state.transactions.tx,
   batch: state.transactions.batch,
   messageOpen: state.transactions.messageOpen,

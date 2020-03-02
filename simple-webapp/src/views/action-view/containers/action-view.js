@@ -5,7 +5,7 @@ import { Header, Container, Divider } from 'semantic-ui-react';
 import { Redirect } from 'react-router-dom';
 
 import { handleGetTokens, handleApprove } from '../../../state/tx/actions';
-import { handleInfoAccount, handleInfoOperator } from '../../../state/general/actions';
+import { handleInfoAccount, handleInfoOperator, handleLoadFiles } from '../../../state/general/actions';
 import { pointToCompress } from '../../../utils/utils';
 import MenuBack from '../components/menu';
 import MenuActions from '../components/menu-actions';
@@ -33,6 +33,7 @@ class ActionView extends Component {
     isLoadingInfoAccount: PropTypes.bool.isRequired,
     handleInfoAccount: PropTypes.func.isRequired,
     handleInfoOperator: PropTypes.func.isRequired,
+    handleLoadFiles: PropTypes.func.isRequired,
     handleGetTokens: PropTypes.func.isRequired,
     handleApprove: PropTypes.func.isRequired,
     gasMultiplier: PropTypes.number.isRequired,
@@ -72,6 +73,13 @@ class ActionView extends Component {
       });
       this.infoOperator();
     }
+  }
+
+  changeNode = (currentNode) => {
+    const { config } = this.props;
+    config.nodeEth = currentNode;
+    this.props.handleLoadFiles(config);
+    this.getInfoAccount();
   }
 
   infoOperator = () => {
@@ -135,7 +143,7 @@ class ActionView extends Component {
   render() {
     return (
       <Container textAlign="center">
-        <MenuBack />
+        <MenuBack config={this.props.config} changeNode={this.changeNode} />
         <Header
           as="h1"
           style={{
@@ -217,5 +225,5 @@ const mapStateToProps = (state) => ({
 });
 
 export default connect(mapStateToProps, {
-  handleGetTokens, handleApprove, handleInfoAccount, handleInfoOperator,
+  handleGetTokens, handleApprove, handleInfoAccount, handleInfoOperator, handleLoadFiles,
 })(ActionView);
