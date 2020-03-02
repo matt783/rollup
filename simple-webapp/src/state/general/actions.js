@@ -105,13 +105,13 @@ function loadFiles() {
   };
 }
 
-function loadFilesSuccess(config, abiRollup, abiTokens, chainId) {
+function loadFilesSuccess(config, abiRollup, abiTokens, chainId, errorMessage) {
   return {
     type: CONSTANTS.LOAD_FILES_SUCCESS,
     payload: {
       config, abiRollup, abiTokens, chainId,
     },
-    error: '',
+    error: errorMessage,
   };
 }
 
@@ -131,6 +131,7 @@ export function handleLoadFiles(config) {
         const urlParams = new URLSearchParams(window.location.search);
         let chainId;
         let web3;
+        let errorMessage = '';
         if (config.nodeEth) {
           web3 = new Web3(config.nodeEth);
           chainId = await web3.eth.getChainId();
@@ -141,8 +142,9 @@ export function handleLoadFiles(config) {
           chainId = await web3.eth.getChainId();
         } else {
           chainId = -1;
+          errorMessage = 'No Node Ethereum';
         }
-        dispatch(loadFilesSuccess(config, config.abiRollup, config.abiTokens, chainId));
+        dispatch(loadFilesSuccess(config, config.abiRollup, config.abiTokens, chainId, errorMessage));
       } catch (error) {
         dispatch(loadFilesError(error.message));
       }

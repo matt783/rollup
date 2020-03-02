@@ -95,7 +95,7 @@ function general(state = initialState, action) {
         abiTokens: action.payload.abiTokens,
         chainId: action.payload.chainId,
         isLoadingFiles: false,
-        errorFiles: '',
+        errorFiles: action.error,
       };
     case CONSTANTS.LOAD_FILES_ERROR:
       return {
