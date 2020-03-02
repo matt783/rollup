@@ -37,6 +37,7 @@ class ActionView extends Component {
     handleGetTokens: PropTypes.func.isRequired,
     handleApprove: PropTypes.func.isRequired,
     gasMultiplier: PropTypes.number.isRequired,
+    errorFiles: PropTypes.string.isRequired,
   }
 
   static defaultProps = {
@@ -65,7 +66,7 @@ class ActionView extends Component {
 
   componentDidMount = () => {
     this.getInfoAccount();
-    if (Object.keys(this.props.desWallet).length === 0) {
+    if (Object.keys(this.props.desWallet).length === 0 || this.props.errorFiles !== '') {
       this.setState({ noImported: true });
     } else {
       this.setState({
@@ -75,11 +76,16 @@ class ActionView extends Component {
     }
   }
 
-  changeNode = (currentNode) => {
+  changeNode = async (currentNode) => {
     const { config } = this.props;
     config.nodeEth = currentNode;
-    this.props.handleLoadFiles(config);
+    const nodeLoad = await this.props.handleLoadFiles(config);
     this.getInfoAccount();
+    if (Object.keys(this.props.desWallet).length === 0 || !nodeLoad) {
+      this.setState({ noImported: true });
+    } else {
+      this.setState({ noImported: false });
+    }
   }
 
   infoOperator = () => {
@@ -221,6 +227,7 @@ const mapStateToProps = (state) => ({
   txs: state.general.txs,
   txsExits: state.general.txsExits,
   isLoadingInfoAccount: state.general.isLoadingInfoAccount,
+  errorFiles: state.general.errorFiles,
   gasMultiplier: state.general.gasMultiplier,
 });
 

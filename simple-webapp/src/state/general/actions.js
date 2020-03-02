@@ -115,9 +115,10 @@ function loadFilesSuccess(config, abiRollup, abiTokens, chainId, errorMessage) {
   };
 }
 
-function loadFilesError(error) {
+function loadFilesError(config, error) {
   return {
     type: CONSTANTS.LOAD_FILES_ERROR,
+    payload: { config },
     error,
   };
 }
@@ -125,7 +126,7 @@ function loadFilesError(error) {
 export function handleLoadFiles(config) {
   return function (dispatch) {
     dispatch(loadFiles());
-    return new Promise(async () => {
+    return new Promise(async (resolve) => {
       try {
         const Web3 = require('web3');
         const urlParams = new URLSearchParams(window.location.search);
@@ -134,7 +135,9 @@ export function handleLoadFiles(config) {
         let errorMessage = '';
         if (config.nodeEth) {
           web3 = new Web3(config.nodeEth);
+          console.log(web3);
           chainId = await web3.eth.getChainId();
+          console.log(chainId);
         } else if (urlParams.has('node')) {
           const tokenInfura = urlParams.get('node');
           config.nodeEth = `https://goerli.infura.io/v3/${tokenInfura}`;
@@ -144,9 +147,20 @@ export function handleLoadFiles(config) {
           chainId = -1;
           errorMessage = 'No Node Ethereum';
         }
+        console.log("AQUI")
+        if (errorMessage !== '') {
+          resolve(false);
+        } else {
+          resolve(true);
+        }
         dispatch(loadFilesSuccess(config, config.abiRollup, config.abiTokens, chainId, errorMessage));
       } catch (error) {
-        dispatch(loadFilesError(error.message));
+        console.log("O AQUI");
+        const newConfig = config;
+        newConfig.nodeEth = undefined;
+        console.log(newConfig);
+        resolve(false);
+        dispatch(loadFilesError(newConfig, error.message));
       }
     });
   };

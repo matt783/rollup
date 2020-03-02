@@ -101,6 +101,8 @@ function general(state = initialState, action) {
       return {
         ...state,
         isLoadingFiles: false,
+        chainId: -1,
+        config: action.payload.config,
         errorFiles: action.error,
       };
     case CONSTANTS.LOAD_OPERATOR:

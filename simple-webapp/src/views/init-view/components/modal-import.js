@@ -21,7 +21,7 @@ class ModalImport extends Component {
           <Message warning>
             <Icon name="circle notched" loading />
             Your wallet is being checked...
-            This may take a few minutes!
+            This may take a few seconds!
           </Message>
         );
       } if (this.props.errorWallet !== '') {

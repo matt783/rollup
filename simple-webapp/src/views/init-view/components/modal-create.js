@@ -23,7 +23,7 @@ class ModalCreate extends Component {
         <Message warning>
           <Icon name="circle notched" loading />
           Your wallet is being created and imported...
-          This may take a few minutes!
+          This may take a few seconds!
         </Message>
       );
     } if (this.props.errorCreateWallet !== '') {

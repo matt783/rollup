@@ -244,7 +244,7 @@ class InfoWallet extends Component {
                 <Popup
                   content="You need ether to get tokens"
                   trigger={<Icon name="info" circular />} />
-                <Button onClick={this.handleClickTokens} disabled={this.state.loading || this.props.balance === '0.0'}>
+                <Button onClick={this.handleClickTokens} disabled={this.state.loading || this.props.balance === '0.0' || this.props.noImported}>
                   GET TOKENS
                   <Icon name="ethereum" />
                 </Button>
