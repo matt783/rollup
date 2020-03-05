@@ -74,14 +74,15 @@ class InitView extends Component {
 
     handleClickImport = async () => {
       try {
+        this.setState({ step: 0, desc: '' });
         if (this.state.walletImport === '' || this.passwordRef.current.value === '') {
           throw new Error('Incorrect wallet or password');
         } else {
           await this.props.handleInitStateTx();
           await this.props.handleLoadFiles(config);
-          this.setState({ step: 1, desc: 'Loading Operator' });
+          this.setState({ step: 1, desc: '1/3 Loading Operator' });
           await this.props.handleLoadOperator(config);
-          this.setState({ step: 2, desc: 'Loading Wallet' });
+          this.setState({ step: 2, desc: '2/3 Loading Wallet' });
           await this.props.handleLoadWallet(this.state.walletImport, this.passwordRef.current.value, true);
         }
       } catch (err) {
@@ -93,18 +94,19 @@ class InitView extends Component {
 
     handleClickCreate = async () => {
       try {
+        this.setState({ step: 0, desc: '' });
         const fileName = this.fileNameRef.current.value;
         const password = this.passwordRef.current.value;
         if (fileName === '' || password === '') {
           throw new Error('Incorrect wallet or password');
         } else {
-          this.setState({ step: 1, desc: 'Creating Wallet' });
+          this.setState({ step: 1, desc: '1/4 Creating Wallet' });
           const encWallet = await this.props.handleCreateWallet(fileName, password);
           await this.props.handleInitStateTx();
           await this.props.handleLoadFiles(config);
-          this.setState({ step: 2, desc: 'Loading Operator' });
+          this.setState({ step: 2, desc: '2/4 Loading Operator' });
           await this.props.handleLoadOperator(config);
-          this.setState({ step: 3, desc: 'Loading Wallet' });
+          this.setState({ step: 3, desc: '3/4 Loading Wallet' });
           await this.props.handleLoadWallet(encWallet, password, false);
         }
       } catch (err) {

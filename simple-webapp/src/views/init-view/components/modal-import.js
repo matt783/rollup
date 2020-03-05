@@ -27,7 +27,7 @@ class ModalImport extends Component {
               This may take a few seconds!
             </Message>
             <p>{this.props.desc}</p>
-            <Progress value={this.props.step} total="3" progress="ratio" />
+            <Progress value={this.props.step} total="3" progress="ratio" color="blue" active />
           </div>
         );
       } if (this.props.errorWallet !== '') {

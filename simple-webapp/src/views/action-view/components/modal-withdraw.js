@@ -68,7 +68,7 @@ class ModalWithdraw extends Component {
     const exitRoots = [];
     txsExitsById.map(async (key, index) => {
       exitRoots.push({
-        key: index, value: key, text: `Batch: ${key.batch} Amount: ${key.amount}`,
+        key: index, value: key.batch, text: `Batch: ${key.batch} Amount: ${key.amount}`,
       });
     });
     this.setState({ exitRoots }, () => { this.toggleModalChange(); });

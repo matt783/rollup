@@ -29,7 +29,7 @@ class ModalCreate extends Component {
             This may take a few seconds!
           </Message>
           <p>{this.props.desc}</p>
-          <Progress value={this.props.step} total="4" progress="ratio" />
+          <Progress value={this.props.step} total="4" progress="ratio" color="blue" active />
         </div>
       );
     } if (this.props.errorCreateWallet !== '') {
