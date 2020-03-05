@@ -148,28 +148,6 @@ function transactions(state = initialState, action) {
         messageOpen: true,
         error: action.error,
       };
-    case CONSTANTS.GET_EXIT_ROOT:
-      return {
-        ...state,
-        isLoadingGetExitRoot: true,
-        successGetExitRoot: false,
-        error: '',
-      };
-    case CONSTANTS.GET_EXIT_ROOT_SUCCESS:
-      return {
-        ...state,
-        isLoadingGetExitRoot: false,
-        exitRoots: action.payload,
-        successGetExitRoot: true,
-        error: '',
-      };
-    case CONSTANTS.GET_EXIT_ROOT_ERROR:
-      return {
-        ...state,
-        isLoadingGetExitRoot: false,
-        successGetExitRoot: false,
-        error: action.error,
-      };
     case CONSTANTS.GET_IDS:
       return {
         ...state,

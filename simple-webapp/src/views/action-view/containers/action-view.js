@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 import { Header, Container, Divider } from 'semantic-ui-react';
 import { Redirect } from 'react-router-dom';
 
-import { handleGetTokens, handleApprove } from '../../../state/tx/actions';
+import { handleGetTokens, handleApprove, handleInitStateTx } from '../../../state/tx/actions';
 import { handleInfoAccount, handleInfoOperator, handleLoadFiles } from '../../../state/general/actions';
 import { pointToCompress } from '../../../utils/utils';
 import MenuBack from '../components/menu';
@@ -30,6 +30,7 @@ class ActionView extends Component {
     txs: PropTypes.array,
     txsExits: PropTypes.array,
     apiOperator: PropTypes.object.isRequired,
+    handleInitStateTx: PropTypes.func.isRequired,
     isLoadingInfoAccount: PropTypes.bool.isRequired,
     handleInfoAccount: PropTypes.func.isRequired,
     handleInfoOperator: PropTypes.func.isRequired,
@@ -55,7 +56,6 @@ class ActionView extends Component {
       modalDeposit: false,
       modalWithdraw: false,
       modalSend: false,
-      modalSend0: false,
       modalError: false,
       error: '',
       activeItem: '',
@@ -64,26 +64,30 @@ class ActionView extends Component {
     };
   }
 
-  componentDidMount = () => {
+  componentDidMount = async () => {
     this.getInfoAccount();
+    this.infoOperator();
     if (Object.keys(this.props.desWallet).length === 0 || this.props.errorFiles !== '') {
       this.setState({ noImported: true });
     } else {
       this.setState({
         babyjub: pointToCompress(this.props.desWallet.babyjubWallet.publicKey),
       });
-      this.infoOperator();
     }
   }
 
   changeNode = async (currentNode) => {
     const { config } = this.props;
+    this.props.handleInitStateTx();
     config.nodeEth = currentNode;
     const nodeLoad = await this.props.handleLoadFiles(config);
-    this.getInfoAccount();
+    await this.getInfoAccount();
     if (Object.keys(this.props.desWallet).length === 0 || !nodeLoad) {
       this.setState({ noImported: true });
     } else {
+      this.setState({
+        babyjub: pointToCompress(this.props.desWallet.babyjubWallet.publicKey),
+      });
       this.setState({ noImported: false });
     }
   }
@@ -93,11 +97,12 @@ class ActionView extends Component {
     setTimeout(this.infoOperator, 30000);
   }
 
-  getInfoAccount = () => {
+  getInfoAccount = async () => {
     if (Object.keys(this.props.desWallet).length !== 0) {
-      this.props.handleInfoAccount(this.props.config.nodeEth, this.props.config.tokensAddress, this.props.abiTokens,
-        this.props.desWallet, this.props.config.operator, this.props.config.address, this.props.config.abiRollup);
-      this.props.handleInfoOperator(this.props.config.operator);
+      await this.props.handleInfoAccount(this.props.config.nodeEth, this.props.config.tokensAddress,
+        this.props.abiTokens, this.props.desWallet, this.props.config.operator, this.props.config.address,
+        this.props.config.abiRollup);
+      await this.props.handleInfoOperator(this.props.config.operator);
     }
   }
 
@@ -118,8 +123,6 @@ class ActionView extends Component {
   toggleModalWithdraw = () => { this.setState((prev) => ({ modalWithdraw: !prev.modalWithdraw })); }
 
   toggleModalSend = () => { this.setState((prev) => ({ modalSend: !prev.modalSend })); }
-
-  toggleModalSend0 = () => { this.setState((prev) => ({ modalSend0: !prev.modalSend0 })); }
 
   toggleModalError = () => { this.setState((prev) => ({ modalError: !prev.modalError })); }
 
@@ -149,7 +152,10 @@ class ActionView extends Component {
   render() {
     return (
       <Container textAlign="center">
-        <MenuBack config={this.props.config} changeNode={this.changeNode} />
+        <MenuBack
+          config={this.props.config}
+          changeNode={this.changeNode}
+          isLoadingInfoAccount={this.props.isLoadingInfoAccount} />
         <Header
           as="h1"
           style={{
@@ -232,5 +238,10 @@ const mapStateToProps = (state) => ({
 });
 
 export default connect(mapStateToProps, {
-  handleGetTokens, handleApprove, handleInfoAccount, handleInfoOperator, handleLoadFiles,
+  handleGetTokens,
+  handleApprove,
+  handleInfoAccount,
+  handleInfoOperator,
+  handleLoadFiles,
+  handleInitStateTx,
 })(ActionView);

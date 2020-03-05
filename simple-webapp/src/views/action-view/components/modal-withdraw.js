@@ -5,7 +5,7 @@ import {
   Button, Modal, Form, Icon, Dropdown,
 } from 'semantic-ui-react';
 import ModalError from './modal-error';
-import { handleSendWithdraw, handleGetExitRoot } from '../../../state/tx/actions';
+import { handleSendWithdraw } from '../../../state/tx/actions';
 import { handleInfoOperator } from '../../../state/general/actions';
 
 class ModalWithdraw extends Component {
@@ -15,7 +15,6 @@ class ModalWithdraw extends Component {
     modalWithdraw: PropTypes.bool.isRequired,
     toggleModalWithdraw: PropTypes.func.isRequired,
     handleSendWithdraw: PropTypes.func.isRequired,
-    handleGetExitRoot: PropTypes.func.isRequired,
     handleInfoOperator: PropTypes.func.isRequired,
     gasMultiplier: PropTypes.number.isRequired,
     desWallet: PropTypes.object.isRequired,
@@ -63,7 +62,15 @@ class ModalWithdraw extends Component {
   }
 
   getExitRoot = async () => {
-    const exitRoots = await this.props.handleGetExitRoot(this.props.config.operator, this.state.idFrom);
+    const { txsExits } = this.props;
+    // const exitRoots = await this.props.handleGetExitRoot(this.props.config.operator, this.state.idFrom);
+    const txsExitsById = txsExits.filter((tx) => tx.idx === this.state.idFrom);
+    const exitRoots = [];
+    txsExitsById.map(async (key, index) => {
+      exitRoots.push({
+        key: index, value: key, text: `Batch: ${key.batch} Amount: ${key.amount}`,
+      });
+    });
     this.setState({ exitRoots }, () => { this.toggleModalChange(); });
   }
 
@@ -192,4 +199,4 @@ const mapStateToProps = (state) => ({
   txsExits: state.general.txsExits,
 });
 
-export default connect(mapStateToProps, { handleSendWithdraw, handleGetExitRoot, handleInfoOperator })(ModalWithdraw);
+export default connect(mapStateToProps, { handleSendWithdraw, handleInfoOperator })(ModalWithdraw);

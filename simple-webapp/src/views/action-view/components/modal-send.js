@@ -141,27 +141,17 @@ class ModalSend extends Component {
     }
 
     receiverBySend = () => {
-      if (this.props.activeItem === 'send0') {
+      if (this.props.activeItem === 'send') {
         return (
-          <label htmlFor="babyjub-to-0">
-          Receiver BabyJubJub Address
+          <label htmlFor="babyjub-to">
+            Receiver BabyJubJub Address
             <input
               type="text"
-              id="baby-ax-r-0"
-              defaultValue={this.props.babyjub}
-              disabled />
+              id="baby-ax-r"
+              ref={this.babyjubRef} />
           </label>
         );
       }
-      return (
-        <label htmlFor="babyjub-to">
-          Receiver BabyJubJub Address
-          <input
-            type="text"
-            id="baby-ax-r"
-            ref={this.babyjubRef} />
-        </label>
-      );
     }
 
     modal = () => {

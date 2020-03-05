@@ -1,8 +1,8 @@
 import * as CONSTANTS from './constants';
-import * as rollup from '../../utils/bundle-cli';
-import * as operator from '../../utils/bundle-op';
 
 const ethers = require('ethers');
+const rollup = require('../../utils/bundle-cli');
+const operator = require('../../utils/bundle-op.js');
 
 const gasLimit = 5000000;
 
@@ -43,58 +43,6 @@ export function handleSendDeposit(nodeEth, addressSC, amount, tokenId, wallet, e
       } catch (error) {
         dispatch(sendDepositError('Deposit Error'));
         resolve(error);
-      }
-    });
-  };
-}
-
-
-function getNumExitRoot() {
-  return {
-    type: CONSTANTS.GET_EXIT_ROOT,
-  };
-}
-
-function getNumExitRootSuccess(res) {
-  return {
-    type: CONSTANTS.GET_EXIT_ROOT_SUCCESS,
-    payload: res,
-    error: '',
-  };
-}
-
-function getNumExitRootError(error) {
-  return {
-    type: CONSTANTS.GET_EXIT_ROOT_ERROR,
-    error,
-  };
-}
-
-export function handleGetExitRoot(urlOperator, id) {
-  return function (dispatch) {
-    dispatch(getNumExitRoot());
-    return new Promise(async (resolve) => {
-      try {
-        const apiOperator = new operator.cliExternalOperator(urlOperator);
-        const res = await apiOperator.getExits(id);
-        const infoExits = [];
-        res.data.map(async (key, index) => {
-          // eslint-disable-next-line no-console
-          const info = await apiOperator.getExitInfo(id, key).catch((err) => { console.log(err); });
-          if (info.data.found) {
-            const amount = ethers.utils.formatEther(info.data.state.amount);
-            if (!infoExits.find((leaf) => leaf.value === key)) {
-              infoExits.push({
-                key: index, value: key, amount, text: `Batch: ${key} Amount: ${amount}`,
-              });
-            }
-          }
-        });
-        resolve(infoExits);
-        dispatch(getNumExitRootSuccess(infoExits));
-      } catch (err) {
-        resolve([]);
-        dispatch(getNumExitRootError(err.message));
       }
     });
   };

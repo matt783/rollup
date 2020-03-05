@@ -4,11 +4,10 @@ import {
   Table, Icon, Modal, Button,
 } from 'semantic-ui-react';
 
-const web3 = require('web3');
-
 class ModalInfoIdExits extends Component {
   static propTypes = {
     txsExits: PropTypes.array,
+    noImported: PropTypes.bool.isRequired,
   };
 
   static defaultProps = {
@@ -23,7 +22,7 @@ class ModalInfoIdExits extends Component {
           <Table.Row key={index}>
             <Table.Cell>{key.idx}</Table.Cell>
             <Table.Cell>{key.batch}</Table.Cell>
-            <Table.Cell>{web3.utils.fromWei(key.amount, 'ether')}</Table.Cell>
+            <Table.Cell>{key.amount}</Table.Cell>
           </Table.Row>
         );
       });
@@ -40,7 +39,7 @@ class ModalInfoIdExits extends Component {
 
   render() {
     return (
-      <Modal trigger={<Button icon="info" circular size="mini" />} closeIcon>
+      <Modal trigger={<Button icon="info" circular size="mini" disabled={this.props.noImported} />} closeIcon>
         <Modal.Header><Icon name="info" /></Modal.Header>
         <Modal.Content>
           <Table>

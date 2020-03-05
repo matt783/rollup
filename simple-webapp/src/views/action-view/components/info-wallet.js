@@ -244,7 +244,9 @@ class InfoWallet extends Component {
                 <Popup
                   content="You need ether to get tokens"
                   trigger={<Icon name="info" circular />} />
-                <Button onClick={this.handleClickTokens} disabled={this.state.loading || this.props.balance === '0.0' || this.props.noImported}>
+                <Button
+                  onClick={this.handleClickTokens}
+                  disabled={this.state.loading || this.props.balance === '0.0' || this.props.noImported}>
                   GET TOKENS
                   <Icon name="ethereum" />
                 </Button>
@@ -282,7 +284,7 @@ class InfoWallet extends Component {
                 TOKENS ROLLUP:
               </Table.Cell>
               <Table.Cell textAlign="left" colSpan="3">
-                <ModalInfoId txs={this.props.txs} />
+                <ModalInfoId txs={this.props.txs} noImported={this.props.noImported} />
                 {this.isLoadingTokensR()}
               </Table.Cell>
             </Table.Row>
@@ -291,7 +293,7 @@ class InfoWallet extends Component {
                 PENDING EXIT TOKENS:
               </Table.Cell>
               <Table.Cell textAlign="left" colSpan="3">
-                <ModalInfoIdExits txsExits={this.props.txsExits} />
+                <ModalInfoIdExits txsExits={this.props.txsExits} noImported={this.props.noImported} />
                 {this.isLoadingTokensE()}
               </Table.Cell>
             </Table.Row>

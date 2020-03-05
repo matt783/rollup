@@ -1,11 +1,11 @@
 /* global BigInt */
 import * as CONSTANTS from './constants';
-import * as rollup from '../../utils/bundle-cli';
-import * as operator from '../../utils/bundle-op';
 import { getNullifier } from '../../utils/utils';
 
 const ethers = require('ethers');
 const FileSaver = require('file-saver');
+const rollup = require('../../utils/bundle-cli');
+const operator = require('../../utils/bundle-op.js');
 const { readFile } = require('../../utils/utils');
 
 function loadWallet() {
@@ -30,22 +30,20 @@ function loadWalletError(error) {
 }
 
 export function handleLoadWallet(walletFile, password, file) {
-  return function (dispatch) {
+  return async function (dispatch) {
     dispatch(loadWallet());
-    return new Promise(async () => {
-      try {
-        let wallet;
-        if (file) {
-          wallet = await readFile(walletFile);
-        } else {
-          wallet = walletFile;
-        }
-        const desWallet = await rollup.wallet.Wallet.fromEncryptedJson(wallet, password);
-        dispatch(loadWalletSuccess(wallet, password, desWallet));
-      } catch (error) {
-        dispatch(loadWalletError(error.message));
+    try {
+      let wallet;
+      if (file) {
+        wallet = await readFile(walletFile);
+      } else {
+        wallet = walletFile;
       }
-    });
+      const desWallet = await rollup.wallet.Wallet.fromEncryptedJson(wallet, password);
+      dispatch(loadWalletSuccess(wallet, password, desWallet));
+    } catch (error) {
+      dispatch(loadWalletError(error.message));
+    }
   };
 }
 
@@ -129,22 +127,22 @@ export function handleLoadFiles(config) {
     return new Promise(async (resolve) => {
       try {
         const Web3 = require('web3');
-        const urlParams = new URLSearchParams(window.location.search);
         let chainId;
         let web3;
         let errorMessage = '';
         if (config.nodeEth) {
           web3 = new Web3(config.nodeEth);
           chainId = await web3.eth.getChainId();
-        } else if (urlParams.has('node')) {
-          const tokenInfura = urlParams.get('node');
-          config.nodeEth = `https://goerli.infura.io/v3/${tokenInfura}`;
-          web3 = new Web3(config.nodeEth);
-          chainId = await web3.eth.getChainId();
         } else {
           chainId = -1;
           errorMessage = 'No Node Ethereum';
         }
+        if (!config.operator) errorMessage = 'No operator';
+        if (!config.address) errorMessage = 'No Rollup Address';
+        if (!config.abiRollup) errorMessage = 'No Rollup ABI';
+        if (!config.abiTokens) errorMessage = 'No Tokens ABI';
+        if (!config.tokensAddress) errorMessage = 'No Tokens Address';
+
         if (errorMessage !== '') {
           resolve(false);
         } else {
@@ -155,7 +153,7 @@ export function handleLoadFiles(config) {
         const newConfig = config;
         newConfig.nodeEth = undefined;
         resolve(false);
-        dispatch(loadFilesError(newConfig, error.message));
+        dispatch(loadFilesError(newConfig, 'Error Configuration'));
       }
     });
   };
@@ -185,14 +183,12 @@ function loadOperatorError(error) {
 export function handleLoadOperator(config) {
   return function (dispatch) {
     dispatch(loadOperator());
-    return new Promise(async () => {
-      try {
-        const apiOperator = new operator.cliExternalOperator(config.operator);
-        dispatch(loadOperatorSuccess(apiOperator));
-      } catch (error) {
-        dispatch(loadOperatorError(error));
-      }
-    });
+    try {
+      const apiOperator = new operator.cliExternalOperator(config.operator);
+      dispatch(loadOperatorSuccess(apiOperator));
+    } catch (error) {
+      dispatch(loadOperatorError(error));
+    }
   };
 }
 
@@ -221,47 +217,45 @@ function infoAccountError(error) {
 }
 
 export function handleInfoAccount(node, addressTokens, abiTokens, wallet, operatorUrl, addressRollup, abiRollup) {
-  return function (dispatch) {
+  return async function (dispatch) {
     dispatch(infoAccount());
-    return new Promise(async () => {
+    try {
+      let tokens = '0';
+      let tokensA = '0';
+      let tokensE = '0';
+      let tokensR = '0';
+      const txs = [];
+      const txsExits = [];
+      const provider = new ethers.providers.JsonRpcProvider(node);
+      const walletEthAddress = wallet.ethWallet.address;
+      let walletEth = new ethers.Wallet(wallet.ethWallet.privateKey);
+      walletEth = walletEth.connect(provider);
+      const balanceHex = await provider.getBalance(walletEthAddress);
+      const balance = ethers.utils.formatEther(balanceHex);
+      const contractTokens = new ethers.Contract(addressTokens, abiTokens, provider);
+      const apiOperator = new operator.cliExternalOperator(operatorUrl);
+      const filters = {};
+      if (walletEthAddress.startsWith('0x')) filters.ethAddr = walletEthAddress;
+      else filters.ethAddr = `0x${walletEthAddress}`;
+      const contractRollup = new ethers.Contract(addressRollup, abiRollup, walletEth);
+      const tokensHex = await contractTokens.balanceOf(walletEthAddress);
+      const tokensAHex = await contractTokens.allowance(walletEthAddress, addressRollup);
+      let allTxs = {};
       try {
-        let tokens = '0';
-        let tokensA = '0';
-        let tokensE = '0';
-        let tokensR = '0';
-        const txs = [];
-        const txsExits = [];
-        const provider = new ethers.providers.JsonRpcProvider(node);
-        const walletEthAddress = wallet.ethWallet.address;
-        let walletEth = new ethers.Wallet(wallet.ethWallet.privateKey);
-        walletEth = walletEth.connect(provider);
-        const balanceHex = await provider.getBalance(walletEthAddress);
-        const balance = ethers.utils.formatEther(balanceHex);
-        const contractTokens = new ethers.Contract(addressTokens, abiTokens, provider);
-        const apiOperator = new operator.cliExternalOperator(operatorUrl);
-        const filters = {};
-        if (walletEthAddress.startsWith('0x')) filters.ethAddr = walletEthAddress;
-        else filters.ethAddr = `0x${walletEthAddress}`;
-        const contractRollup = new ethers.Contract(addressRollup, abiRollup, walletEth);
-        const tokensHex = await contractTokens.balanceOf(walletEthAddress);
-        const tokensAHex = await contractTokens.allowance(walletEthAddress, addressRollup);
-        let allTxs = {};
-        try {
-          allTxs = await apiOperator.getAccounts(filters);
-        } catch (err) {
-          allTxs.data = [];
-        }
-        const tokensRNum = getTokensRollup(allTxs, txs);
-        const tokensENum = await getTokensExit(txsExits, apiOperator, wallet, allTxs, contractRollup);
-        tokens = tokensHex.toString();
-        tokensA = tokensAHex.toString();
-        tokensE = tokensENum.toString();
-        tokensR = tokensRNum.toString();
-        dispatch(infoAccountSuccess(balance, tokens, tokensR, tokensA, tokensE, txs, txsExits));
-      } catch (error) {
-        dispatch(infoAccountError(error));
+        allTxs = await apiOperator.getAccounts(filters);
+      } catch (err) {
+        allTxs.data = [];
       }
-    });
+      const tokensRNum = getTokensRollup(allTxs, txs);
+      const tokensENum = await getTokensExit(txsExits, apiOperator, wallet, allTxs, contractRollup);
+      tokens = tokensHex.toString();
+      tokensA = tokensAHex.toString();
+      tokensE = tokensENum.toString();
+      tokensR = tokensRNum.toString();
+      dispatch(infoAccountSuccess(balance, tokens, tokensR, tokensA, tokensE, txs, txsExits));
+    } catch (error) {
+      dispatch(infoAccountError(error));
+    }
   };
 }
 
@@ -298,8 +292,9 @@ async function getTokensExit(txsExits, apiOperator, wallet, allTxs, contractRoll
                 const boolNullifier = await getNullifier(wallet, info, contractRollup, batches[batch]);
                 if (!boolNullifier) {
                   if (!txsExits.find((leaf) => leaf.idx === allTxs.data[tx].idx && leaf.batch === batches[batch])) {
+                    const amount = ethers.utils.formatEther(info.data.state.amount);
                     txsExits.push({
-                      idx: allTxs.data[tx].idx, batch: batches[batch], amount: info.data.state.amount,
+                      idx: allTxs.data[tx].idx, batch: batches[batch], amount,
                     });
                     tokensENum += BigInt(info.data.state.amount);
                   }
@@ -403,21 +398,19 @@ function getInfoOperatorError(error) {
 
 
 export function handleInfoOperator(operatorUrl) {
-  return function (dispatch) {
+  return async function (dispatch) {
     dispatch(getInfoOperator());
-    return new Promise(async () => {
-      try {
-        const apiOperator = new operator.cliExternalOperator(operatorUrl);
-        const res = await apiOperator.getState();
-        const generalInfo = res.data;
-        const { currentBlock } = generalInfo;
-        const { currentEra } = generalInfo.posSynch;
-        const { currentSlot } = generalInfo.posSynch;
-        const currentBatch = generalInfo.rollupSynch.lastBatchSynched;
-        dispatch(getInfoOperatorSuccess(currentBlock, currentEra, currentSlot, currentBatch));
-      } catch (error) {
-        dispatch(getInfoOperatorError(error));
-      }
-    });
+    try {
+      const apiOperator = new operator.cliExternalOperator(operatorUrl);
+      const res = await apiOperator.getState();
+      const generalInfo = res.data;
+      const { currentBlock } = generalInfo;
+      const { currentEra } = generalInfo.posSynch;
+      const { currentSlot } = generalInfo.posSynch;
+      const currentBatch = generalInfo.rollupSynch.lastBatchSynched;
+      dispatch(getInfoOperatorSuccess(currentBlock, currentEra, currentSlot, currentBatch));
+    } catch (error) {
+      dispatch(getInfoOperatorError(error));
+    }
   };
 }

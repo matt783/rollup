@@ -53,7 +53,10 @@ class MessageTx extends Component {
         <Message icon color="red">
           <Icon name="exclamation" />
           <Message.Content>
-            <Message.Header>Error Node Ethereum!</Message.Header>
+            <Message.Header>
+              Error!
+              {this.props.errorFiles}
+            </Message.Header>
           </Message.Content>
         </Message>
       );

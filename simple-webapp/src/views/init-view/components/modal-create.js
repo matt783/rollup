@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import {
-  Button, Modal, Form, Icon, Message,
+  Button, Modal, Form, Icon, Message, Progress,
 } from 'semantic-ui-react';
 
 class ModalCreate extends Component {
@@ -15,16 +15,22 @@ class ModalCreate extends Component {
     isCreatingWallet: PropTypes.bool.isRequired,
     isLoadingWallet: PropTypes.bool.isRequired,
     nameWallet: PropTypes.string,
+    desc: PropTypes.string,
+    step: PropTypes.number.isRequired,
   }
 
   isLoading = () => {
     if (this.props.isCreatingWallet === true || this.props.isLoadingWallet === true) {
       return (
-        <Message warning>
-          <Icon name="circle notched" loading />
-          Your wallet is being created and imported...
-          This may take a few seconds!
-        </Message>
+        <div>
+          <Message warning>
+            <Icon name="circle notched" loading />
+            Your wallet is being created and imported...
+            This may take a few seconds!
+          </Message>
+          <p>{this.props.desc}</p>
+          <Progress value={this.props.step} total="4" progress="ratio" />
+        </div>
       );
     } if (this.props.errorCreateWallet !== '') {
       return (
